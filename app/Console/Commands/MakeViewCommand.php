@@ -2,7 +2,7 @@
 namespace AppConsoleCommands;
 use IlluminateConsoleCommand;
 use File;
-class MakeViewCommand extends Command
+class MakeViewCommand 
 {
   /**
    * The name and signature of the console command.
