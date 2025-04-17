@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Review extends Model
 {
     use HasFactory;
+
+    public function review_user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 }

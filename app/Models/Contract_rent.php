@@ -18,4 +18,14 @@ class Contract_rent extends Model
     {
         return $this->belongsTo(Contract::class, 'id_contract');
     }
+
+    public function contract_report()
+    {
+        return $this->hasMany(Report::class, 'id_contract');
+    }
+
+    public function contract_produces()
+    {
+        return $this->hasMany(Produce::class, 'id_contract');
+    }
 }

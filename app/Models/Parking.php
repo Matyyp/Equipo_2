@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Parking extends Model
 {
     use HasFactory;
+
+    public function parking_service()
+    {
+        return $this->belongsTo(Service::class, 'id_service');
+    }
+
+    public function parking_park()
+    {
+        return $this->hasMany(Park::class, 'id_service');
+    }
 }
