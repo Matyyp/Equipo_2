@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('presents', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_contract_information');
+            $table->unsignedBigInteger('id_contact_information');
             $table->unsignedBigInteger('id_contract');
-            $table->foreign('id_contract_information')->references('id_contract_information')->on('contract_information')->onDelete('cascade');
-            $table->foreign('id_contract')->references('id_contract')->on('contract')->onDelete('cascade');
+            $table->foreign('id_contact_information')->references('id_contact_information')->on('contact_informations')->onDelete('cascade');
+            $table->foreign('id_contract')->references('id_contract')->on('contracts')->onDelete('cascade');
             $table->timestamps();
         });
     }

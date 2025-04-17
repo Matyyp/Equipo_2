@@ -8,24 +8,28 @@ use Illuminate\Database\Eloquent\Model;
 class Rent extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'id_service'
+    ];
     
     public function rent_rent_register()
     {
-        return $this->hasMany(Rent_register::class, 'id_service');
+        return $this->hasMany(RentRegister::class, 'id_service', 'id_service');
     }
 
     public function rent_service()
     {
-        return $this->belongsTo(Service::class, 'id_service');
+        return $this->belongsTo(Service::class, 'id_service', 'id_service');
     }
 
-    public function rent_can()
+    public function rent_allow()
     {
-        return $this->hasMany(Can::class, 'id_service');
+        return $this->hasMany(Allow::class, 'id_service', 'id_service');
     }
 
-    public function rent_uses()
+    public function rent_utilize()
     {
-        return $this->hasMany(Uses::class, 'id_service');
+        return $this->hasMany(Utilize::class, 'id_service', 'id_service');
     }
 }

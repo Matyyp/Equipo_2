@@ -9,8 +9,13 @@ class Rule extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'description',
+    ];
+
     public function rule_contains()
     {
-        return $this->hasMany(Contains::class, 'id_rule');
+        return $this->hasMany(Contain::class, 'id_rule', 'id_rule');
     }
 }

@@ -9,8 +9,15 @@ class Owner extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'type_owner',
+        'name',
+        'last_name',
+        'number_phone',
+    ];
+
     public function owner_belongs()
     {
-        return $this->hasMany(Belongs::class, 'id_owner');
+        return $this->hasMany(Belong::class, 'id_owner', 'id_owner');
     }
 }

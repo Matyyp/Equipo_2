@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_owner');
             $table->unsignedBigInteger('id_car');
-            $table->foreign('id_owner')->references('id_owner')->on('owner')->onDelete('cascade');
-            $table->foreign('id_car')->references('id_car')->on('car')->onDelete('cascade');
+            $table->foreign('id_owner')->references('id_owner')->on('owners')->onDelete('cascade');
+            $table->foreign('id_car')->references('id_car')->on('cars')->onDelete('cascade');
             $table->timestamps();
         });
     }

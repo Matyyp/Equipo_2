@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_contract');
             $table->unsignedBigInteger('id_parking_register');
-            $table->foreign('id_contract')->references('id_contract')->on('contract_parking')->onDelete('cascade');
-            $table->foreign('id_parking_register')->references('id_parking_register')->on('parking_register')->onDelete('cascade');
+            $table->foreign('id_contract')->references('id_contract')->on('contract_parkings')->onDelete('cascade');
+            $table->foreign('id_parking_register')->references('id_parking_register')->on('parking_registers')->onDelete('cascade');
             $table->timestamps();
         });
     }

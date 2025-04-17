@@ -9,13 +9,18 @@ class Park extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'id_service',
+        'id_car'
+    ];
+
     public function park_parking()
     {
-        return $this->belongsTo(Parking::class, 'id_service');
+        return $this->belongsTo(Parking::class, 'id_service', 'id_service');
     }
 
     public function park_car()
     {
-        return $this->belongsTo(Car::class, 'id_car');
+        return $this->belongsTo(Car::class, 'id_car', 'id_car');
     }
 }

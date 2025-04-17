@@ -9,38 +9,43 @@ class Car extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'patent',
+        'value_rent',
+    ];
+
     public function car_park()
     {
-        return $this->hasMany(Park::class, 'id_car');
+        return $this->hasMany(Park::class, 'id_car', 'id_car');
     }
 
     public function car_belongs()
     {
-        return $this->hasMany(Belongs::class, 'id_car');
+        return $this->hasMany(Belong::class, 'id_car', 'id_car');
     }
 
     public function car_brand()
     {
-        return $this->hasMany(Brand::class, 'id_car');
+        return $this->belongsTo(Brand::class, 'id_brand', 'id_brand');
     }
 
     public function car_model()
     {
-        return $this->hasMany(Model_car::class, 'id_car');
+        return $this->belongsTo(Model_car::class, 'id_model', 'id_model');
     }
 
     public function car_photo_car()
     {
-        return $this->hasMany(Photo_car::class, 'id_car');
+        return $this->hasMany(Photo_car::class, 'id_car', 'id_car');
     }
 
-    public function car_requires()
+    public function car_need()
     {
-        return $this->hasMany(Requires::class, 'id_car');
+        return $this->hasMany(Need::class, 'id_car', 'id_car');
     }
 
-    public function car_uses()
+    public function car_utilize()
     {
-        return $this->hasMany(Uses::class, 'id_car');
+        return $this->hasMany(Utilize::class, 'id_car', 'id_car');
     }
 }

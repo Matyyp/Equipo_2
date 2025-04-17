@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('owns', function (Blueprint $table) {
-            $table->id('id_contract');
-            $table->foreign('id_contract')->references('id_contract')->on('contract_rent')->onDelete('cascade');
+            $table->id();
+            $table->unsignedBigInteger('id_accessory');
+            $table->unsignedBigInteger('id_contract');
+            $table->foreign('id_accessory')->references('id_accessory')->on('accessory')->onDelete('cascade');
+            $table->foreign('id_contract')->references('id_contract')->on('contract_rents')->onDelete('cascade');
             $table->timestamps();
         });
     }

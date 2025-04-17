@@ -13,8 +13,9 @@ class Select extends Model
     {
         return $this->belongsTo(User::class, 'id_user');
     }
+    
     public function select_type_of_payment()
     {
-        return $this->belongsTo(Type_of_payment::class, 'id_payment');
+        return $this->belongsTo(TypeOfPayment::class, 'id_payment', 'id_payment');
     }
 }

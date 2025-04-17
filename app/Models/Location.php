@@ -9,8 +9,13 @@ class Location extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'region',
+        'commune'
+    ];
+
     public function location_branch_office()
     {
-        return $this->hasMany(Branch_office::class, 'id_location');
+        return $this->hasMany(BranchOffice::class, 'id_location', 'id_location');
     }
 }

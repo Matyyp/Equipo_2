@@ -9,10 +9,16 @@ class Request extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'id_service',
+        'id_user'
+    ];
+
     public function request_car_wash()
     {
-        return $this->belongsTo(Car_wash::class, 'id_service');
+        return $this->belongsTo(CarWash::class, 'id_service',  'id_service');
     }
+
     public function request_user()
     {
         return $this->belongsTo(User::class, 'id_user');
