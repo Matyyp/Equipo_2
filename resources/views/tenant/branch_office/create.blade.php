@@ -19,11 +19,6 @@
         @csrf
 
         <div class="mb-3">
-            <label>ID de Sucursal</label>
-            <input type="text" name="id_branch" class="form-control" value="{{ old('id_branch') }}" required>
-        </div>
-
-        <div class="mb-3">
             <label>Horario</label>
             <input type="text" name="schedule" class="form-control" value="{{ old('schedule') }}" required>
         </div>

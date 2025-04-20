@@ -11,11 +11,10 @@ class Rent extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $primaryKey = 'id_service';
+
     protected $fillable = [
         'id_service',
-        'type_car',
-        'warranty',
-        'id_rent'
     ];
     
     public function rent_rent_register()

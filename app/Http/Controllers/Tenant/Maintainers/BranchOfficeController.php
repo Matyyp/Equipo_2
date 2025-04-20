@@ -50,7 +50,6 @@ class BranchOfficeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_branch'   => 'required|string|max:10|unique:branch_offices,id_branch',
             'schedule'    => 'required|string|max:100',
             'street'      => 'required|string|max:150',
             'id_location' => 'required|exists:locations,id_location',
@@ -58,7 +57,6 @@ class BranchOfficeController extends Controller
         ]);
 
         BranchOffice::create([
-            'id_branch'   => $request->id_branch,
             'schedule'    => $request->schedule,
             'street'      => $request->street,
             'id_location' => $request->id_location,

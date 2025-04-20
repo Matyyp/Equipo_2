@@ -41,6 +41,8 @@
                                 @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Eliminar</button>
                             </form>
+
+                            <a href="{{ route('servicios.show', $branch['id'] ) }}" class="btn btn-warning btn-sm">Servicios</a>
                         </td>
                     </tr>
                 @endforeach

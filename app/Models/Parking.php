@@ -11,12 +11,10 @@ class Parking extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $primaryKey = 'id_service';
+
     protected $fillable = [
         'id_service',
-        'id_parking',
-        'price_net',
-        'name_parking',
-        'type_parking'
     ];
 
     public function parking_service()

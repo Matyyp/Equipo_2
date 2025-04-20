@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_service');
             $table->foreign('id_service')->references('id_service')->on('services')->onDelete('cascade');
-            $table->string('name_wash');
-            $table->integer('price_net');
             $table->timestamps();
             $table->softDeletes();
         });

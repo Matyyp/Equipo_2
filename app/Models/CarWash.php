@@ -11,11 +11,10 @@ class CarWash extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $primaryKey = 'id_service';
+
     protected $fillable = [
         'id_service',
-        'id_wash',
-        'name_wash',
-        'price_net'
     ];
 
     public function car_wash_service()

@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id('id_service');
             $table->string('name');
+            $table->integer('price_net');
             $table->unsignedBigInteger('id_branch_office');
             $table->foreign('id_branch_office')->references('id_branch')->on('branch_offices')->onDelete('cascade');
+            $table->enum('type_service', ['car_wash', 'parking', 'rent']);
             $table->timestamps();
             $table->softDeletes();
         });

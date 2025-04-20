@@ -20,11 +20,6 @@
         @method('PUT')
 
         <div class="mb-3">
-            <label>ID de Sucursal</label>
-            <input type="text" name="id_branch" class="form-control" value="{{ $branch->id_branch }}" readonly>
-        </div>
-
-        <div class="mb-3">
             <label>Horario</label>
             <input type="text" name="schedule" class="form-control" value="{{ old('schedule', $branch->schedule) }}" required>
         </div>

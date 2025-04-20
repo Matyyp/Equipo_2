@@ -16,6 +16,7 @@ use App\Http\Controllers\Tenant\Maintainers\RuleController;
 use App\Http\Controllers\Tenant\Maintainers\CarController;
 use App\Http\Controllers\Tenant\Maintainers\BelongsController;
 use App\Http\Controllers\Tenant\Maintainers\BranchOfficeController;
+use App\Http\Controllers\Tenant\Maintainers\ServiceController;
 
 
 /*
@@ -60,6 +61,7 @@ Route::middleware([
         Route::resource('autos', CarController::class);
         Route::resource('asociado', BelongsController::class);
         Route::resource('sucursales', BranchOfficeController::class);
+        Route::resource('servicios', ServiceController::class);
 
     });
 
