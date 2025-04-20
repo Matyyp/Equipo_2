@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_contact_information');
             $table->unsignedBigInteger('id_contract');
-            $table->foreign('id_contact_information')->references('id_contact_information')->on('contact_informations')->onDelete('cascade');
+            $table->foreign('id_contact_information')->references('id_contact_information')->on('contact_information')->onDelete('cascade');
             $table->foreign('id_contract')->references('id_contract')->on('contracts')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

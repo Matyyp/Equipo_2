@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('id_payment')->references('id_payment')->on('type_of_payments')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

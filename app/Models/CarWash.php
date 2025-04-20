@@ -4,13 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CarWash extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
-        'id_service'
+        'id_service',
+        'id_wash',
+        'name_wash',
+        'price_net'
     ];
 
     public function car_wash_service()

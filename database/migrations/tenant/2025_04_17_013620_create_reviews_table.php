@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('date_opinion');
             $table->integer('grading');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

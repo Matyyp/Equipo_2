@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('important_note');
             $table->date('expiration_date');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

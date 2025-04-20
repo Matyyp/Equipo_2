@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('commune');
             $table->string('region');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

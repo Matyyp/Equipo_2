@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('body_evaluation');
             $table->integer('grading_evaluation');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

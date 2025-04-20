@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreign('id_rule')->references('id_rule')->on('rules')->onDelete('cascade');
             $table->foreign('id_contract')->references('id_contract')->on('contracts')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

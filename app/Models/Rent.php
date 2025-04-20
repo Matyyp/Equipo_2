@@ -4,13 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Rent extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
-        'id_service'
+        'id_service',
+        'type_car',
+        'warranty',
+        'id_rent'
     ];
     
     public function rent_rent_register()

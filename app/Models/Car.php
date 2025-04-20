@@ -4,14 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Car extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'patent',
         'value_rent',
+        'id_model',
+        'id_brand'
     ];
 
     public function car_park()
@@ -31,12 +35,12 @@ class Car extends Model
 
     public function car_model()
     {
-        return $this->belongsTo(Model_car::class, 'id_model', 'id_model');
+        return $this->belongsTo(ModelCar::class, 'id_model', 'id_model');
     }
 
     public function car_photo_car()
     {
-        return $this->hasMany(Photo_car::class, 'id_car', 'id_car');
+        return $this->hasMany(PhotoCar::class, 'id_car', 'id_car');
     }
 
     public function car_need()

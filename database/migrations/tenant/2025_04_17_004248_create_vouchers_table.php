@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('amount');
             $table->integer('discount');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

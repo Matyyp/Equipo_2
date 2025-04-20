@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('id_service')->references('id_service')->on('car_washes')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('last_name');
-            $table->string('user_name');
+            $table->string('last_name')->nullable();;
+            $table->string('user_name')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('cell_phone', 20)->nullable();
             $table->string('url_photo_user')->nullable();
-            $table->enum('user_type', ['client', 'employee']);
+            $table->enum('user_type', ['client', 'employee'])->nullable();
         });
     }
 

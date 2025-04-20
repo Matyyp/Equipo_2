@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreign('id_service')->references('id_service')->on('services')->onDelete('cascade');
             $table->foreign('id_voucher')->references('id_voucher')->on('vouchers')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

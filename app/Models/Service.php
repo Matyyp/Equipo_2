@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Service extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
-        'price_net'
     ];
 
     public function service_branch_office()
@@ -26,16 +27,16 @@ class Service extends Model
 
     public function service_parking()
     {
-        return $this->hasOne(Parking::class, 'id_service', 'id_service');
+        return $this->hasMany(Parking::class, 'id_service', 'id_service');
     }
 
     public function service_car_wash()
     {
-        return $this->hasOne(CarWash::class, 'id_service', 'id_service');
+        return $this->hasMany(CarWash::class, 'id_service', 'id_service');
     }
 
     public function service_rent()
     {
-        return $this->hasOne(Rent::class, 'id_service', 'id_service');
+        return $this->hasMany(Rent::class, 'id_service', 'id_service');
     }
 }

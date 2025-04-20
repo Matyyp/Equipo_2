@@ -31,6 +31,7 @@ return new class extends Migration
             $table->dateTime('end_date');
             $table->integer('total_value');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
