@@ -1,11 +1,12 @@
-@extends('layouts.tenant')
+@extends('tenant.layouts.admin')
 
-@section('header')
-    <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-        {{ __('Panel de admin') }}
-    </h2>
-@endsection
+@section('title', 'Dashboard')
+@section('page_title', 'Dashboard')
 
 @section('content')
-    <h1>aca deberia ver otro panel de admin diferente al del central</h1>
+    <div class="card">
+        <div class="card-body">
+            ¡Bienvenido al panel!
+        </div>
+    </div>
 @endsection
