@@ -14,7 +14,7 @@ class BrandController extends Controller
     public function index()
     {
         $data = Brand::all();
-        return view('tenant.brand.index', compact('data'));
+        return view('tenant.admin.maintainer.brand.index', compact('data'));
     }
 
     /**
@@ -22,7 +22,7 @@ class BrandController extends Controller
      */
     public function create()
     {
-        return view('tenant.brand.create');
+        return view('tenant.admin.maintainer.brand.create');
     }
 
     /**
@@ -57,7 +57,7 @@ class BrandController extends Controller
     public function edit(string $id)
     {
         $brand = brand::where('id_brand', $id)->first();
-        return view('tenant.brand.edit', compact('brand'));
+        return view('tenant.admin.maintainer.brand.edit', compact('brand'));
     }
 
     /**

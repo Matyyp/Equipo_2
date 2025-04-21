@@ -15,7 +15,7 @@ class BusinessController extends Controller
     public function index()
     {
         $data = Business::all();
-        return view('tenant.business.index', compact('data'));
+        return view('tenant.admin.maintainer.business.index', compact('data'));
     }
 
     /**
@@ -23,7 +23,7 @@ class BusinessController extends Controller
      */
     public function create()
     {
-        return view('tenant.business.create');
+        return view('tenant.admin.maintainer.business.create');
     }
 
     /**
@@ -71,7 +71,7 @@ class BusinessController extends Controller
     public function edit(string $id)
     {
         $business = business::where('id_business', $id)->first();
-        return view('tenant.business.edit', compact('business'));
+        return view('tenant.admin.maintainer.business.edit', compact('business'));
     }
 
     /**

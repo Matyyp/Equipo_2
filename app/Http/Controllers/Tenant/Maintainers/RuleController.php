@@ -14,7 +14,7 @@ class RuleController extends Controller
     public function index()
     {
         $Rule = Rule::all();
-        return view('tenant.rule.index', compact('Rule'));
+        return view('tenant.admin.maintainer.rule.index', compact('Rule'));
     }
 
     /**
@@ -22,7 +22,7 @@ class RuleController extends Controller
      */
     public function create()
     {
-        return view('tenant.rule.create');
+        return view('tenant.admin.maintainer.rule.create');
     }
 
     /**
@@ -59,7 +59,7 @@ class RuleController extends Controller
     public function edit(string $id)
     {
         $rule = Rule::where('id_rule', $id)->first();
-        return view('tenant.rule.edit', compact('rule'));
+        return view('tenant.admin.maintainer.rule.edit', compact('rule'));
     }
 
     /**

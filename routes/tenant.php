@@ -17,6 +17,7 @@ use App\Http\Controllers\Tenant\Maintainers\CarController;
 use App\Http\Controllers\Tenant\Maintainers\BelongsController;
 use App\Http\Controllers\Tenant\Maintainers\BranchOfficeController;
 use App\Http\Controllers\Tenant\Maintainers\ServiceController;
+use App\Http\Controllers\Tenant\Maintainers\ContractController;
 
 
 /*
@@ -41,7 +42,7 @@ Route::middleware([
     });
     
     Route::get('/dashboard', function () {
-        return view('tenant.dashboard');
+        return view('tenant.admin.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
     
     Route::middleware('auth')->group(function () {
@@ -62,6 +63,7 @@ Route::middleware([
         Route::resource('asociado', BelongsController::class);
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
+        Route::resource('contratos', ContractController::class);
 
     });
 

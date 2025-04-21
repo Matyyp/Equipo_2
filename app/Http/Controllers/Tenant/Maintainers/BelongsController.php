@@ -68,7 +68,7 @@ class BelongsController extends Controller
             ];
         })->toArray();
         
-        return view('tenant.belongs.index', ['datos' => $datos, 'id'=>$id]);
+        return view('tenant.admin.maintainer.belongs.index', ['datos' => $datos, 'id'=>$id]);
     }
 
     /**
@@ -91,7 +91,7 @@ class BelongsController extends Controller
             ];
         })->toArray();
 
-        return view('tenant.belongs.edit', [
+        return view('tenant.admin.maintainer.belongs.edit', [
             'datos' => $datos,
             'id'    => $id,
         ]);

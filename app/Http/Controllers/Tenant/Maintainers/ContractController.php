@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Tenant\Maintainers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Models\ContactInformation;
+use App\Models\Rule;
 class ContractController extends Controller
 {
     /**
@@ -20,7 +21,10 @@ class ContractController extends Controller
      */
     public function create()
     {
-        //
+        return view('tenant.admin.maintainer.contract.create', [
+            'contactInformations' => ContactInformation::all(),
+            'rules' => Rule::all(),
+        ]);
     }
 
     /**

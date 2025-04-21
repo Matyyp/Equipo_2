@@ -29,7 +29,7 @@ class CarController extends Controller
 
         $car = $car->toArray(); 
 
-        return view('tenant.car.index', compact('car'));
+        return view('tenant.admin.maintainer.car.index', compact('car'));
     }
 
     /**

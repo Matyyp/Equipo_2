@@ -14,7 +14,7 @@ class ContactInformationController extends Controller
     public function index()
     {
         $data = ContactInformation::all();
-        return view('tenant.contactInformation.index', compact('data'));
+        return view('tenant.admin.maintainer.contactInformation.index', compact('data'));
     }
 
     /**
@@ -22,7 +22,7 @@ class ContactInformationController extends Controller
      */
     public function create()
     {
-        return view('tenant.contactInformation.create');
+        return view('tenant.admin.maintainer.contactInformation.create');
     }
 
     /**
@@ -57,7 +57,7 @@ class ContactInformationController extends Controller
     public function edit(string $id)
     {
         $data = ContactInformation::where('id_contact_information', $id)->first();
-        return view('tenant.contactInformation.edit', compact('data'));
+        return view('tenant.admin.maintainer.contactInformation.edit', compact('data'));
     }
 
     /**

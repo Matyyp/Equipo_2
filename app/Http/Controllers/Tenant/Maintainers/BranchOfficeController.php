@@ -41,7 +41,7 @@ class BranchOfficeController extends Controller
         $locacion = Location::all();
         $business = Business::all();
 
-        return view('tenant.branch_office.create', compact('locacion', 'business'));
+        return view('tenant.admin.maintainer.branch_office.create', compact('locacion', 'business'));
     }
 
     /**
@@ -86,7 +86,7 @@ class BranchOfficeController extends Controller
         $locacion = Location::all();
         $business = Business::all();
 
-        return view('tenant.branch_office.edit', compact('branch', 'locacion', 'business'));
+        return view('tenant.admin.maintainer.branch_office.edit', compact('branch', 'locacion', 'business'));
     }
 
 

@@ -25,7 +25,7 @@ class ServiceController extends Controller
     public function create(Request $request)
     {
         $sucursalId = $request->query('sucursal_id');
-        return view('tenant.service.create', compact('sucursalId'));
+        return view('tenant.admin.maintainer.service.create', compact('sucursalId'));
     }
 
     /**
@@ -78,7 +78,7 @@ class ServiceController extends Controller
     {
         $data = Service::where('id_branch_office', $id)->get();
 
-        return view('tenant.service.show', [
+        return view('tenant.admin.maintainer.service.show', [
             'data' => $data,
             'sucursalId' => $id
         ]);
@@ -91,7 +91,7 @@ class ServiceController extends Controller
     public function edit(string $id)
     {
         $service = Service::findOrFail($id);
-        return view('tenant.service.edit', compact('service'));
+        return view('tenant.admin.maintainer.service.edit', compact('service'));
     }
 
     /**

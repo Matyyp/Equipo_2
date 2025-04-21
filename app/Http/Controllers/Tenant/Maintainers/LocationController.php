@@ -14,7 +14,7 @@ class LocationController extends Controller
     public function index()
     {
         $data = Location::all();
-        return view('tenant.location.index', compact('data'));
+        return view('tenant.admin.maintainer.location.index', compact('data'));
     }
 
     /**
@@ -22,7 +22,7 @@ class LocationController extends Controller
      */
     public function create()
     {
-        return view('tenant.location.create');
+        return view('tenant.admin.maintainer.location.create');
     }
 
     /**
@@ -58,7 +58,7 @@ class LocationController extends Controller
     public function edit(string $id)
     {
         $location = location::where('id_location', $id)->first();
-        return view('tenant.location.edit', compact('location'));
+        return view('tenant.admin.maintainer.location.edit', compact('location'));
     }
 
     /**

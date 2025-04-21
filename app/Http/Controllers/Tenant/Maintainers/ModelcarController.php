@@ -14,7 +14,7 @@ class ModelcarController extends Controller
     public function index()
     {
         $Modelcar = ModelCar::all();
-        return view('tenant.modelcar.index', compact('Modelcar'));
+        return view('tenant.admin.maintainer.modelcar.index', compact('Modelcar'));
     }
 
     /**
@@ -22,7 +22,7 @@ class ModelcarController extends Controller
      */
     public function create()
     {
-        return view('tenant.modelcar.create');
+        return view('tenant.admin.maintainer.modelcar.create');
     }
 
     /**
@@ -57,7 +57,7 @@ class ModelcarController extends Controller
     public function edit(string $id)
     {
         $Modelcar = ModelCar::where('id_model', $id)->first();
-        return view('tenant.Modelcar.edit', compact('Modelcar'));
+        return view('tenant.admin.maintainer.Modelcar.edit', compact('Modelcar'));
     }
 
     /**

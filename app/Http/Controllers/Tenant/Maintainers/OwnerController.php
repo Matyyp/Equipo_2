@@ -15,7 +15,7 @@ class OwnerController extends Controller
     public function index()
     {
         $owner = Owner::all();
-        return view('tenant.owner.index', compact('owner'));
+        return view('tenant.admin.maintainer.owner.index', compact('owner'));
     }
 
     /**
@@ -23,7 +23,7 @@ class OwnerController extends Controller
      */
     public function create()
     {
-        return view('tenant.owner.create');
+        return view('tenant.admin.maintainer.owner.create');
     }
 
     /**
@@ -62,7 +62,7 @@ class OwnerController extends Controller
     public function edit(string $id)
     {
         $owner = Owner::where('id_owner', $id)->first();
-        return view('tenant.owner.edit', compact('owner'));
+        return view('tenant.admin.maintainer.owner.edit', compact('owner'));
     }
 
     /**
