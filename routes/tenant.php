@@ -36,17 +36,29 @@ Route::middleware([
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-    /*CRUD Usuarios*/
-    Route::middleware(['auth', 'role:Admin|Empleado'])->group(function () {
-        Route::get ('users',             [UserController::class, 'index'  ])->name('users.index');
+    // CRUD Usuarios
+    Route::middleware(['auth', 'permission:users.index'])->group(function () {
+        Route::get('users', [UserController::class, 'index'])
+            ->name('users.index');
+    });
+
+    Route::middleware(['auth', 'permission:users.create'])->group(function () {
+        Route::get('users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('users',        [UserController::class, 'store' ])->name('users.store');
+    });
+
+    Route::middleware(['auth', 'permission:users.edit'])->group(function () {
+        Route::get('users/{user}/edit', [UserController::class, 'edit']  )->name('users.edit');
+        Route::put('users/{user}',      [UserController::class, 'update'])->name('users.update');
+    });
+
+    Route::middleware(['auth', 'permission:users.delete'])->group(function () {
+        Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
     Route::middleware(['auth', 'role:Admin'])->group(function () {
-        Route::get    ('users/create',      [UserController::class, 'create'])->name('users.create');
-        Route::post   ('users',             [UserController::class, 'store' ])->name('users.store');
-        Route::delete ('users/{user}',      [UserController::class, 'destroy'])->name('users.destroy');
-        Route::get ('users/{user}/edit', [UserController::class, 'edit'   ])->name('users.edit');
-        Route::put ('users/{user}',      [UserController::class, 'update' ])->name('users.update');
+        Route::resource('roles', RoleController::class)
+        ->only(['index','create','store','edit','update','destroy']);
         
     });
     require __DIR__.'/auth.php';

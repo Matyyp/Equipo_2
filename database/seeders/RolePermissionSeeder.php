@@ -25,15 +25,12 @@ class RolePermissionSeeder extends Seeder
          * Roles
          * ----------------------------------------------------------------*/
         $admin    = Role::firstOrCreate(['name' => 'Admin']);
-        $empleado = Role::firstOrCreate(['name' => 'Empleado']);
-
         /** ----------------------------------------------------------------
          * Asignación de permisos
          * ----------------------------------------------------------------*/
-        // Admin = todos
+
         $admin->syncPermissions(Permission::all());
 
-        // Empleado = sólo ver y editar usuarios
-        $empleado->syncPermissions(['users.index']);
+
     }
 }
