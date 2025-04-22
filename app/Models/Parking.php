@@ -27,8 +27,8 @@ class Parking extends Model
         return $this->hasMany(Park::class, 'id_service', 'id_service');
     }
 
-    public function parking_parking_register()
+    public function parking_register()
     {
-        return $this->hasMany(ParkingRegister::class, 'id_service', 'id_service');
+        return $this->hasMany(Register::class, 'id_service', 'id_service');
     }
 }

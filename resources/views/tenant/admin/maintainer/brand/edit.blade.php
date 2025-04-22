@@ -1,32 +1,41 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Marca</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <h2>Editar Marca</h2>
+@extends('tenant.layouts.admin')
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
-        </div>
-    @endif
+@section('title', 'Editar Marca')
+@section('page_title', 'Editar Marca')
 
-    <form action="{{ route('marca.update', $brand->id_brand) }}" method="POST">
-        @csrf
-        @method('PUT')
+@section('content')
+<div class="card">
+    <div class="card-body">
+        {{-- Validación de errores --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-        <div class="mb-3">
-            <label for="name_brand" class="form-label">Nombre de la Marca</label>
-            <input type="text" name="name_brand" class="form-control" value="{{ old('name_brand', $brand->name_brand) }}" required>
-        </div>
+        {{-- Formulario de edición --}}
+        <form action="{{ route('marca.update', $brand->id_brand) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-        <button type="submit" class="btn btn-primary">Actualizar</button>
-        <a href="{{ route('marca.index') }}" class="btn btn-secondary">Volver</a>
-    </form>
+            <div class="form-group mb-3">
+                <label for="name_brand">Nombre de la Marca</label>
+                <input type="text" name="name_brand" class="form-control" value="{{ old('name_brand', $brand->name_brand) }}" required>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Actualizar
+                </button>
+                <a href="{{ route('marca.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
-</body>
-</html>
+@endsection

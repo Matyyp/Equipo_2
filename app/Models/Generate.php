@@ -11,6 +11,12 @@ class Generate extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $fillable = [
+        'id_contract',
+        'id_parking_register'
+    ];
+
+
     public function generates_parking_register()
     {
         return $this->belongsTo(ParkingRegister::class, 'id_parking_register', 'id_parking_register');

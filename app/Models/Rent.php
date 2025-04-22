@@ -17,9 +17,9 @@ class Rent extends Model
         'id_service',
     ];
     
-    public function rent_rent_register()
+    public function rent_enter()
     {
-        return $this->hasMany(RentRegister::class, 'id_service', 'id_service');
+        return $this->hasMany(Enter::class, 'id_service', 'id_service');
     }
 
     public function rent_service()

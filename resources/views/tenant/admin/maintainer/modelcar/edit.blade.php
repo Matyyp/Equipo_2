@@ -1,32 +1,43 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Modelo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <h2>Editar Modelo</h2>
+@extends('tenant.layouts.admin')
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
-        </div>
-    @endif
+@section('title', 'Editar Modelo')
+@section('page_title', 'Editar Modelo de Auto')
 
-    <form action="{{ route('modelo.update', $Modelcar->id_model) }}" method="POST">
-        @csrf
-        @method('PUT')
+@section('content')
+<div class="card">
+    <div class="card-body">
+        {{-- Validación de errores --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <strong>Ups!</strong> Hay errores en el formulario:
+                <ul class="mb-0 mt-2">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-        <div class="mb-3">
-            <label for="name_model" class="form-label">Nombre del Modelo</label>
-            <input type="text" name="name_model" class="form-control" value="{{ old('name_model', $Modelcar->name_model) }}" required>
-        </div>
+        {{-- Formulario --}}
+        <form action="{{ route('modelo.update', $Modelcar->id_model) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-        <button type="submit" class="btn btn-primary">Actualizar</button>
-        <a href="{{ route('modelo.index') }}" class="btn btn-secondary">Volver</a>
-    </form>
+            <div class="form-group mb-3">
+                <label for="name_model" class="form-label">Nombre del Modelo</label>
+                <input type="text" name="name_model" id="name_model" class="form-control"
+                       value="{{ old('name_model', $Modelcar->name_model) }}" required>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Actualizar
+                </button>
+                <a href="{{ route('modelo.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
-</body>
-</html>
+@endsection

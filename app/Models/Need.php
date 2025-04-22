@@ -11,6 +11,12 @@ class Need extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $fillable = [
+        'id_maintenance',
+        'id_car'
+    ];
+
+
     public function require_car()
     {
         return $this->belongsTo(Car::class, 'id_car', 'id_car');

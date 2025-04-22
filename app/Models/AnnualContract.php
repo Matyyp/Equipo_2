@@ -12,7 +12,11 @@ class AnnualContract extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'id_contract'
+        'id_contract',
+        'rut',
+        'authorized_person',
+        'important_note',
+        'expiration_date'
     ];
 
     public function contract_annual_contract_parking()

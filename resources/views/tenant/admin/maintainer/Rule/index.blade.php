@@ -1,48 +1,59 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Listado de Reglas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body>
-<div class="container mt-5">
-    <h1>Listado de Reglas</h1>
+@extends('tenant.layouts.admin')
 
-    <a href="{{ route('reglas.create') }}" class="btn btn-success mb-3">Nueva Regla</a>
+@section('title', 'Reglas del Sistema')
+@section('page_title', 'Listado de Reglas')
 
-    @if ($Rule->count())
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($Rule as $rule)
-                    <tr>
-                        <td>{{ $rule->name }}</td>
-                        <td>{{ $rule->description }}</td>
-                        <td>
-                            <a href="{{ route('reglas.edit', $rule->id_rule) }}" class="btn btn-warning btn-sm">Editar</a>
-                            <form action="{{ route('reglas.destroy', $rule->id_rule) }}" method="POST" class="d-inline delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm">Eliminar</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @else
-        <div class="alert alert-info">No hay reglas registradas.</div>
-    @endif
+@section('content')
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Reglas Registradas</h3>
+        <a href="{{ route('reglas.create') }}" class="btn btn-success btn-sm float-right">
+            <i class="fas fa-plus"></i> Nueva Regla
+        </a>
+    </div>
+
+    <div class="card-body p-0">
+        @if ($Rule->count())
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th class="text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($Rule as $rule)
+                            <tr>
+                                <td>{{ $rule->name }}</td>
+                                <td>{{ $rule->description }}</td>
+                                <td class="text-right">
+                                    <a href="{{ route('reglas.edit', $rule->id_rule) }}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <form action="{{ route('reglas.destroy', $rule->id_rule) }}" method="POST" class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="alert alert-info m-3">No hay reglas registradas.</div>
+        @endif
+    </div>
 </div>
+@endsection
 
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.querySelectorAll('.delete-form').forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -62,5 +73,4 @@
         });
     });
 </script>
-</body>
-</html>
+@endpush

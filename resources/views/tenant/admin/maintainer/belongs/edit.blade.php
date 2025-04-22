@@ -18,9 +18,8 @@
             <input type="text" id="searchInput" class="form-control" placeholder="Buscar por patente...">
         </div>
 
-        <form action="{{ route('asociado.store') }}" method="POST">
+        <form action="{{ route('asociado.store') }}" method="POST" id="formAsociarVehiculos">
             @csrf
-            {{-- ID del propietario --}}
             <input type="hidden" name="id_owner" value="{{ $id }}">
 
             <div class="table-responsive">
@@ -45,7 +44,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center">No hay vehículos disponibles para asociar.</td>
+                                <td colspan="5" class="text-center text-muted">No hay vehículos disponibles para asociar.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -56,12 +55,15 @@
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-plus"></i> Asociar Vehículos Seleccionados
                 </button>
+                <a href="{{ route('dueños.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
             </div>
         </form>
     </div>
 </div>
+@endsection
 
-{{-- JS para búsqueda y seleccionar todos --}}
 @push('scripts')
 <script>
     // Buscar por patente
@@ -69,10 +71,24 @@
         const filter = this.value.toLowerCase();
         const rows = document.querySelectorAll('#vehiculosTable tbody tr');
 
+        let visible = 0;
         rows.forEach(row => {
             const placa = row.querySelector('.placa')?.textContent.toLowerCase();
-            row.style.display = placa.includes(filter) ? '' : 'none';
+            const match = placa.includes(filter);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
         });
+
+        const noResultRow = document.getElementById('noResultsRow');
+        if (visible === 0 && !noResultRow) {
+            const tbody = document.querySelector('#vehiculosTable tbody');
+            const row = document.createElement('tr');
+            row.id = 'noResultsRow';
+            row.innerHTML = `<td colspan="5" class="text-center text-muted">No se encontraron coincidencias.</td>`;
+            tbody.appendChild(row);
+        } else if (visible > 0 && noResultRow) {
+            noResultRow.remove();
+        }
     });
 
     // Seleccionar todos los checkboxes
@@ -80,6 +96,14 @@
         const isChecked = this.checked;
         document.querySelectorAll('input[name="vehiculos[]"]').forEach(cb => cb.checked = isChecked);
     });
+
+    // Validar que al menos un checkbox esté marcado
+    document.getElementById('formAsociarVehiculos').addEventListener('submit', function (e) {
+        const seleccionados = document.querySelectorAll('input[name="vehiculos[]"]:checked');
+        if (seleccionados.length === 0) {
+            e.preventDefault();
+            alert('Debes seleccionar al menos un vehículo para asociar.');
+        }
+    });
 </script>
 @endpush
-@endsection

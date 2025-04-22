@@ -1,31 +1,40 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Marca</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <h2>Registrar Nueva Marca</h2>
+@extends('tenant.layouts.admin')
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
-        </div>
-    @endif
+@section('title', 'Crear Marca')
+@section('page_title', 'Registrar Nueva Marca')
 
-    <form action="{{ route('marca.store') }}" method="POST">
-        @csrf
+@section('content')
+<div class="card">
+    <div class="card-body">
+        {{-- Validación de errores --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-        <div class="mb-3">
-            <label for="name_brand" class="form-label">Nombre de la Marca</label>
-            <input type="text" name="name_brand" class="form-control" value="{{ old('name_brand') }}" required>
-        </div>
+        {{-- Formulario de registro --}}
+        <form action="{{ route('marca.store') }}" method="POST">
+            @csrf
 
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <a href="{{ route('marca.index') }}" class="btn btn-secondary">Volver</a>
-    </form>
+            <div class="form-group mb-3">
+                <label for="name_brand">Nombre de la Marca</label>
+                <input type="text" name="name_brand" class="form-control" value="{{ old('name_brand') }}" required>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <a href="{{ route('marca.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
-</body>
-</html>
+@endsection

@@ -17,6 +17,7 @@ class Review extends Model
         'author_opinion',
         'grading',
         'date_opinion',
+        'id_user'
     ];
 
     public function review_user()

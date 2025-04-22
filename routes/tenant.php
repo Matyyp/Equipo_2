@@ -43,7 +43,7 @@ Route::middleware([
     });
     
     Route::get('/dashboard', function () {
-        return view('tenant.dashboard');
+        return view('tenant.admin.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
     
     Route::middleware('auth')->group(function () {
@@ -51,6 +51,10 @@ Route::middleware([
         Route::patch ('/profile', [ProfileController::class, 'update' ])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    });
+    
+    //Mantenedores
+    Route::middleware(['auth', 'permission:mantenedores.access'])->group(function () {
         Route::resource('empresa', BusinessController::class);
         Route::resource('locacion', LocationController::class);
         Route::resource('accesorio', AccessoryController::class);
@@ -65,7 +69,6 @@ Route::middleware([
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
         Route::resource('contratos', ContractController::class);
-
     });
 
     // CRUD Usuarios

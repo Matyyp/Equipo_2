@@ -1,41 +1,45 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Ubicación</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <h2 class="mb-4">Ingresar Nueva Ubicación</h2>
+@extends('tenant.layouts.admin')
+@section('title', 'Crear Ubicación')
+@section('page_title', 'Ingresar Nueva Ubicación')
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>Error:</strong> Corrige los siguientes errores:<br><br>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+@section('content')
+<div class="card">
+    <div class="card-body">
+        {{-- Mensajes de error --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <strong>¡Ups!</strong> Corrige los siguientes errores:<br><br>
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    <form action="{{ route('locacion.store') }}" method="POST">
-        @csrf
+        {{-- Formulario --}}
+        <form action="{{ route('locacion.store') }}" method="POST">
+            @csrf
 
-        <div class="mb-3">
-            <label for="region" class="form-label">Región</label>
-            <input type="text" name="region" class="form-control" id="region" value="{{ old('region') }}" required>
-        </div>
+            <div class="form-group">
+                <label for="region">Región</label>
+                <input type="text" name="region" id="region" class="form-control" value="{{ old('region') }}" required>
+            </div>
 
-        <div class="mb-3">
-            <label for="commune" class="form-label">Comuna</label>
-            <input type="text" name="commune" class="form-control" id="commune" value="{{ old('commune') }}" required>
-        </div>
+            <div class="form-group mt-3">
+                <label for="commune">Comuna</label>
+                <input type="text" name="commune" id="commune" class="form-control" value="{{ old('commune') }}" required>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Guardar Ubicación</button>
-        <a href="{{ route('locacion.index') }}" class="btn btn-secondary">Volver</a>
-    </form>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar Ubicación
+                </button>
+                <a href="{{ route('locacion.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
-</body>
-</html>
+@endsection

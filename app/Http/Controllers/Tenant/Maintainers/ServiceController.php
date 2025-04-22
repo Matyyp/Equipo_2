@@ -67,7 +67,8 @@ class ServiceController extends Controller
 
         }
 
-        return redirect()->back();
+        return redirect()->route('servicios.show', $request->id_branch_office); 
+
 
     }
 
@@ -111,7 +112,7 @@ class ServiceController extends Controller
             'type_service' => $request->type_service,
         ]);
 
-        return redirect()->route('servicios.index');
+        return redirect()->route('servicios.show', $id); 
 
 
     }

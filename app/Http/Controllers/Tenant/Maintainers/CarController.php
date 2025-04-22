@@ -40,7 +40,7 @@ class CarController extends Controller
         $brands = Brand::all();
         $models = ModelCar::all();
 
-        return view('tenant.car.create', [
+        return view('tenant.admin.maintainer.car.create', [
             'brands' => $brands,
             'models' => $models,
         ]);
@@ -64,6 +64,8 @@ class CarController extends Controller
             'id_brand' => $request->brand_id,
             'id_model' => $request->model_id,
         ]);
+
+        return redirect()->route('autos.index');
     }
 
     /**
@@ -79,12 +81,13 @@ class CarController extends Controller
      */
     public function edit(string $id)
     {
-        $car = Car::where('id_car', $id)
-        ->with('car_brand', 'car_model')
-        ->first();
+        $car = Car::with('car_brand', 'car_model')
+        ->where('id_car', $id)
+        ->firstOrFail();
+
         $brands = Brand::all();
         $models = ModelCar::all();
-        return view('tenant.car.edit', [
+        return view('tenant.admin.maintainer.car.edit', [
             'brands' => $brands,
             'models' => $models,
             'car'=> $car

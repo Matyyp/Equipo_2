@@ -15,6 +15,7 @@ class Evaluation extends Model
         'id_evaluation',
         'body_evaluation',
         'grading_evaluation',
+        'id_user'
     ];
 
     public function evaluation_user()

@@ -74,8 +74,8 @@ class LocationController extends Controller
 
         location::where('id_location', $id)
         ->update([
-            'region' => $request->commune,
-            'commune' => $request->region, 
+            'region' => $request->region,
+            'commune' => $request->commune,
         ]);
 
         return redirect()->route('locacion.index');

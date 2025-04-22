@@ -34,8 +34,8 @@ class RentRegister extends Model
         return $this->hasMany(Produce::class, 'id_rent_register', 'id_rent_register');
     }
 
-    public function rent_register_rent()
+    public function rent_register_enter()
     {
-        return $this->belongsTo(ContractRent::class, 'id_service', 'id_service');
+        return $this->belongsTo(Enter::class, 'id_rent_register', 'id_rent_register');
     }
 }

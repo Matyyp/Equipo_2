@@ -13,6 +13,7 @@ class CarDamage extends Model
 
     protected $fillable = [
         'name_damage',
+        'id_contract'
     ];
     
     public function car_damage_report()

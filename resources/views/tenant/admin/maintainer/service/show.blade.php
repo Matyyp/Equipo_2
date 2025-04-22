@@ -1,85 +1,88 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Servicios</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body>
-<div class="container mt-5">
-    <h1 class="mb-4">Listado de Servicios</h1>
+@extends('tenant.layouts.admin')
 
-    <a href="{{ route('servicios.create') }}?sucursal_id={{ $sucursalId }}" class="btn btn-success">
-        Ingresar Servicio
-    </a>
+@section('title', 'Servicios')
+@section('page_title', 'Listado de Servicios')
 
+@section('content')
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Servicios Registrados</h3>
+        <a href="{{ route('servicios.create') }}?sucursal_id={{ $sucursalId }}" class="btn btn-success btn-sm float-right">
+            <i class="fas fa-plus"></i> Ingresar Servicio
+        </a>
+    </div>
 
-
-    @if ($data->count())
-        <div class="table-responsive">
-            <table class="table table-bordered align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Precio Neto</th>
-                        <th>Tipo de Servicio</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($data as $service)
+    <div class="card-body p-0">
+        @if ($data->count())
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0 align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td>{{ $service->id_service }}</td>
-                            <td>{{ $service->name }}</td>
-                            <td>${{ number_format($service->price_net, 0, ',', '.') }}</td>
-                            <td>
-                                @if ($service->type_service=='parking')
-                                    Estacionamiento
-                                @elseif ($service->type_service=='car_wash')
-                                    Lavado de Autos
-                                @elseif ($service->type_service=='rent')
-                                    Arriendo
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('servicios.edit', $service->id_service) }}" class="btn btn-warning btn-sm mb-1">
-                                    Editar
-                                </a>
-
-                                <form action="{{ route('servicios.destroy', $service->id_service) }}" method="POST" class="d-inline delete-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                                </form>
-                            </td>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Precio Neto</th>
+                            <th>Tipo de Servicio</th>
+                            <th class="text-right">Acciones</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @else
-        <div class="alert alert-info">No hay servicios registrados.</div>
-    @endif
-</div>
+                    </thead>
+                    <tbody>
+                        @foreach ($data as $service)
+                            <tr>
+                                <td>{{ $service->id_service }}</td>
+                                <td>{{ $service->name }}</td>
+                                <td>${{ number_format($service->price_net, 0, ',', '.') }}</td>
+                                <td>
+                                    @switch($service->type_service)
+                                        @case('parking') Estacionamiento @break
+                                        @case('car_wash') Lavado de Autos @break
+                                        @case('rent') Arriendo @break
+                                        @default -
+                                    @endswitch
+                                </td>
+                                <td class="text-right">
+                                    <a href="{{ route('servicios.edit', $service->id_service) }}" class="btn btn-warning btn-sm mb-1">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <form action="{{ route('servicios.destroy', $service->id_service) }}" method="POST" class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="alert alert-info m-3">No hay servicios registrados.</div>
+        @endif
+    </div>
 
-{{-- SweetAlert para eliminar y mensajes flash --}}
+    <div class="card-footer">
+        <a href="{{ route('sucursales.index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a Sucursales
+        </a>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.querySelectorAll('.delete-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
-
             Swal.fire({
                 title: '¿Eliminar servicio?',
                 text: 'Esta acción no se puede deshacer.',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar'
-            }).then((result) => {
+            }).then(result => {
                 if (result.isConfirmed) {
                     form.submit();
                 }
@@ -88,15 +91,13 @@
     });
 
     @if (session('success'))
-    Swal.fire({
-        icon: 'success',
-        title: '¡Éxito!',
-        text: '{{ session('success') }}',
-        timer: 2500,
-        showConfirmButton: false
-    });
+        Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: '{{ session('success') }}',
+            timer: 2500,
+            showConfirmButton: false
+        });
     @endif
 </script>
-</body>
-</html>
-
+@endpush

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('type_of_payments', function (Blueprint $table) {
-            $table->id('id_payment');
+            $table->id('id__type_payment');
             $table->string('name_payment');
             $table->timestamps();
             $table->softDeletes();

@@ -27,7 +27,7 @@ class BranchOfficeController extends Controller
             ];
         });
 
-        return view('tenant.branch_office.index', [
+        return view('tenant.admin.maintainer.branch_office.index', [
             'data' => $office
         ]);
     }
@@ -96,8 +96,24 @@ class BranchOfficeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'schedule'    => 'required|string|max:100',
+            'street'      => 'required|string|max:150',
+            'id_location' => 'required|exists:locations,id_location',
+            'id_business' => 'required|exists:businesses,id_business',
+        ]);
+
+        BranchOffice::where('id_branch', $id)
+        ->update([
+            'schedule'    => $request->schedule,
+            'street'      => $request->street,
+            'id_location' => $request->id_location,
+            'id_business' => $request->id_business,
+        ]);
+
+        return redirect()->route('sucursales.index');
     }
+
 
     /**
      * Remove the specified resource from storage.

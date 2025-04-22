@@ -1,84 +1,105 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Sucursal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <h2>Registrar Nueva Sucursal</h2>
+@extends('tenant.layouts.admin')
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
-        </div>
-    @endif
+@section('title', 'Crear Sucursal')
+@section('page_title', 'Registrar Nueva Sucursal')
 
-    <form action="{{ route('sucursales.store') }}" method="POST">
-        @csrf
+@section('content')
+<div class="card">
+    <div class="card-body">
+        {{-- Validación de errores --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-        <div class="mb-3">
-            <label>Horario</label>
-            <input type="text" name="schedule" class="form-control" value="{{ old('schedule') }}" required>
-        </div>
+        {{-- Formulario --}}
+        <form action="{{ route('sucursales.store') }}" method="POST">
+            @csrf
 
-        <div class="mb-3">
-            <label>Calle</label>
-            <input type="text" name="street" class="form-control" value="{{ old('street') }}" required>
-        </div>
+            <div class="form-group mb-3">
+                <label>Horario</label>
+                <input type="text" name="schedule" class="form-control" value="{{ old('schedule') }}" required>
+            </div>
 
-        <div class="mb-3">
-            <label>Región</label>
-            <select id="region-select" class="form-select">
-                <option value="">Seleccione región</option>
-                @foreach ($locacion->pluck('region')->unique() as $region)
-                    <option value="{{ $region }}">{{ $region }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div class="form-group mb-3">
+                <label>Calle</label>
+                <input type="text" name="street" class="form-control" value="{{ old('street') }}" required>
+            </div>
 
-        <div class="mb-3">
-            <label>Comuna</label>
-            <select name="id_location" id="commune-select" class="form-select" required>
-                <option value="">Seleccione comuna</option>
-                @foreach ($locacion as $loc)
-                    <option value="{{ $loc->id_location }}" data-region="{{ $loc->region }}">
-                        {{ $loc->commune }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+            <div class="form-group mb-3">
+                <label>Región</label>
+                <select id="region-select" class="form-select" required>
+                    <option value="">Seleccione región</option>
+                    @foreach ($locacion->pluck('region')->unique() as $region)
+                        <option value="{{ $region }}">{{ $region }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="mb-3">
-            <label>Negocio</label>
-            <select name="id_business" class="form-select" required>
-                <option value="">Seleccione negocio</option>
-                @foreach ($business as $b)
-                    <option value="{{ $b->id_business }}">{{ $b->name_business }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div class="form-group mb-3">
+                <label>Comuna</label>
+                <select name="id_location" id="commune-select" class="form-select" required>
+                    <option value="">Seleccione comuna</option>
+                    @foreach ($locacion as $loc)
+                        <option value="{{ $loc->id_location }}" data-region="{{ $loc->region }}">
+                            {{ $loc->commune }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <a href="{{ route('sucursales.index') }}" class="btn btn-secondary">Volver</a>
-    </form>
+            <div class="form-group mb-4">
+                <label>Negocio</label>
+                <select name="id_business" class="form-select" required>
+                    <option value="">Seleccione negocio</option>
+                    @foreach ($business as $b)
+                        <option value="{{ $b->id_business }}">{{ $b->name_business }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <a href="{{ route('sucursales.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const regionSelect = document.getElementById('region-select');
         const communeSelect = document.getElementById('commune-select');
 
         regionSelect.addEventListener('change', () => {
-            const region = regionSelect.value;
+            const selectedRegion = regionSelect.value;
             Array.from(communeSelect.options).forEach(option => {
                 if (!option.value) return;
-                option.hidden = option.dataset.region !== region;
+                option.hidden = option.dataset.region !== selectedRegion;
             });
+
             communeSelect.value = '';
         });
+
+        // Al cargar la vista, ocultar comunas que no coincidan si ya hay una región preseleccionada
+        if (regionSelect.value) {
+            const selectedRegion = regionSelect.value;
+            Array.from(communeSelect.options).forEach(option => {
+                if (!option.value) return;
+                option.hidden = option.dataset.region !== selectedRegion;
+            });
+        }
     });
 </script>
-</body>
-</html>
+@endpush

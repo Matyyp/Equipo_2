@@ -20,9 +20,9 @@ class ParkingRegister extends Model
         'days',
     ];
 
-    public function parking_register_parking()
+    public function parking_register_register()
     {
-        return $this->belongsTo(Parking::class, 'id_service', 'id_service');
+        return $this->belongsTo(Register::class, 'id_parking_register', 'id_parking_register');
     }
 
     public function parking_register_generates()

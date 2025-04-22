@@ -34,7 +34,7 @@ class BusinessController extends Controller
         $request->validate([
             'name_business' => 'required|string|max:255',
             'electronic_transfer' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $tenantId = tenant()->id;
@@ -104,6 +104,8 @@ class BusinessController extends Controller
                 'electronic_transfer' => $request->electronic_transfer, 
             ]);
         }
+
+        return redirect()->route('empresa.index');
         
     }
 

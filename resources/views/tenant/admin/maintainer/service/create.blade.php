@@ -1,42 +1,61 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Servicio</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <h1>Nuevo Servicio</h1>
+@extends('tenant.layouts.admin')
 
-    <form action="{{ route('servicios.store') }}" method="POST">
-        @csrf
+@section('title', 'Crear Servicio')
+@section('page_title', 'Registrar Nuevo Servicio')
 
-        <div class="mb-3">
-            <label for="name" class="form-label">Nombre del Servicio</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
-        </div>
+@section('content')
+<div class="card">
+    <div class="card-body">
+        {{-- Validación de errores --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <strong>Ups!</strong> Revisa los siguientes errores:
+                <ul class="mb-0 mt-2">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-        <div class="mb-3">
-            <label for="price_net" class="form-label">Precio Neto</label>
-            <input type="number" name="price_net" class="form-control" value="{{ old('price_net') }}" required>
-        </div>
+        {{-- Formulario --}}
+        <form action="{{ route('servicios.store') }}" method="POST">
+            @csrf
 
-        <div class="mb-3">
-            <label for="type_service" class="form-label">Tipo de Servicio</label>
-            <select name="type_service" class="form-select" required>
-                <option value="">Seleccione...</option>
-                <option value="parking" {{ old('type_service') == 'parking' ? 'selected' : '' }}>Estacionamiento</option>
-                <option value="car_wash" {{ old('type_service') == 'car_wash' ? 'selected' : '' }}>Lavado de Autos</option>
-                <option value="rent" {{ old('type_service') == 'rent' ? 'selected' : '' }}>Arriendo</option>
-            </select>
-        </div>
+            {{-- Campo oculto con ID de sucursal --}}
+            <input type="hidden" name="id_branch_office" value="{{ $sucursalId }}">
 
-        <input type="hidden" name="id_branch_office" value="{{ $sucursalId }}">
+            <div class="form-group mb-3">
+                <label for="name">Nombre del Servicio</label>
+                <input type="text" name="name" id="name" class="form-control"
+                       value="{{ old('name') }}" required>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <a href="{{ route('servicios.index') }}" class="btn btn-secondary">Cancelar</a>
-    </form>
+            <div class="form-group mb-3">
+                <label for="price_net">Precio Neto</label>
+                <input type="number" name="price_net" id="price_net" class="form-control"
+                       value="{{ old('price_net') }}" required>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="type_service">Tipo de Servicio</label>
+                <select name="type_service" id="type_service" class="form-select" required>
+                    <option value="">Seleccione...</option>
+                    <option value="parking" {{ old('type_service') == 'parking' ? 'selected' : '' }}>Estacionamiento</option>
+                    <option value="car_wash" {{ old('type_service') == 'car_wash' ? 'selected' : '' }}>Lavado de Autos</option>
+                    <option value="rent" {{ old('type_service') == 'rent' ? 'selected' : '' }}>Arriendo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <a href="{{ route('servicios.show', $sucursalId) }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
-</body>
-</html>
+@endsection

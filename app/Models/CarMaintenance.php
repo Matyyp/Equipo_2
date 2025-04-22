@@ -17,6 +17,7 @@ class CarMaintenance extends Model
         'next_km',
         'current_km',
         'filtros',
+        'id_car'
     ];
 
     public function car_maintenance_requires()

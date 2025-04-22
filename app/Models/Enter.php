@@ -6,24 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Make extends Model
+class Enter extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
         'id_service',
-        'id_voucher'
+        'id_rent_register'
     ];
 
-
-    public function make_service()
+    public function enter_rent()
     {
-        return $this->belongsTo(Service::class, 'id_service', 'id_service');
+        return $this->belongsTo(RentRegister::class,'id_rent_register', 'id_rent_register');
     }
 
-    public function make_voucher()
+    public function enter_rent_register()
     {
-        return $this->belongsTo(Voucher::class,'id_voucher', 'id_voucher');
+        return $this->belongsTo(Rent::class, 'id_service', 'id_service');
     }
 }

@@ -11,6 +11,11 @@ class Select extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $fillable = [
+        'id_type_payment',
+        'id_user'
+    ];
+
     public function select_user()
     {
         return $this->belongsTo(User::class, 'id_user');
