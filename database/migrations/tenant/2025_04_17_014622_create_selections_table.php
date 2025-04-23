@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('selections', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_user');
-            $table->unsignedBigInteger('id_payment');
+            $table->unsignedBigInteger('id_type_payment');
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('id_payment')->references('id_payment')->on('type_of_payments')->onDelete('cascade');
+            $table->foreign('id_type_payment')->references('id_type_payment')->on('type_of_payments')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
