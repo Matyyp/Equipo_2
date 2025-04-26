@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class RentRegister extends Model
+{
+    use HasFactory;
+    use SoftDeletes;
+
+    protected $fillable = [
+        'total_value',
+        'return_in',
+        'address',
+        'driving_licence',
+        'class_licence',
+        'expire',
+        'observation',
+        'guarantee',
+        'payment',
+        'departure_fuel',
+        'arrival_fuel',
+        'arrival_km',
+        'km_exit',
+        'start_date',
+        'end_date',
+    ];
+
+    public function rent_register_produces()
+    {
+        return $this->hasMany(Produce::class, 'id_rent_register', 'id_rent_register');
+    }
+
+    public function rent_register_enter()
+    {
+        return $this->belongsTo(Enter::class, 'id_rent_register', 'id_rent_register');
+    }
+}
