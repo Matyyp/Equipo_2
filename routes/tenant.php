@@ -41,10 +41,12 @@ Route::middleware([
     Route::get('/', function () {
         return view('welcome');
     });
-    
-    Route::get('/dashboard', function () {
-        return view('tenant.admin.dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    //aca agregar todos los roles que necesiten entran al panel de admin
+    Route::middleware(['auth', 'role:Admin|Empleado'])->group(function () {
+        Route::get('/dashboard', function () {
+            return view('tenant.admin.dashboard');
+        })->name('dashboard');
+    });
     
     Route::middleware('auth')->group(function () {
         Route::get   ('/profile', [ProfileController::class, 'edit'   ])->name('profile.edit');
