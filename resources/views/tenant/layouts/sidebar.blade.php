@@ -153,6 +153,112 @@
                     </ul>
                 </li>
                 @endrole
+
+                @can('mantenedores.access')
+                <li class="nav-item has-treeview
+                    {{ request()->is('empresa*') || request()->is('locacion*') || request()->is('accesorio*') || request()->is('informacion_contacto*')
+                        || request()->is('modelo*') || request()->is('marca*') || request()->is('dueños*') || request()->is('reglas*')
+                        || request()->is('autos*') || request()->is('sucursales*') || request()->is('contratos*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link
+                        {{ request()->is('empresa*') || request()->is('locacion*') || request()->is('accesorio*') || request()->is('informacion_contacto*')
+                            || request()->is('modelo*') || request()->is('marca*') || request()->is('dueños*') || request()->is('reglas*')
+                            || request()->is('autos*') || request()->is('sucursales*') || request()->is('contratos*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-cogs"></i>
+                        <p>Mantenedores <i class="right fas fa-angle-left"></i></p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+                        {{-- Empresa --}}
+                        <li class="nav-item">
+                            <a href="{{ route('empresa.index') }}" class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Empresa</p>
+                            </a>
+                        </li>
+
+                        {{-- Locación --}}
+                        <li class="nav-item">
+                            <a href="{{ route('locacion.index') }}" class="nav-link {{ request()->routeIs('locacion.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Locaciones</p>
+                            </a>
+                        </li>
+
+                        <!-- {{-- Accesorios --}}
+                        <li class="nav-item">
+                            <a href="{{ route('accesorio.index') }}" class="nav-link {{ request()->routeIs('accesorio.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Accesorios</p>
+                            </a>
+                        </li> -->
+
+                        {{-- Información de Contacto --}}
+                        <li class="nav-item">
+                            <a href="{{ route('informacion_contacto.index') }}" class="nav-link {{ request()->routeIs('informacion_contacto.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Información Contacto</p>
+                            </a>
+                        </li>
+
+                        {{-- Modelos --}}
+                        <li class="nav-item">
+                            <a href="{{ route('modelo.index') }}" class="nav-link {{ request()->routeIs('modelo.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Modelos</p>
+                            </a>
+                        </li>
+
+                        {{-- Marcas --}}
+                        <li class="nav-item">
+                            <a href="{{ route('marca.index') }}" class="nav-link {{ request()->routeIs('marca.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Marcas</p>
+                            </a>
+                        </li>
+
+                        {{-- Dueños --}}
+                        <li class="nav-item">
+                            <a href="{{ route('dueños.index') }}" class="nav-link {{ request()->routeIs('dueños.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Dueños</p>
+                            </a>
+                        </li>
+
+                        {{-- Reglas --}}
+                        <li class="nav-item">
+                            <a href="{{ route('reglas.index') }}" class="nav-link {{ request()->routeIs('reglas.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Reglas</p>
+                            </a>
+                        </li>
+
+                        {{-- Autos --}}
+                        <li class="nav-item">
+                            <a href="{{ route('autos.index') }}" class="nav-link {{ request()->routeIs('autos.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Autos</p>
+                            </a>
+                        </li>
+
+                        {{-- Sucursales --}}
+                        <li class="nav-item">
+                            <a href="{{ route('sucursales.index') }}" class="nav-link {{ request()->routeIs('sucursales.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Sucursales</p>
+                            </a>
+                        </li>
+
+                        {{-- Contratos --}}
+                        <li class="nav-item">
+                            <a href="{{ route('contratos.index') }}" class="nav-link {{ request()->routeIs('contratos.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Contratos</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @endcan
+
             </ul>
         </nav>
     </div>

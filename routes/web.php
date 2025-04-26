@@ -35,6 +35,8 @@ foreach (config('tenancy.central_domains') as $domain) {
             Route::resource('tenants', TenantController::class);    
         });
         
+        
+        
         require __DIR__.'/auth.php';
     });
 }

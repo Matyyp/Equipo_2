@@ -6,6 +6,20 @@ use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use App\Http\Controllers\{ProfileController, UserController, RoleController};
+use App\Http\Controllers\Tenant\Maintainers\BusinessController;
+use App\Http\Controllers\Tenant\Maintainers\LocationController;
+use App\Http\Controllers\Tenant\Maintainers\AccessoryController;
+use App\Http\Controllers\Tenant\Maintainers\BrandController;
+use App\Http\Controllers\Tenant\Maintainers\ContactinformationController;
+use App\Http\Controllers\Tenant\Maintainers\ModelcarController;
+use App\Http\Controllers\Tenant\Maintainers\OwnerController;
+use App\Http\Controllers\Tenant\Maintainers\RuleController;
+use App\Http\Controllers\Tenant\Maintainers\CarController;
+use App\Http\Controllers\Tenant\Maintainers\BelongsController;
+use App\Http\Controllers\Tenant\Maintainers\BranchOfficeController;
+use App\Http\Controllers\Tenant\Maintainers\ServiceController;
+use App\Http\Controllers\Tenant\Maintainers\ContractController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -24,16 +38,39 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::get('/', fn () => view('welcome'));
-
-    Route::get('/dashboard', fn () => view('tenant.admin.dashboard'))
-        ->middleware(['auth', 'verified'])
-        ->name('dashboard');
-
+    Route::get('/', function () {
+        return view('welcome');
+    });
+    //aca agregar todos los roles que necesiten entran al panel de admin
+    Route::middleware(['auth', 'role:Admin|Empleado'])->group(function () {
+        Route::get('/dashboard', function () {
+            return view('tenant.admin.dashboard');
+        })->name('dashboard');
+    });
+    
     Route::middleware('auth')->group(function () {
         Route::get   ('/profile', [ProfileController::class, 'edit'   ])->name('profile.edit');
         Route::patch ('/profile', [ProfileController::class, 'update' ])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    });
+    
+    //Mantenedores
+    Route::middleware(['auth', 'permission:mantenedores.access'])->group(function () {
+        Route::resource('empresa', BusinessController::class);
+        Route::resource('locacion', LocationController::class);
+        Route::resource('accesorio', AccessoryController::class);
+        Route::resource('informacion_contacto', ContactInformationController::class);
+        Route::resource('modelo', ModelcarController::class);
+        Route::resource('marca', BrandController::class);
+        Route::resource('dueños', OwnerController::class);
+        Route::resource('reglas', RuleController::class);
+
+        Route::resource('autos', CarController::class);
+        Route::resource('asociado', BelongsController::class);
+        Route::resource('sucursales', BranchOfficeController::class);
+        Route::resource('servicios', ServiceController::class);
+        Route::resource('contratos', ContractController::class);
     });
 
     // CRUD Usuarios

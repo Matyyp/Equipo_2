@@ -17,6 +17,7 @@ class RolePermissionSeeder extends Seeder
             'users.create',
             'users.edit',
             'users.delete',
+            'mantenedores.access'
         ] as $perm) {
             Permission::firstOrCreate(['name' => $perm]);
         }
@@ -25,6 +26,7 @@ class RolePermissionSeeder extends Seeder
          * Roles
          * ----------------------------------------------------------------*/
         $admin    = Role::firstOrCreate(['name' => 'Admin']);
+        $user    = Role::firstOrCreate(['name' => 'User']);
         /** ----------------------------------------------------------------
          * Asignación de permisos
          * ----------------------------------------------------------------*/

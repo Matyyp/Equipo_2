@@ -20,6 +20,8 @@ return [
         'saas.test',
         '127.0.0.1',
         'localhost',
+        'tis2.me', 
+        'ww.tis2.me'
     ],
 
     /**
