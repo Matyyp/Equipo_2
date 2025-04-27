@@ -2,10 +2,16 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
+    server: {
+        host: 'cliente1.local', // tu dominio local
+        hmr: {
+            host: 'cliente1.local',
+        },
+    },
     plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-        }),
+        laravel([
+            'resources/css/app.css',
+            'resources/js/app.js',
+        ]),
     ],
 });

@@ -20,8 +20,8 @@ return [
         'saas.test',
         '127.0.0.1',
         'localhost',
-        'tis2.me', 
-        'ww.tis2.me'
+        //'tis2.me', 
+        //'ww.tis2.me'
     ],
 
     /**
@@ -138,7 +138,7 @@ return [
          * disable asset() helper tenancy and explicitly use tenant_asset() calls in places
          * where you want to use tenant-specific assets (product images, avatars, etc).
          */
-        'asset_helper_tenancy' => true,
+        'asset_helper_tenancy' => false,
     ],
 
     /**
