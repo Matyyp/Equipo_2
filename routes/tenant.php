@@ -19,6 +19,7 @@ use App\Http\Controllers\Tenant\Maintainers\BelongsController;
 use App\Http\Controllers\Tenant\Maintainers\BranchOfficeController;
 use App\Http\Controllers\Tenant\Maintainers\ServiceController;
 use App\Http\Controllers\Tenant\Maintainers\ContractController;
+use App\Http\Controllers\Tenant\Maintainers\PaymentRegisterController;
 
 
 /*
@@ -69,6 +70,8 @@ Route::middleware([
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
         Route::resource('contratos', ContractController::class);
+        Route::resource('payment', PaymentRegisterController::class);
+
     });
 
     // CRUD Usuarios
