@@ -25,7 +25,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->integer('amount');
             $table->string('type_payment'); 
-            $table->dateTime('payment_date');
+            $table->date('payment_date');
             $table->timestamps();
         });
     }

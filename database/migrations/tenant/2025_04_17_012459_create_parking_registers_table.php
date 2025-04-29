@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('parking_registers', function (Blueprint $table) {
             $table->id('id_parking_register');
-            $table->integer('arrival_km');
-            $table->integer('km_exit');
+            $table->integer('arrival_km')->nullable();
+            $table->integer('km_exit')->nullable();
             $table->integer('total_value');
             $table->integer('days');
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
+            $table->integer('id_park');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
             $table->softDeletes();
         });

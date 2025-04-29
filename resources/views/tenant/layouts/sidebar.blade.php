@@ -125,6 +125,47 @@
                     </ul>
                 </li>
                 @endcanany
+                @role('Admin')
+                    <li class="nav-item has-treeview {{ request()->is('estacionamiento*') ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link {{ request()->is('estacionamiento*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-parking"></i>
+                            <p>
+                                Estacionamiento
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            {{-- Listado --}}
+                            <li class="nav-item">
+                                <a href="{{ route('estacionamiento.index') }}"
+                                class="nav-link {{ request()->routeIs('estacionamiento.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Listado</p>
+                                </a>
+                            </li>
+
+                            {{-- Ingresar nuevo --}}
+                            <li class="nav-item">
+                                <a href="{{ route('estacionamiento.create') }}"
+                                class="nav-link {{ request()->routeIs('estacionamiento.create') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Ingresar</p>
+                                </a>
+                            </li>
+
+
+                            {{-- Historial --}}
+                            <li class="nav-item">
+                                <a href="{{ route('estacionamiento.history') }}"
+                                class="nav-link {{ request()->routeIs('estacionamiento.history') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Historial</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @endrole
+
 
                 @role('Admin')
                 <li class="nav-item has-treeview {{ request()->is('roles*') ? 'menu-open' : '' }}">
@@ -154,107 +195,113 @@
                 </li>
                 @endrole
 
+                {{-- Mantenedores --}}
                 @can('mantenedores.access')
                 <li class="nav-item has-treeview
-                    {{ request()->is('empresa*') || request()->is('locacion*') || request()->is('accesorio*') || request()->is('informacion_contacto*')
-                        || request()->is('modelo*') || request()->is('marca*') || request()->is('dueños*') || request()->is('reglas*')
-                        || request()->is('autos*') || request()->is('sucursales*') || request()->is('contratos*') ? 'menu-open' : '' }}">
+                    {{ request()->is('contratos*') || request()->is('reglas*') ||
+                       request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ||
+                       request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ? 'menu-open' : '' }}">
+                    
                     <a href="#" class="nav-link
-                        {{ request()->is('empresa*') || request()->is('locacion*') || request()->is('accesorio*') || request()->is('informacion_contacto*')
-                            || request()->is('modelo*') || request()->is('marca*') || request()->is('dueños*') || request()->is('reglas*')
-                            || request()->is('autos*') || request()->is('sucursales*') || request()->is('contratos*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cogs"></i>
+                        {{ request()->is('contratos*') || request()->is('reglas*') ||
+                           request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ||
+                           request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tools"></i>
                         <p>Mantenedores <i class="right fas fa-angle-left"></i></p>
                     </a>
 
                     <ul class="nav nav-treeview">
-                        {{-- Empresa --}}
-                        <li class="nav-item">
-                            <a href="{{ route('empresa.index') }}" class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Empresa</p>
-                            </a>
-                        </li>
 
-                        {{-- Locación --}}
-                        <li class="nav-item">
-                            <a href="{{ route('locacion.index') }}" class="nav-link {{ request()->routeIs('locacion.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Locaciones</p>
+                        {{-- Contratos --}}
+                        <li class="nav-item has-treeview {{ request()->is('contratos*') || request()->is('reglas*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('contratos*') || request()->is('reglas*') ? 'active' : '' }}">
+                                <i class="fas fa-file-signature nav-icon"></i>
+                                <p>Contratos<i class="right fas fa-angle-left"></i></p>
                             </a>
-                        </li>
-
-                        <!-- {{-- Accesorios --}}
-                        <li class="nav-item">
-                            <a href="{{ route('accesorio.index') }}" class="nav-link {{ request()->routeIs('accesorio.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Accesorios</p>
-                            </a>
-                        </li> -->
-
-                        {{-- Información de Contacto --}}
-                        <li class="nav-item">
-                            <a href="{{ route('informacion_contacto.index') }}" class="nav-link {{ request()->routeIs('informacion_contacto.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Información Contacto</p>
-                            </a>
-                        </li>
-
-                        {{-- Modelos --}}
-                        <li class="nav-item">
-                            <a href="{{ route('modelo.index') }}" class="nav-link {{ request()->routeIs('modelo.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Modelos</p>
-                            </a>
-                        </li>
-
-                        {{-- Marcas --}}
-                        <li class="nav-item">
-                            <a href="{{ route('marca.index') }}" class="nav-link {{ request()->routeIs('marca.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Marcas</p>
-                            </a>
-                        </li>
-
-                        {{-- Dueños --}}
-                        <li class="nav-item">
-                            <a href="{{ route('dueños.index') }}" class="nav-link {{ request()->routeIs('dueños.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Dueños</p>
-                            </a>
-                        </li>
-
-                        {{-- Reglas --}}
-                        <li class="nav-item">
-                            <a href="{{ route('reglas.index') }}" class="nav-link {{ request()->routeIs('reglas.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Reglas</p>
-                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('contratos.index') }}" class="nav-link {{ request()->routeIs('contratos.index') ? 'active' : '' }}">
+                                        <i class="far fa-file-alt nav-icon"></i>
+                                        <p>Contratos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('reglas.index') }}" class="nav-link {{ request()->routeIs('reglas.index') ? 'active' : '' }}">
+                                        <i class="fas fa-gavel nav-icon"></i>
+                                        <p>Reglas de contrato</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
                         {{-- Autos --}}
-                        <li class="nav-item">
-                            <a href="{{ route('autos.index') }}" class="nav-link {{ request()->routeIs('autos.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Autos</p>
+                        <li class="nav-item has-treeview {{ request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ? 'active' : '' }}">
+                                <i class="fas fa-car nav-icon"></i>
+                                <p>Autos<i class="right fas fa-angle-left"></i></p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('autos.index') }}" class="nav-link {{ request()->routeIs('autos.index') ? 'active' : '' }}">
+                                        <i class="fas fa-car-side nav-icon"></i>
+                                        <p>Nuevo auto</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('marca.index') }}" class="nav-link {{ request()->routeIs('marca.index') ? 'active' : '' }}">
+                                        <i class="fas fa-flag nav-icon"></i>
+                                        <p>Marcas</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('modelo.index') }}" class="nav-link {{ request()->routeIs('modelo.index') ? 'active' : '' }}">
+                                        <i class="fas fa-cubes nav-icon"></i>
+                                        <p>Modelos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('dueños.index') }}" class="nav-link {{ request()->routeIs('dueños.index') ? 'active' : '' }}">
+                                        <i class="fas fa-user nav-icon"></i>
+                                        <p>Dueños de vehiculos</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
-                        {{-- Sucursales --}}
-                        <li class="nav-item">
-                            <a href="{{ route('sucursales.index') }}" class="nav-link {{ request()->routeIs('sucursales.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Sucursales</p>
+                        {{-- Empresa --}}
+                        <li class="nav-item has-treeview {{ request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ? 'active' : '' }}">
+                                <i class="fas fa-building nav-icon"></i>
+                                <p>Empresa<i class="right fas fa-angle-left"></i></p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('empresa.index') }}" class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
+                                        <i class="fas fa-briefcase nav-icon"></i>
+                                        <p>Datos de empresa</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('locacion.index') }}" class="nav-link {{ request()->routeIs('locacion.index') ? 'active' : '' }}">
+                                        <i class="fas fa-map-marker-alt nav-icon"></i>
+                                        <p>Locaciones</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('sucursales.index') }}" class="nav-link {{ request()->routeIs('sucursales.index') ? 'active' : '' }}">
+                                        <i class="fas fa-store nav-icon"></i>
+                                        <p>Sucursales</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('informacion_contacto.index') }}" class="nav-link {{ request()->routeIs('informacion_contacto.index') ? 'active' : '' }}">
+                                        <i class="fas fa-address-book nav-icon"></i>
+                                        <p>Información de Contacto</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
-                        {{-- Contratos --}}
-                        <li class="nav-item">
-                            <a href="{{ route('contratos.index') }}" class="nav-link {{ request()->routeIs('contratos.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Contratos</p>
-                            </a>
-                        </li>
                     </ul>
                 </li>
                 @endcan

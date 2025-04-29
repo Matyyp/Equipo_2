@@ -27,8 +27,8 @@ return new class extends Migration
             $table->integer('arrival_fuel');
             $table->integer('arrival_km');
             $table->integer('km_exit');
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->integer('total_value');
             $table->timestamps();
             $table->softDeletes();

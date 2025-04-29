@@ -19,6 +19,7 @@ use App\Http\Controllers\Tenant\Maintainers\BelongsController;
 use App\Http\Controllers\Tenant\Maintainers\BranchOfficeController;
 use App\Http\Controllers\Tenant\Maintainers\ServiceController;
 use App\Http\Controllers\Tenant\Maintainers\ContractController;
+use App\Http\Controllers\Tenant\Parking\ParkingController;
 
 
 /*
@@ -71,6 +72,18 @@ Route::middleware([
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
         Route::resource('contratos', ContractController::class);
+
+        Route::get('estacionamiento/data', [ParkingController::class, 'data'])
+        ->name('estacionamiento.data');
+        Route::get('estacionamiento/search', [ParkingController::class, 'search'])
+        ->name('estacionamiento.search');
+        Route::get('estacionamiento/history', [ParkingController::class, 'history'])
+        ->name('estacionamiento.history');
+        Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])
+        ->name('contrato.print');
+
+        Route::resource('estacionamiento', ParkingController::class);
+        
     });
 
     // CRUD Usuarios
