@@ -16,6 +16,7 @@ class Voucher extends Model
         'payment',
         'discount',
         'amount',
+        'id_register'
     ];
 
     public function voucher_make()

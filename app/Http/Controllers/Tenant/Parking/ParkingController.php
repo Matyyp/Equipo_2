@@ -28,49 +28,37 @@ class ParkingController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = ParkingRegister::query()
-                ->whereHas('parking_register_register.register_parking', function($q) {
-                    $q->whereNull('deleted_at'); 
+            $rows = ParkingRegister::all()
+                ->filter(function ($reg) {
+                    $park = Park::find($reg->id_park);
+                    return $park && $park->deleted_at === null;
                 })
-                ->with([
-                    'parking_register_register.register_parking.parking_service',
-                    'parking_register_register.register_parking.parking_park',
-                    'parking_register_register.register_parking.parking_park.park_car.car_belongs.belongs_owner',
-                    'parking_register_register.register_parking.parking_park.park_car.car_brand',
-                    'parking_register_register.register_parking.parking_park.park_car.car_model',
-                ]);
+                ->map(function ($reg) {
+                    $park = Park::find($reg->id_park);
+                    $car = $park?->park_car; // relación en Park: belongsTo(Car::class, 'id_car')
+                    $owner = $car?->car_belongs->first()?->belongs_owner;
+                    $brand = $car?->car_brand?->name_brand;
+                    $model = $car?->car_model?->name_model;
+                    $service = Service::find($park?->id_service); // o $park?->service si tienes la relación
     
-            $rows = $query->get()->map(function($reg) {
-                $linkReg   = $reg->parking_register_register->first();
-                $parkEntry = $linkReg?->register_parking;
-                $pivotPark = $parkEntry?->parking_park->first();
-                $car       = $pivotPark?->park_car;
-                $owner     = $car?->car_belongs->first()?->belongs_owner;
-                $service   = $parkEntry?->parking_service;
+                    return [
+                        'owner_name'          => $owner?->name ?? '-',
+                        'patent'              => $car?->patent ?? '-',
+                        'brand_model'         => trim(($brand ?? '') . ' ' . ($model ?? '')),
+                        'start_date'          => $reg->start_date,
+                        'end_date'            => $reg->end_date,
+                        'days'                => $reg->days,
+                        'service_price'       => $service?->price_net ?? 0,
+                        'total_value'         => $reg->total_value,
+                        'id_parking_register' => $reg->getKey(),
+                    ];
+                });
     
-                return [
-                    'owner_name'          => $owner?->name               ?? '-',
-                    'patent'              => $car?->patent               ?? '-',
-                    'brand_model'         => trim(
-                                              ($car->car_brand?->name_brand ?? '')
-                                            .' '.
-                                              ($car->car_model?->name_model ?? '')
-                                           ),
-                    'start_date'          => $reg->start_date,
-                    'end_date'            => $reg->end_date,
-                    'days'                => $reg->days,
-                    'service_price'       => $service?->price_net        ?? 0,
-                    'total_value'         => $reg->total_value,
-                    'id_parking_register' => $reg->getKey(),
-                ];
-            });
-    
-            return response()->json($rows->values());
+            return response()->json(['data' => $rows->values()]);
         }
     
         return view('tenant.admin.parking.index');
     }
-    
 
     public function search(Request $request)
     {
@@ -160,7 +148,7 @@ class ParkingController extends Controller
         $data = $request->validate([
             'plate'        => 'required|string|max:8',
             'name'         => 'required|string|max:255',
-            'phone'        => 'required|string|max:20',
+            'phone'        => 'required|string|max:9',
             'start_date'   => 'required|date',
             'end_date'     => 'required|date|after_or_equal:start_date',
             'arrival_km'   => 'nullable|integer|min:0',
@@ -168,20 +156,23 @@ class ParkingController extends Controller
             'id_brand'     => 'required|exists:brands,id_brand',
             'id_model'     => 'required|exists:model_cars,id_model',
             'service_id'   => 'required|exists:services,id_service',
-            'wash_service' => 'sometimes|boolean',
+            //'wash_service' => 'nullable|boolean',
         ]);
 
         $owner = Owner::firstOrCreate(
             ['number_phone' => $data['phone']],
-            ['name' => $data['name']],
-            ['lastname' => $data['name']],
-            ['type_owner' => 'cliente'],
+            [
+                'name'       => $data['name'],
+                'type_owner' => 'cliente'
+            ]
         );
 
         $car = Car::firstOrCreate(
-            ['patent'    => $data['plate']],
-            ['id_brand'  => $data['id_brand'],
-            'id_model'  => $data['id_model']]
+            ['patent' => strtoupper($data['plate'])],
+            [
+                'id_brand' => $data['id_brand'],
+                'id_model' => $data['id_model']
+            ]
         );
 
         Belong::create([
@@ -207,8 +198,8 @@ class ParkingController extends Controller
             'id_model'     => $data['id_model'],
             'start_date'   => $data['start_date'],
             'end_date'     => $data['end_date'],
-            'arrival_km'   => $data['arrival_km'] ?? '11',
-            'km_exit'      => $data['km_exit']    ?? '11',
+            'arrival_km'   => $data['arrival_km'] ?? null,
+            'km_exit'      => $data['km_exit']    ?? null,
             'days'        => $days,
             'total_value' => $total,
             'id_park' => $park->id

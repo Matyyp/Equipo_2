@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('code');
             $table->string('payment');
             $table->integer('amount');
+            $table->integer('id_register');
             $table->integer('discount');
             $table->timestamps();
             $table->softDeletes();

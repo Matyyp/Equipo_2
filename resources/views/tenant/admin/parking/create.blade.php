@@ -5,49 +5,31 @@
 @section('page_title', 'Registro de Estacionamiento')
 
 @push('styles')
-    <!-- bootstrap-select CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .loading-spinner {
-            display: none;
-            color: #0d6efd;
-            margin-left: 10px;
-        }
-        .is-valid {
-            border-color: #198754 !important;
-        }
-        .is-invalid {
-            border-color: #dc3545 !important;
-        }
-    </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    .loading-spinner { display: none; color: #0d6efd; margin-left: 10px; }
+    .is-valid { border-color: #198754 !important; }
+    .is-invalid { border-color: #dc3545 !important; }
+</style>
 @endpush
 
 @section('content')
 <div class="container mt-5">
   <div class="card mb-4">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header bg-secondary text-white">
       <i class="fas fa-car me-2"></i>Ingreso de Vehículo al estacionamiento
     </div>
     <div class="card-body">
       <form action="{{ route('estacionamiento.store') }}" method="POST" autocomplete="off">
         @csrf
 
-        {{-- Patente con búsqueda --}}
+        {{-- Patente --}}
         <div class="row mb-3">
           <div class="col-md-4 position-relative">
             <label for="plate" class="form-label">Patente</label>
             <div class="input-group">
-              <input
-                type="text"
-                id="plate"
-                name="plate"
-                class="form-control"
-                placeholder="Ej: AB123CD"
-                maxlength="8"
-                required
-              >
+              <input type="text" id="plate" name="plate" class="form-control" placeholder="Ej: AB123CD" maxlength="8" required>
               <span class="input-group-text"><i class="fas fa-search"></i></span>
             </div>
             <div id="plateFeedback" class="invalid-feedback"></div>
@@ -57,7 +39,7 @@
           </div>
         </div>
 
-        {{-- Nombre y Teléfono --}}
+        {{-- Nombre y teléfono --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="name" class="form-label">Nombre</label>
@@ -81,7 +63,7 @@
           </div>
         </div>
 
-        {{-- Km opcionales --}}
+        {{-- KMs --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="arrival_km" class="form-label">Km Entrada (opcional)</label>
@@ -93,7 +75,7 @@
           </div>
         </div>
 
-        {{-- Marca / Modelo --}}
+        {{-- Marca y Modelo --}}
         <div class="row mb-4">
           <div class="col-md-6">
             <label for="id_brand" class="form-label">Marca</label>
@@ -115,27 +97,18 @@
           </div>
         </div>
 
+        {{-- Servicio --}}
         <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="service_id" class="form-label">Tipo de Estacionamiento</label>
-                <select
-                id="service_id"
-                name="service_id"
-                class="selectpicker form-control"
-                data-live-search="true"
-                title="Seleccione un tipo"
-                required
-                >
-                <option value="">—</option>
-                @foreach($parkingServices as $svc)
-                    <option value="{{ $svc->id_service }}">
-                    {{ $svc->name }} {{-- o el campo que uses para mostrar el servicio --}}
-                    </option>
-                @endforeach
-                </select>
-            </div>
+          <div class="col-md-6">
+            <label for="service_id" class="form-label">Tipo de Estacionamiento</label>
+            <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
+              <option value="">—</option>
+              @foreach($parkingServices as $svc)
+                <option value="{{ $svc->id_service }}">{{ $svc->name }}</option>
+              @endforeach
+            </select>
+          </div>
         </div>
-
 
         {{-- Lavado --}}
         <div class="form-check mb-4">
@@ -144,12 +117,8 @@
         </div>
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <button type="reset" class="btn btn-secondary me-md-2">
-            <i class="fas fa-eraser me-1"></i> Limpiar
-          </button>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save me-1"></i> Guardar
-          </button>
+          <button type="reset" class="btn btn-secondary me-md-2"><i class="fas fa-eraser me-1"></i> Limpiar</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Guardar</button>
         </div>
       </form>
     </div>
@@ -158,125 +127,83 @@
 @endsection
 
 @push('scripts')
-  <!-- bootstrap-select JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  $('.selectpicker').selectpicker();
 
-    $('.selectpicker').selectpicker();
-    
+  const searchUrl = '{{ route("estacionamiento.search") }}';
+  let debounceTimer;
 
-    const searchUrl = '{{ route("estacionamiento.search") }}';
-    const debounceDelay = 500;
-    let debounceTimer;
-    
+  const plateInput = $('#plate');
+  const plateFeedback = $('#plateFeedback');
+  const plateLoading = $('#plateLoading');
+  const nameInput = $('#name');
+  const phoneInput = $('#phone');
+  const brandSelect = $('#id_brand');
+  const modelSelect = $('#id_model');
 
-    const plateInput = $('#plate');
-    const plateFeedback = $('#plateFeedback');
-    const plateLoading = $('#plateLoading');
-    const nameInput = $('#name');
-    const phoneInput = $('#phone');
-    const brandSelect = $('#id_brand');
-    const modelSelect = $('#id_model');
-    
-
-    function showFeedback(element, message, isValid) {
-      const input = $(`#${element}`);
-      const feedback = $(`#${element}Feedback`);
-      
-      input.removeClass('is-invalid is-valid');
-      feedback.text('');
-      
-      if (message) {
-        input.addClass(isValid ? 'is-valid' : 'is-invalid');
-        if (!isValid) feedback.text(message);
-      }
+  function showFeedback(element, message, isValid) {
+    const input = $(`#${element}`);
+    const feedback = $(`#${element}Feedback`);
+    input.removeClass('is-invalid is-valid');
+    feedback.text('');
+    if (message) {
+      input.addClass(isValid ? 'is-valid' : 'is-invalid');
+      if (!isValid) feedback.text(message);
     }
-    
+  }
 
-    function clearFields() {
-      nameInput.val('');
-      phoneInput.val('');
-      brandSelect.val('').selectpicker('refresh');
-      modelSelect.val('').selectpicker('refresh');
-      showFeedback('plate', '', true);
-    }
-    
+  function searchByPlate(plate) {
+    if (!plate) return;
+    plateLoading.show();
 
-    function searchByPlate(plate) {
-      if (!plate) {
-        clearFields();
-        return;
-      }
-      
-      plateLoading.show();
-      
-      $.ajax({
-        url: searchUrl,
-        method: 'GET',
-        dataType: 'json',
-        data: { plate },
-        success: function(response) {
-          if (response.found) {
-
-            nameInput.val(response.name || '');
-            phoneInput.val(response.phone || '');
-            
-            if (response.id_brand) {
-              brandSelect.val(response.id_brand).selectpicker('refresh');
-            }
-            
-            if (response.id_model) {
-              modelSelect.val(response.id_model).selectpicker('refresh');
-            }
-            
-            showFeedback('plate', 'Datos encontrados', true);
-          } else {
-            clearFields();
-            showFeedback('plate', response.message || 'Patente no encontrada', false);
-          }
-        },
-        error: function(xhr) {
-          clearFields();
-          showFeedback('plate', 'Error al buscar la patente', false);
-          console.error('Error en la búsqueda:', xhr.responseText);
-        },
-        complete: function() {
-          plateLoading.hide();
+    $.ajax({
+      url: searchUrl,
+      method: 'GET',
+      dataType: 'json',
+      data: { plate },
+      success: function(response) {
+        if (response.found) {
+          nameInput.val(response.name || '');
+          phoneInput.val(response.phone || '');
+          if (response.id_brand) brandSelect.val(response.id_brand).selectpicker('refresh');
+          if (response.id_model) modelSelect.val(response.id_model).selectpicker('refresh');
+          showFeedback('plate', 'Datos encontrados', true);
+        } else {
+          showFeedback('plate', 'Patente no encontrada, puede ingresar manualmente', false);
         }
-      });
-    }
-    
-
-    plateInput
-      .on('keydown', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          searchByPlate($(this).val().trim());
-          return false;
-        }
-      })
-      .on('input', function() {
-        const plate = $(this).val().trim().toUpperCase();
-        $(this).val(plate);
-        
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-          searchByPlate(plate);
-        }, debounceDelay);
-      })
-      .on('blur', function() {
-        searchByPlate($(this).val().trim());
-      });
-    
-
-    const today = new Date().toISOString().slice(0, 16);
-    $('#start_date').attr('min', today);
-    
-
-    $('#start_date').on('change', function() {
-      $('#end_date').attr('min', $(this).val());
+      },
+      error: function(xhr) {
+        showFeedback('plate', 'Error buscando patente, puede ingresar manualmente', false);
+        console.error('Error:', xhr.responseText);
+      },
+      complete: function() {
+        plateLoading.hide();
+      }
     });
+  }
+
+  plateInput.on('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      searchByPlate($(this).val().trim());
+      return false;
+    }
+  }).on('input', function() {
+    const plate = $(this).val().trim().toUpperCase();
+    $(this).val(plate);
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => searchByPlate(plate), 500);
+  }).on('blur', function() {
+    searchByPlate($(this).val().trim());
   });
-  </script>
+
+  const today = new Date().toISOString().slice(0, 10);
+  $('#start_date').attr('min', today);
+  $('#start_date').on('change', function() {
+    $('#end_date').attr('min', $(this).val());
+  });
+});
+</script>
 @endpush

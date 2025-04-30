@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id('id_owner'); 
             $table->enum('type_owner', ['cliente', 'empresa']);
             $table->string('name');
-            $table->string('last_name'); 
             $table->integer('number_phone');
             $table->timestamps();
             $table->softDeletes();

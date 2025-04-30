@@ -29,7 +29,7 @@
 @section('content')
 <div class="container mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div>
         <i class="fas fa-history"></i> Historial de Ingresos
       </div>

@@ -15,7 +15,7 @@
 @section('content')
 <div class="container mt-5">
   <div class="card">
-    <div class="card-header bg-warning text-dark">
+    <div class="card-header bg-secondary text-dark">
       <i class="fas fa-edit me-2"></i>Editar Ingreso
     </div>
     <div class="card-body">

@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     serverSide: true,
     ajax: {
       url: '{{ route("estacionamiento.index") }}',  
-      dataSrc: ''                                    
+      dataSrc: 'data'                                
     },
     columns: [
       { data: 'owner_name' },

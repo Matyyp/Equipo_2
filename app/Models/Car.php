@@ -17,6 +17,8 @@ class Car extends Model
         'id_model',
         'id_brand'
     ];
+    
+    protected $primaryKey = 'id_car';
 
     public function car_park()
     {
