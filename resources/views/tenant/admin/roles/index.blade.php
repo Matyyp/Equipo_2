@@ -1,43 +1,72 @@
+{{-- resources/views/tenant/admin/roles/index.blade.php --}}
 @extends('tenant.layouts.admin')
+
 @section('title','Roles')
 @section('page_title','Roles del sistema')
 
+@push('styles')
+  <!-- DataTables Bootstrap4 CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css"
+  />
+@endpush
+
 @section('content')
-<div class="card">
-  <div class="card-header">
-    <h3 class="card-title">Listado de Roles</h3>
-    @role('Admin')
-        <a href="{{ route('roles.create') }}" class="btn btn-primary btn-sm float-right">
-            <i class="fas fa-user-plus"></i> Nuevo
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-header bg-secondary text-white">
+      <i class="fas fa-user-shield me-2"></i>Roles
+      @role('Admin')
+        <a href="{{ route('roles.create') }}"
+           class="btn border btn-sm float-end">
+          <i class="fas fa-plus"></i> Nuevo
         </a>
-    @endrole
-  </div>
-  <div class="card-body p-0">
-    <table class="table">
-      <thead>
-        <tr><th>Rol</th><th>Permisos</th><th>Acciones</th></tr>
-      </thead>
-      <tbody>
-      @foreach($roles as $role)
-        <tr>
-          <td>{{ $role->name }}</td>
-          <td>{{ $role->permissions_count }}</td>
-          <td>
-            <a href="{{ route('roles.edit', $role) }}" class="btn btn-sm btn-warning">
-              <i class="fas fa-edit"></i>
-            </a>
-            <form action="{{ route('roles.destroy', $role) }}" method="POST" class="d-inline">
-              @csrf
-              @method('DELETE')
-              <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar rol {{ $role->name }}?')">
-                  <i class="fas fa-trash"></i>
-              </button>
-          </form>
-          </td>
-        </tr>
-      @endforeach
-      </tbody>
-    </table>
+      @endrole
+    </div>
+    <div class="card-body">
+      <table id="roles-table" class="table table-striped table-bordered w-100">
+        <thead>
+          <tr>
+            <th>Rol</th>
+            <th>Permisos</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
   </div>
 </div>
 @endsection
+
+@push('scripts')
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#roles-table').DataTable({
+      processing: true,
+      serverSide: true,
+      ajax: {
+        url: '{{ route("roles.data") }}'
+      },
+      columns: [
+        { data: 'name',               name: 'name' },
+        { data: 'permissions_count',  name: 'permissions_count' },
+        {
+          data: 'action',
+          name: 'action',
+          orderable: false,
+          searchable: false,
+          className: 'text-center'
+        }
+      ],
+      order: [[0, 'asc']],
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      }
+    });
+  });
+  </script>
+@endpush

@@ -88,8 +88,10 @@ Route::middleware([
 
     // CRUD Usuarios
     Route::middleware(['auth', 'permission:users.index'])->group(function () {
-        Route::get('users', [UserController::class, 'index'])
-            ->name('users.index');
+        // Listado principal
+        Route::get('users',      [UserController::class, 'index'])->name('users.index');
+        // AJAX DataTables
+        Route::get('users/data', [UserController::class, 'getData'])->name('users.data');
     });
 
     Route::middleware(['auth', 'permission:users.create'])->group(function () {
@@ -107,8 +109,11 @@ Route::middleware([
     });
 
     Route::middleware(['auth', 'role:Admin'])->group(function () {
+        Route::get('roles/data', [RoleController::class, 'getData'])
+            ->name('roles.data');
+
         Route::resource('roles', RoleController::class)
-        ->only(['index','create','store','edit','update','destroy']);
+            ->only(['index','create','store','edit','update','destroy']);
         
     });
     require __DIR__.'/auth.php';
