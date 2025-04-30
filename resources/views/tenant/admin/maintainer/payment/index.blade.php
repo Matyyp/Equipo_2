@@ -5,9 +5,8 @@
 
 @section('content')
 <div class="container mt-5">
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+    
+ 
 
     <a href="{{ route('payment.create') }}" class="btn btn-primary mb-3">
         + Nuevo Pago
@@ -62,3 +61,17 @@
     {{ $payments->links() }}
 </div>
 @endsection
+{{-- al final de index.blade.php --}}
+@push('scripts')
+  @if(session('success'))
+    <script>
+      Swal.fire({
+        title: '¡Pago registrado!',
+        text: "{{ session('success') }}",
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    </script>
+  @endif
+@endpush
