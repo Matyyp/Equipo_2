@@ -11,6 +11,9 @@ class Contract extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $primaryKey = 'id_contract';
+
+
     public function contract_presents()
     {
         return $this->hasMany(Present::class, 'id_contract', 'id_contract');

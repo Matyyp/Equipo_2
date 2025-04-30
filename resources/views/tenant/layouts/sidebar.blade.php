@@ -9,7 +9,7 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
 
-                {{-- Dashboard siempre visible --}}
+                {{-- Dashboard --}}
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}"
                        class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -18,255 +18,188 @@
                     </a>
                 </li>
 
-                {{-- Usuarios: aparecerá si puede ver la lista o crear usuarios --}}
-                @canany(['users.index','users.create'])
-                <li class="nav-item has-treeview {{ request()->is('users*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>
-                            Usuarios
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                {{-- Estacionamiento --}}
+                <li class="nav-item has-treeview {{ request()->is('estacionamiento*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('estacionamiento*') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-square-parking"></i>
+                        <p>Estacionamiento<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
-                        {{-- Listado --}}
-                        @can('users.index')
                         <li class="nav-item">
-                            <a href="{{ route('users.index') }}"
-                               class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('estacionamiento.index') }}"
+                               class="nav-link {{ request()->routeIs('estacionamiento.index') ? 'active' : '' }}">
                                 <p>Listado</p>
                             </a>
                         </li>
-                        @endcan
-
-                        {{-- Nuevo usuario --}}
-                        @can('users.create')
                         <li class="nav-item">
-                            <a href="{{ route('users.create') }}"
-                               class="nav-link {{ request()->routeIs('users.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Nuevo usuario</p>
+                            <a href="{{ route('estacionamiento.create') }}"
+                               class="nav-link {{ request()->routeIs('estacionamiento.create') ? 'active' : '' }}">
+                                <p>Ingresar</p>
                             </a>
                         </li>
-                        @endcan
+                        <li class="nav-item">
+                            <a href="{{ route('estacionamiento.history') }}"
+                               class="nav-link {{ request()->routeIs('estacionamiento.history') ? 'active' : '' }}">
+                                <p>Historial</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- Reservas --}}
+                <li class="nav-item has-treeview {{ request()->is('reservas*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('reservas*') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-calendar-days"></i>
+                        <p>Reservas<i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        {{-- Submódulos aquí --}}
+                    </ul>
+                </li>
+
+                {{-- Ventas --}}
+                <li class="nav-item has-treeview {{ request()->is('ventas*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('ventas*') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-wallet"></i>
+                        <p>Ventas<i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        {{-- Submódulos aquí --}}
+                    </ul>
+                </li>
+
+                {{-- Mantenciones --}}
+                <li class="nav-item has-treeview {{ request()->is('mantenimiento*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('mantenimiento*') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-screwdriver-wrench"></i>
+                        <p>Mant. Vehículos<i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        {{-- Submódulos aquí --}}
+                    </ul>
+                </li>
+
+                {{-- Administración --}}
+                @canany(['users.index','roles.index'])
+                <li class="nav-item has-treeview {{ request()->is('administracion*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('administracion*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-cog"></i>
+                        <p>Administración<i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+
+                        {{-- Configuración Interna --}}
+                        <li class="nav-item has-treeview
+                            {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ||
+                               request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link
+                                {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ||
+                                   request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>Configuración Interna<i class="right fas fa-angle-left"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                @can('users.index')
+                                <li class="nav-item">
+                                    <a href="{{ route('users.index') }}"
+                                       class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
+                                        <i class="fas fa-users nav-icon"></i>
+                                        <p>Usuarios</p>
+                                    </a>
+                                </li>
+                                @endcan
+                                @role('Admin')
+                                <li class="nav-item">
+                                    <a href="{{ route('roles.index') }}"
+                                       class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
+                                        <i class="fas fa-user-shield nav-icon"></i>
+                                        <p>Roles</p>
+                                    </a>
+                                </li>
+                                @endrole
+                                <li class="nav-item">
+                                    <a href="{{ route('empresa.index') }}"
+                                       class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
+                                        <i class="fas fa-briefcase nav-icon"></i>
+                                        <p>Datos Empresa</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('locacion.index') }}"
+                                       class="nav-link {{ request()->routeIs('locacion.index') ? 'active' : '' }}">
+                                        <i class="fas fa-map-marker-alt nav-icon"></i>
+                                        <p>Ubicación</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('sucursales.index') }}"
+                                       class="nav-link {{ request()->routeIs('sucursales.index') ? 'active' : '' }}">
+                                        <i class="fas fa-store nav-icon"></i>
+                                        <p>Sucursal</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        {{-- Configuración Contrato --}}
+                        <li class="nav-item has-treeview {{ request()->is('contratos*') || request()->is('reglas*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('contratos*') || request()->is('reglas*') ? 'active' : '' }}">
+                                <i class="fas fa-file-signature nav-icon"></i>
+                                <p>Configuración Contrato<i class="right fas fa-angle-left"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('contratos.index') }}"
+                                       class="nav-link {{ request()->routeIs('contratos.index') ? 'active' : '' }}">
+                                        <p>Contratos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('reglas.index') }}"
+                                       class="nav-link {{ request()->routeIs('reglas.index') ? 'active' : '' }}">
+                                        <p>Reglas de contrato</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        {{-- Configuración Auto --}}
+                        <li class="nav-item has-treeview {{ request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ? 'active' : '' }}">
+                                <i class="fas fa-car nav-icon"></i>
+                                <p>Configuración Auto<i class="right fas fa-angle-left"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('autos.index') }}"
+                                       class="nav-link {{ request()->routeIs('autos.index') ? 'active' : '' }}">
+                                        <p>Nuevo auto</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('marca.index') }}"
+                                       class="nav-link {{ request()->routeIs('marca.index') ? 'active' : '' }}">
+                                        <p>Marcas</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('modelo.index') }}"
+                                       class="nav-link {{ request()->routeIs('modelo.index') ? 'active' : '' }}">
+                                        <p>Modelos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('dueños.index') }}"
+                                       class="nav-link {{ request()->routeIs('dueños.index') ? 'active' : '' }}">
+                                        <p>Dueños</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
                     </ul>
                 </li>
                 @endcanany
-
-                {{-- Roles: aparecerá si puede listar o crear roles --}}
-                @canany(['roles.index','roles.create'])
-                <li class="nav-item has-treeview {{ request()->is('roles*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('roles*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-shield"></i>
-                        <p>
-                            Roles
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        {{-- Listado --}}
-                        @can('roles.index')
-                        <li class="nav-item">
-                            <a href="{{ route('roles.index') }}"
-                               class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Listado</p>
-                            </a>
-                        </li>
-                        @endcan
-
-                        {{-- Nuevo rol --}}
-                        @can('roles.create')
-                        <li class="nav-item">
-                            <a href="{{ route('roles.create') }}"
-                               class="nav-link {{ request()->routeIs('roles.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Nuevo rol</p>
-                            </a>
-                        </li>
-                        @endcan
-                    </ul>
-                </li>
-                @endcanany
-
-                {{-- Permisos: aparecerá si puede listar o crear permisos --}}
-                @canany(['permissions.index','permissions.create'])
-                <li class="nav-item has-treeview {{ request()->is('permissions*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('permissions*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-key"></i>
-                        <p>
-                            Permisos
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        {{-- Listado --}}
-                        @can('permissions.index')
-                        <li class="nav-item">
-                            <a href="{{ route('permissions.index') }}"
-                               class="nav-link {{ request()->routeIs('permissions.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Listado</p>
-                            </a>
-                        </li>
-                        @endcan
-
-                        {{-- Nuevo permiso --}}
-                        @can('permissions.create')
-                        <li class="nav-item">
-                            <a href="{{ route('permissions.create') }}"
-                               class="nav-link {{ request()->routeIs('permissions.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Nuevo permiso</p>
-                            </a>
-                        </li>
-                        @endcan
-                    </ul>
-                </li>
-                @endcanany
-
-                @role('Admin')
-                <li class="nav-item has-treeview {{ request()->is('roles*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('roles*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-shield"></i>
-                        <p>Roles <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('roles.index') }}"
-                                class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Listado</p>
-                            </a>
-                        </li>
-                        {{-- Crear nuevo rol (solo Admin) --}}
-                        @role('Admin')
-                        <li class="nav-item">
-                            <a href="{{ route('roles.create') }}"
-                               class="nav-link {{ request()->routeIs('roles.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Nuevo Rol</p>
-                            </a>
-                        </li>
-                        @endrole
-                    </ul>
-                </li>
-                @endrole
-
-                @can('mantenedores.access')
-                <li class="nav-item has-treeview
-                    {{ request()->is('empresa*') || request()->is('locacion*') || request()->is('accesorio*') || request()->is('informacion_contacto*')
-                        || request()->is('modelo*') || request()->is('marca*') || request()->is('dueños*') || request()->is('reglas*')
-                        || request()->is('autos*') || request()->is('sucursales*') || request()->is('contratos*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link
-                        {{ request()->is('empresa*') || request()->is('locacion*') || request()->is('accesorio*') || request()->is('informacion_contacto*')
-                            || request()->is('modelo*') || request()->is('marca*') || request()->is('dueños*') || request()->is('reglas*')
-                            || request()->is('autos*') || request()->is('sucursales*') || request()->is('contratos*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>Mantenedores <i class="right fas fa-angle-left"></i></p>
-                    </a>
-
-                    <ul class="nav nav-treeview">
-                        {{-- Empresa --}}
-                        <li class="nav-item">
-                            <a href="{{ route('empresa.index') }}" class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Empresa</p>
-                            </a>
-                        </li>
-
-                        {{-- Locación --}}
-                        <li class="nav-item">
-                            <a href="{{ route('locacion.index') }}" class="nav-link {{ request()->routeIs('locacion.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Locaciones</p>
-                            </a>
-                        </li>
-
-                        <!-- {{-- Accesorios --}}
-                        <li class="nav-item">
-                            <a href="{{ route('accesorio.index') }}" class="nav-link {{ request()->routeIs('accesorio.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Accesorios</p>
-                            </a>
-                        </li> -->
-
-                        {{-- Información de Contacto --}}
-                        <li class="nav-item">
-                            <a href="{{ route('informacion_contacto.index') }}" class="nav-link {{ request()->routeIs('informacion_contacto.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Información Contacto</p>
-                            </a>
-                        </li>
-
-                        {{-- Modelos --}}
-                        <li class="nav-item">
-                            <a href="{{ route('modelo.index') }}" class="nav-link {{ request()->routeIs('modelo.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Modelos</p>
-                            </a>
-                        </li>
-
-                        {{-- Marcas --}}
-                        <li class="nav-item">
-                            <a href="{{ route('marca.index') }}" class="nav-link {{ request()->routeIs('marca.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Marcas</p>
-                            </a>
-                        </li>
-
-                        {{-- Dueños --}}
-                        <li class="nav-item">
-                            <a href="{{ route('dueños.index') }}" class="nav-link {{ request()->routeIs('dueños.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Dueños</p>
-                            </a>
-                        </li>
-
-                        {{-- Reglas --}}
-                        <li class="nav-item">
-                            <a href="{{ route('reglas.index') }}" class="nav-link {{ request()->routeIs('reglas.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Reglas</p>
-                            </a>
-                        </li>
-
-                        {{-- Autos --}}
-                        <li class="nav-item">
-                            <a href="{{ route('autos.index') }}" class="nav-link {{ request()->routeIs('autos.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Autos</p>
-                            </a>
-                        </li>
-
-                        {{-- Sucursales --}}
-                        <li class="nav-item">
-                            <a href="{{ route('sucursales.index') }}" class="nav-link {{ request()->routeIs('sucursales.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Sucursales</p>
-                            </a>
-                        </li>
-
-                        {{-- Contratos --}}
-                        <li class="nav-item">
-                            <a href="{{ route('contratos.index') }}" class="nav-link {{ request()->routeIs('contratos.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Contratos</p>
-                            </a>
-                        </li>
-
-                        
-                        <li class="nav-item">
-                            <a href="{{ route('payment.index') }}" class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Pagos</p>
-                            </a>
-                        </li>
-                        
-                    </ul>
-                </li>
-                @endcan
 
             </ul>
         </nav>

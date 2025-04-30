@@ -18,7 +18,10 @@ class ParkingRegister extends Model
         'start_date',
         'end_date',
         'days',
+        'id_park'
     ];
+
+    protected $primaryKey = 'id_parking_register';
 
     public function parking_register_register()
     {

@@ -14,9 +14,9 @@ class Owner extends Model
     protected $fillable = [
         'type_owner',
         'name',
-        'last_name',
         'number_phone',
     ];
+    protected $primaryKey = 'id_owner';
 
     public function owner_belongs()
     {

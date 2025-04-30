@@ -13,8 +13,6 @@ class AnnualContract extends Model
 
     protected $fillable = [
         'id_contract',
-        'rut',
-        'authorized_person',
         'important_note',
         'expiration_date'
     ];

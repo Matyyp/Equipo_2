@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Tenant\Maintainers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ContractDailyController extends Controller
+class AccessoryController extends Controller
 {
     /**
      * Display a listing of the resource.

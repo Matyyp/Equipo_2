@@ -20,6 +20,7 @@ use App\Http\Controllers\Tenant\Maintainers\BranchOfficeController;
 use App\Http\Controllers\Tenant\Maintainers\ServiceController;
 use App\Http\Controllers\Tenant\Maintainers\ContractController;
 use App\Http\Controllers\Tenant\Maintainers\PaymentRegisterController;
+use App\Http\Controllers\Tenant\Parking\ParkingController;
 
 
 /*
@@ -42,10 +43,12 @@ Route::middleware([
     Route::get('/', function () {
         return view('welcome');
     });
-    
-    Route::get('/dashboard', function () {
-        return view('tenant.admin.dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    //aca agregar todos los roles que necesiten entran al panel de admin
+    Route::middleware(['auth', 'role:Admin|Empleado'])->group(function () {
+        Route::get('/dashboard', function () {
+            return view('tenant.admin.dashboard');
+        })->name('dashboard');
+    });
     
     Route::middleware('auth')->group(function () {
         Route::get   ('/profile', [ProfileController::class, 'edit'   ])->name('profile.edit');
@@ -72,12 +75,26 @@ Route::middleware([
         Route::resource('contratos', ContractController::class);
         Route::resource('payment', PaymentRegisterController::class);
 
+
+        Route::get('estacionamiento/data', [ParkingController::class, 'data'])
+        ->name('estacionamiento.data');
+        Route::get('estacionamiento/search', [ParkingController::class, 'search'])
+        ->name('estacionamiento.search');
+        Route::get('estacionamiento/history', [ParkingController::class, 'history'])
+        ->name('estacionamiento.history');
+        Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])
+        ->name('contrato.print');
+
+        Route::resource('estacionamiento', ParkingController::class);
+        
     });
 
     // CRUD Usuarios
     Route::middleware(['auth', 'permission:users.index'])->group(function () {
-        Route::get('users', [UserController::class, 'index'])
-            ->name('users.index');
+        // Listado principal
+        Route::get('users',      [UserController::class, 'index'])->name('users.index');
+        // AJAX DataTables
+        Route::get('users/data', [UserController::class, 'getData'])->name('users.data');
     });
 
     Route::middleware(['auth', 'permission:users.create'])->group(function () {
@@ -95,8 +112,11 @@ Route::middleware([
     });
 
     Route::middleware(['auth', 'role:Admin'])->group(function () {
+        Route::get('roles/data', [RoleController::class, 'getData'])
+            ->name('roles.data');
+
         Route::resource('roles', RoleController::class)
-        ->only(['index','create','store','edit','update','destroy']);
+            ->only(['index','create','store','edit','update','destroy']);
         
     });
     require __DIR__.'/auth.php';

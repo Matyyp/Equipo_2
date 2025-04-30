@@ -6,14 +6,41 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
 
     public function index()
     {
-        $users = User::with('roles')->paginate(10);
-        return view('tenant.admin.users.index', compact('users'));
+        return view('tenant.admin.users.index');
+    }
+
+    public function getData(Request $request)
+    {
+        $query = User::with('roles')->select('users.*');
+
+        return DataTables::eloquent($query)
+            ->addColumn('role', fn(User $user) => $user->getRoleNames()->implode(', '))
+            ->addColumn('action', function(User $user) {
+                $buttons = '';
+                if (auth()->user()->can('users.edit')) {
+                    $buttons .= '<a href="'.route('users.edit', $user).'" '
+                              . 'class="btn btn-sm btn-warning mr-1">'
+                              . '<i class="fas fa-edit"></i></a>';
+                }
+                if (auth()->user()->can('users.delete')) {
+                    $buttons .= '<form action="'.route('users.destroy', $user).'" '
+                              . 'method="POST" style="display:inline">'
+                              . csrf_field().method_field('DELETE')
+                              . '<button onclick="return confirm(\'¿Eliminar este usuario?\')" '
+                              . 'class="btn btn-sm btn-danger"><i class="fas fa-trash"></i>'
+                              . '</button></form>';
+                }
+                return $buttons;
+            })
+            ->rawColumns(['action'])
+            ->toJson();
     }
 
     public function create()
