@@ -95,93 +95,54 @@
                 <!-- @endcanany -->
 
                 {{-- Administración --}}
-                <!-- @canany(['users.index','users.create','roles.index','roles.create']) -->
-                <li class="nav-item has-treeview {{ request()->is('administracion*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('administracion*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-cog"></i>
+                @canany(['users.index','roles.index'])
+                <li class="nav-item has-treeview {{ (request()->routeIs('users.*') || request()->routeIs('roles.*')) ? 'menu-open' : '' }}">
+                <a href="#" class="nav-link {{ (request()->routeIs('users.*') || request()->routeIs('roles.*')) ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-user-cog"></i>
+                    <p>
+                    Administración
+                    <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+
+                    {{-- Configuración Interna --}}
+                    <li class="nav-item has-treeview {{ (request()->routeIs('users.*') || request()->routeIs('roles.*')) ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ (request()->routeIs('users.*') || request()->routeIs('roles.*')) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-cogs"></i>
                         <p>
-                            Administración
-                            <i class="right fas fa-angle-left"></i>
+                        Configuración Interna
+                        <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        {{-- Configuración Interna --}}
-                        <li class="nav-item has-treeview {{ request()->is('administracion/configuracion-interna*') ? 'menu-open' : '' }}">
-                            <a href="#" class="nav-link {{ request()->is('administracion/configuracion-interna*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-cogs"></i>
-                                <p>
-                                    Configuración Interna
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                {{-- Usuarios --}}
-                                @canany(['users.index','users.create'])
-                                <li class="nav-item has-treeview {{ request()->is('administracion/configuracion-interna/users*') ? 'menu-open' : '' }}">
-                                    <a href="#" class="nav-link {{ request()->is('administracion/configuracion-interna/users*') ? 'active' : '' }}">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Usuarios
-                                            <i class="right fas fa-angle-left"></i>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview">
-                                        @can('users.index')
-                                        <li class="nav-item">
-                                            <a href="{{ route('users.index') }}"
-                                            class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
-                                                <i class="far fa-dot-circle nav-icon"></i>
-                                                <p>Listado</p>
-                                            </a>
-                                        </li>
-                                        @endcan
-                                        @can('users.create')
-                                        <li class="nav-item">
-                                            <a href="{{ route('users.create') }}"
-                                            class="nav-link {{ request()->routeIs('users.create') ? 'active' : '' }}">
-                                                <i class="far fa-dot-circle nav-icon"></i>
-                                                <p>Nuevo usuario</p>
-                                            </a>
-                                        </li>
-                                        @endcan
-                                    </ul>
-                                </li>
-                                @endcanany
-
-                                {{-- Roles --}}
-                                @role('Admin')
-                                <li class="nav-item has-treeview {{ request()->is('administracion/configuracion-interna/roles*') ? 'menu-open' : '' }}">
-                                    <a href="#" class="nav-link {{ request()->is('administracion/configuracion-interna/roles*') ? 'active' : '' }}">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Roles
-                                            <i class="right fas fa-angle-left"></i>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview">
-                                        <li class="nav-item">
-                                            <a href="{{ route('roles.index') }}"
-                                            class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
-                                                <i class="far fa-dot-circle nav-icon"></i>
-                                                <p>Listado</p>
-                                            </a>
-                                        </li>
-                                        
-                                        <li class="nav-item">
-                                            <a href="{{ route('roles.create') }}"
-                                            class="nav-link {{ request()->routeIs('roles.create') ? 'active' : '' }}">
-                                                <i class="far fa-dot-circle nav-icon"></i>
-                                                <p>Nuevo rol</p>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                @endrole
-                            </ul>
+                        {{-- Usuarios (sólo índice) --}}
+                        @can('users.index')
+                        <li class="nav-item">
+                        <a href="{{ route('users.index') }}"
+                            class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
+                            <i class="fas fa-users"></i>
+                            <p>Usuarios</p>
+                        </a>
                         </li>
+                        @endcan
+
+                        {{-- Roles (sólo índice) --}}
+                        @role('Admin')
+                        <li class="nav-item">
+                        <a href="{{ route('roles.index') }}"
+                            class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
+                            <i class="fas fa-user-shield"></i>
+                            <p>Roles</p>
+                        </a>
+                        </li>
+                        @endrole
                     </ul>
+                    </li>
+
+                </ul>
                 </li>
-                <!-- @endcanany -->
+                @endcanany
             </ul>
         </nav>
     </div>

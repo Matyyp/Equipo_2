@@ -1,65 +1,74 @@
+{{-- resources/views/tenant/admin/users/index.blade.php --}}
 @extends('tenant.layouts.admin')
+
 @section('title', 'Usuarios')
-@section('page_title','Usuarios del sistema')
+@section('page_title', 'Usuarios del sistema')
+
+@push('styles')
+  <!-- DataTables Bootstrap4 CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css"
+  />
+@endpush
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Listado de usuarios</h3>
-
-        {{-- Mostrar “Nuevo” si el usuario tiene permiso para crear --}}
-        @can('users.create')
-            <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm float-right">
-                <i class="fas fa-user-plus"></i> Nuevo
-            </a>
-        @endcan
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-header bg-secondary text-white">
+      <i class="fas fa-users me-2"></i>Usuarios
+      @can('users.create')
+        <a href="{{ route('users.create') }}"
+           class="btn border btn-sm float-end">
+          <i class="fas fa-user-plus"></i> Nuevo
+        </a>
+      @endcan
     </div>
-
-    <div class="card-body p-0">
-        <table class="table table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Rol</th>
-                    <th class="text-right">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach($users as $user)
-                <tr>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->getRoleNames()->implode(', ') }}</td>
-                    <td class="text-right">
-
-                        {{-- Editar sólo si tiene permiso --}}
-                        @can('users.edit')
-                            <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-warning">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        @endcan
-
-                        {{-- Eliminar sólo si tiene permiso --}}
-                        @can('users.delete')
-                            <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button
-                                    type="submit"
-                                    class="btn btn-sm btn-danger"
-                                    onclick="return confirm('¿Seguro que quieres eliminar este usuario?')"
-                                >
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        @endcan
-
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
+    <div class="card-body">
+      <table id="users-table" class="table table-striped table-bordered w-100">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+      </table>
     </div>
+  </div>
 </div>
 @endsection
+
+@push('scripts')
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#users-table').DataTable({
+      processing: true,
+      serverSide: true,
+      ajax: {
+        url: '{{ route("users.data") }}'
+      },
+      columns: [
+        { data: 'name',  name: 'name' },
+        { data: 'email', name: 'email' },
+        { data: 'role',  name: 'roles.name', orderable: false, searchable: false },
+        {
+          data: 'action',
+          name: 'action',
+          orderable: false,
+          searchable: false,
+          className: 'text-center'
+        }
+      ],
+      order: [[0, 'asc']],
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      }
+    });
+  });
+  </script>
+@endpush

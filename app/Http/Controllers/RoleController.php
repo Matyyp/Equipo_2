@@ -5,13 +5,35 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Yajra\DataTables\Facades\DataTables;
 
 class RoleController extends Controller
 {
     public function index()
     {
-        $roles = Role::withCount('permissions')->get();
-        return view('tenant.admin.roles.index', compact('roles'));
+        return view('tenant.admin.roles.index');
+    }
+
+    public function getData(Request $request)
+    {
+        $query = Role::withCount('permissions');
+        return DataTables::eloquent($query)
+            ->addColumn('permissions_count', fn(Role $r) => $r->permissions_count)
+            ->addColumn('action', function(Role $r) {
+                $html = '';
+                if (auth()->user()->hasRole('Admin')) {
+                    $html .= '<a href="'.route('roles.edit',$r).'" class="btn btn-sm btn-warning mr-1">'
+                        . '<i class="fas fa-edit"></i></a>';
+                    $html .= '<form action="'.route('roles.destroy',$r).'" method="POST" style="display:inline">'
+                        . csrf_field().method_field('DELETE')
+                        . '<button onclick="return confirm(\'¿Eliminar rol '.$r->name.'?\')" '
+                        . 'class="btn btn-sm btn-danger">'
+                        . '<i class="fas fa-trash"></i></button></form>';
+                }
+                return $html;
+            })
+            ->rawColumns(['action'])
+            ->toJson();
     }
 
     public function create()
