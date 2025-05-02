@@ -10,7 +10,7 @@ class Register extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
+    
     protected $fillable = [
         'id_service',
         'id_parking_register'
@@ -25,4 +25,8 @@ class Register extends Model
     {
         return $this->belongsTo(Parking::class, 'id_service', 'id_service');
     }
+    public function paymentRecord()
+{
+    return $this->hasOne(PaymentRecord::class, 'id_register', 'id');
+}
 }

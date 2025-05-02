@@ -74,6 +74,11 @@ Route::middleware([
         Route::resource('servicios', ServiceController::class);
         Route::resource('contratos', ContractController::class);
         Route::resource('payment', PaymentRegisterController::class);
+        // Ruta que devuelve JSON
+Route::get(
+    'payments/data', 
+    [PaymentRegisterController::class, 'data']
+)->name('payments.data');
 
 
         Route::get('estacionamiento/data', [ParkingController::class, 'data'])

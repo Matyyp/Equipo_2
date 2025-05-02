@@ -64,7 +64,13 @@
                         <p>Ventas<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
-                        {{-- Submódulos aquí --}}
+                        <li class="nav-item">
+                            <a href="{{ route('payment.index') }}"
+                               class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}">
+                                <i class="fas fa-store nav-icon"></i>
+                                <p>Pagos</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

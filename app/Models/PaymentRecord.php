@@ -29,10 +29,10 @@ class PaymentRecord extends Model
     /**
      * Relación con Service
      */
-    public function service()
+    public function paymentRecordPayment()
     {
         return $this->belongsTo(
-            Service::class,
+            Payment::class,
             'id_service',   // FK en esta tabla
             'id_service'    // PK en services
         );
@@ -41,12 +41,17 @@ class PaymentRecord extends Model
     /**
      * Relación con Voucher
      */
-    public function voucher()
+    public function PaymentRecordsVoucher()
     {
         return $this->belongsTo(
-            Voucher::class,
+            Payment::class,
             'id_voucher',   // FK en esta tabla
             'id_voucher'    // PK en vouchers
         );
+    }
+    public function paymentRecords()
+    {
+        // FK en payment_records = id_register, PK local = id
+        return $this->hasMany(PaymentRecord::class, 'id_register', 'id');
     }
 }

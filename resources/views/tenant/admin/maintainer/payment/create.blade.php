@@ -1,40 +1,50 @@
 {{-- resources/views/tenant/admin/maintainer/payment/create.blade.php --}}
-
 @extends('tenant.layouts.admin')
-
-@section('title', 'Registrar Pago')
-@section('page_title', 'Registrar Nuevo Pago')
 
 @section('content')
 <div class="container mt-5">
-  <h3>Servicios disponibles</h3>
+  <h3>Pagos Pendientes</h3>
 
   <table class="table table-hover">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Nombre</th>
+        <th>Registro</th>
+        <th>Servicio</th>
         <th>Precio</th>
         <th>Tipo</th>
+        <th>Patente</th>
+        <th>Dueño</th>
         <th>Acción</th>
       </tr>
     </thead>
     <tbody>
-      @foreach($services as $s)
+      @foreach($registers as $r)
+        @php
+          $svc      = $r->service;
+          $pr       = $r->parkingRegister;                   // relación belongsTo
+          $park     = $pr?->park;
+          $car      = $park?->park_car?->first();
+          $owner    = $car?->car_belongs?->first()?->belongs_owner;
+        @endphp
         <tr>
-          <td>{{ $s->id_service }}</td>
-          <td>{{ $s->name }}</td>
-          <td>${{ number_format($s->price_net, 0, ',', '.') }}</td>
-          <td>{{ ucfirst(str_replace('_',' ', $s->type_service)) }}</td>
+          <td>{{ $r->id_register }}</td>
+          <td>{{ $svc->name }}</td>
+          <td>${{ number_format($svc->price_net, 0, ',', '.') }}</td>
+          <td>{{ ucfirst(str_replace('_',' ',$svc->type_service)) }}</td>
+          <td>{{ $car->patent ?? '-' }}</td>
+          <td>{{ $owner->name ?? '-' }}</td>
           <td>
             <button
               type="button"
               class="btn btn-sm btn-primary"
               data-toggle="modal"
               data-target="#paymentModal"
-              data-id="{{ $s->id_service }}"
-              data-name="{{ $s->name }}"
-              data-price="{{ $s->price_net }}">
+              data-register-id="{{ $r->id_register }}"
+              data-service-name="{{ $svc->name }}"
+              data-price="{{ $r->total_value }}"   {{-- o $svc->price_net si prefieres --}}
+              data-patent="{{ $car->patent ?? '' }}"
+              data-owner="{{ $owner->name ?? '' }}"
+            >
               Pagar
             </button>
           </td>
@@ -49,30 +59,41 @@
   <div class="modal-dialog" role="document">
     <form method="POST" action="{{ route('payment.store') }}">
       @csrf
-      {{-- Hidden inputs obligatorios --}}
-      <input type="hidden" name="id_service" id="modalServiceId">
-      <input type="hidden" name="id_voucher" id="modalVoucherId">
-    
+
+      {{-- Ahora pasamos id_register, que es lo que valida tu store --}}
+      <input type="hidden" name="id_register" id="modalRegisterId">
+
       <div class="modal-content">
-        <div class="modal-header">…</div>
+        <div class="modal-header">
+          <h5 class="modal-title">Registrar Pago</h5>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
         <div class="modal-body">
           {{-- Servicio --}}
           <div class="form-group">
             <label>Servicio</label>
             <input type="text" id="modalServiceName" class="form-control" readonly>
           </div>
-    
-          {{-- Voucher (solo display) --}}
+
+          {{-- Patente --}}
           <div class="form-group">
-            <label>Voucher</label>
-            <input type="text" id="modalVoucherIdDisplay" class="form-control" readonly>
+            <label>Patente</label>
+            <input type="text" id="modalPatentDisplay" class="form-control" readonly>
           </div>
 
+          {{-- Dueño --}}
+          <div class="form-group">
+            <label>Dueño</label>
+            <input type="text" id="modalOwnerDisplay" class="form-control" readonly>
+          </div>
+
+          {{-- Total --}}
           <div class="form-group">
             <label>Total</label>
             <input type="text" name="amount" id="modalAmount" class="form-control" readonly>
           </div>
 
+          {{-- Método de Pago --}}
           <div class="form-group">
             <label>Método de Pago</label>
             <select name="type_payment" id="modalTypePayment" class="form-control" required>
@@ -83,6 +104,7 @@
             </select>
           </div>
 
+          {{-- Fecha de Pago --}}
           <div class="form-group">
             <label>Fecha de Pago</label>
             <input
@@ -113,17 +135,18 @@
 @push('scripts')
 <script>
   $('#paymentModal').on('show.bs.modal', function (e) {
-    const btn = $(e.relatedTarget);
-    const svc = btn.data('id');
-    const voucherId = svc; // o la lógica que necesites
+    const btn           = $(e.relatedTarget);
+    const registerId    = btn.data('register-id');
+    const serviceName   = btn.data('service-name');
+    const price         = btn.data('price');
+    const patent        = btn.data('patent');
+    const owner         = btn.data('owner');
 
-    $('#modalServiceId').val(svc);
-    $('#modalServiceName').val(btn.data('name'));
-
-    $('#modalVoucherId').val(voucherId);
-    $('#modalVoucherIdDisplay').val(voucherId);
-
-    $('#modalAmount').val(btn.data('price'));
+    $('#modalRegisterId').val(registerId);
+    $('#modalServiceName').val(serviceName);
+    $('#modalPatentDisplay').val(patent);
+    $('#modalOwnerDisplay').val(owner);
+    $('#modalAmount').val(price);
     $('#modalTypePayment').val('');
     $('#modalPaymentDate').val(new Date().toISOString().slice(0,10));
   });

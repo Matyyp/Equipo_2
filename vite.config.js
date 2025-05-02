@@ -3,9 +3,9 @@ import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
     server: {
-        host: 'cliente1.local', // tu dominio local
+        host: 'localhost', // tu dominio local
         hmr: {
-            host: 'cliente1.local',
+            host: 'localhost',
         },
     },
     plugins: [

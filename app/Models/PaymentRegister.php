@@ -40,4 +40,13 @@ class PaymentRegister extends Model
     {
         return $this->belongsTo(Voucher::class, 'id_voucher', 'id_voucher');
     }
+    public function payments()
+    {
+        return $this->belongsToMany(
+            PaymentRegister::class,
+            'payment_records',   // nombre de la tabla pivote
+            'id_register',       // FK en pivote que apunta a registers.id
+            'id_payment'         // FK en pivote que apunta a payment_registers.id_payment
+        );
+    }
 }
