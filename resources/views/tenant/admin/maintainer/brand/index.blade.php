@@ -30,14 +30,6 @@
                                     <a href="{{ route('marca.edit', $brand->id_brand) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-
-                                    <form action="{{ route('marca.destroy', $brand->id_brand) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach

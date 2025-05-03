@@ -32,13 +32,7 @@
                                     <a href="{{ route('reglas.edit', $rule->id_rule) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <form action="{{ route('reglas.destroy', $rule->id_rule) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
+
                                 </td>
                             </tr>
                         @endforeach

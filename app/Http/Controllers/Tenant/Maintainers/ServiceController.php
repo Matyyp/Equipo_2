@@ -9,6 +9,7 @@ use App\Models\Parking;
 use App\Models\Rent;
 use App\Models\CarWash;
 
+
 class ServiceController extends Controller
 {
     /**
@@ -36,7 +37,7 @@ class ServiceController extends Controller
         $request->validate([
             'name' => 'required|string|max:100',
             'price_net' => 'required|numeric|min:0',
-            'type_service' => 'required|in:parking,car_wash,rent',
+            'type_service' => 'required|in:parking_daily,parking_annual,car_wash,rent',
             'id_branch_office' => 'required|exists:branch_offices,id_branch',
         ]);
     
@@ -59,7 +60,7 @@ class ServiceController extends Controller
                 'id_service' => $service->id_service
             ]);
 
-        }elseif($request->type_service=='parking'){
+        }elseif($request->type_service=='parking_daily' || $request->type_service=='parking_annual'  ){
 
             Parking::create([
                 'id_service' => $service->id_service
@@ -77,10 +78,14 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
-        $data = Service::where('id_branch_office', $id)->get();
+        $data = Service::where('id_branch_office', $id)
+        ->with('service_branch_office')
+        ->get();
 
         return view('tenant.admin.maintainer.service.show', [
             'data' => $data,
+            'direccion' => optional($data->first()?->service_branch_office)->street,
+            'sucursal' => optional($data->first()?->service_branch_office)->name_branch_offices,
             'sucursalId' => $id
         ]);
     }
@@ -103,7 +108,7 @@ class ServiceController extends Controller
         $request->validate([
             'name' => 'required|string|max:100',
             'price_net' => 'required|numeric|min:0',
-            'type_service' => 'required|in:parking,car_wash,rent',
+            'type_service' => 'required|in:parking_daily,parking_annual,car_wash,rent',
         ]);
     
         Service::where('id_service', $id)->update([

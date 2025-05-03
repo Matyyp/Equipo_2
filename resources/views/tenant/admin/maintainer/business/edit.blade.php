@@ -41,8 +41,8 @@
 
                 @if ($business->logo)
                     <p class="mt-2 mb-1">Logo actual:</p>
-                    <img src="{{ asset('storage/tenants/' . request()->getHost() . '/imagenes/' . $business->logo) }}"
-                         alt="Logo" class="img-thumbnail" width="100">
+                    <img src="/storage/tenants/{{ request()->getHost() }}/imagenes/{{ $business->logo }}"
+                                    alt="Logo del Negocio" class="img-thumbnail" width="100">
                 @endif
             </div>
 

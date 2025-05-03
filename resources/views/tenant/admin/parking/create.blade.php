@@ -8,9 +8,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-    .loading-spinner { display: none; color: #0d6efd; margin-left: 10px; }
-    .is-valid { border-color: #198754 !important; }
-    .is-invalid { border-color: #dc3545 !important; }
+  .loading-spinner { display: none; color: #0d6efd; margin-left: 10px; }
+  .is-valid { border-color: #198754 !important; }
+  .is-invalid { border-color: #dc3545 !important; }
+  .is-warning { border-color: #ffc107 !important; }
 </style>
 @endpush
 
@@ -21,7 +22,20 @@
       <i class="fas fa-car me-2"></i>Ingreso de Vehículo al estacionamiento
     </div>
     <div class="card-body">
-      <form action="{{ route('estacionamiento.store') }}" method="POST" autocomplete="off">
+      @if(session('success'))
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              title: '¡Éxito!',
+              text: "{{ session('success') }}",
+              icon: 'success',
+              confirmButtonText: 'OK'
+            });
+          });
+        </script>
+      @endif
+
+      <form action="{{ route('estacionamiento.store') }}" method="POST" autocomplete="off" id="form-register">
         @csrf
 
         {{-- Patente --}}
@@ -29,10 +43,11 @@
           <div class="col-md-4 position-relative">
             <label for="plate" class="form-label">Patente</label>
             <div class="input-group">
-              <input type="text" id="plate" name="plate" class="form-control" placeholder="Ej: AB123CD" maxlength="8" required>
+              <input type="text" id="plate" name="plate" class="form-control" placeholder="Ej: AB123C" minlength="6" maxlength="6" pattern="[A-Z0-9]{6}" required>
               <span class="input-group-text"><i class="fas fa-search"></i></span>
             </div>
             <div id="plateFeedback" class="invalid-feedback"></div>
+            <div id="plateAlert" class="mt-2"></div>
             <div id="plateLoading" class="loading-spinner position-absolute end-0 top-50 me-3">
               <i class="fas fa-spinner fa-spin"></i>
             </div>
@@ -47,7 +62,7 @@
           </div>
           <div class="col-md-6">
             <label for="phone" class="form-label">Teléfono</label>
-            <input type="tel" id="phone" name="phone" class="form-control" required>
+            <input type="tel" id="phone" name="phone" class="form-control" pattern="[0-9]{9}" maxlength="9" required>
           </div>
         </div>
 
@@ -118,7 +133,7 @@
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
           <button type="reset" class="btn btn-secondary me-md-2"><i class="fas fa-eraser me-1"></i> Limpiar</button>
-          <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Guardar</button>
+          <button type="submit" class="btn btn-primary" id="submit-btn"><i class="fas fa-save me-1"></i> Guardar</button>
         </div>
       </form>
     </div>
@@ -128,6 +143,7 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   $('.selectpicker').selectpicker();
@@ -137,21 +153,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const plateInput = $('#plate');
   const plateFeedback = $('#plateFeedback');
+  const plateAlert = $('#plateAlert');
   const plateLoading = $('#plateLoading');
   const nameInput = $('#name');
   const phoneInput = $('#phone');
   const brandSelect = $('#id_brand');
   const modelSelect = $('#id_model');
+  const submitBtn = $('#submit-btn');
 
-  function showFeedback(element, message, isValid) {
+  function showFeedback(element, message, state = null) {
     const input = $(`#${element}`);
     const feedback = $(`#${element}Feedback`);
-    input.removeClass('is-invalid is-valid');
+    input.removeClass('is-valid is-invalid is-warning');
     feedback.text('');
     if (message) {
-      input.addClass(isValid ? 'is-valid' : 'is-invalid');
-      if (!isValid) feedback.text(message);
+      if (state === true) {
+        input.addClass('is-valid');
+        submitBtn.prop('disabled', false);
+      } else if (state === false) {
+        input.addClass('is-invalid');
+        feedback.text(message);
+        submitBtn.prop('disabled', true);
+      } else {
+        input.addClass('is-warning');
+        feedback.text(message);
+        submitBtn.prop('disabled', false);
+      }
     }
+  }
+
+  function showAlert(type, message) {
+    plateAlert.removeClass().addClass(`alert alert-${type} mt-2`).text(message);
+  }
+
+  function clearAssociatedFields() {
+    nameInput.val('');
+    phoneInput.val('');
+    brandSelect.val('').selectpicker('refresh');
+    modelSelect.val('').selectpicker('refresh');
   }
 
   function searchByPlate(plate) {
@@ -165,18 +204,29 @@ document.addEventListener('DOMContentLoaded', () => {
       data: { plate },
       success: function(response) {
         if (response.found) {
-          nameInput.val(response.name || '');
-          phoneInput.val(response.phone || '');
-          if (response.id_brand) brandSelect.val(response.id_brand).selectpicker('refresh');
-          if (response.id_model) modelSelect.val(response.id_model).selectpicker('refresh');
-          showFeedback('plate', 'Datos encontrados', true);
+          if (response.parked) {
+            showFeedback('plate', 'Este vehículo ya está estacionado.', false);
+            showAlert('danger', 'Este vehículo ya se encuentra estacionado.');
+            clearAssociatedFields();
+          } else {
+            nameInput.val(response.name || '');
+            phoneInput.val(response.phone || '');
+            if (response.id_brand) brandSelect.val(response.id_brand).selectpicker('refresh');
+            if (response.id_model) modelSelect.val(response.id_model).selectpicker('refresh');
+
+            showFeedback('plate', 'Datos encontrados', true);
+            showAlert('success', 'Vehículo disponible. Puede continuar con el ingreso.');
+          }
         } else {
-          showFeedback('plate', 'Patente no encontrada, puede ingresar manualmente', false);
+          showFeedback('plate', 'Patente no encontrada, puede ingresar manualmente', null);
+          showAlert('warning', 'La patente no existe en los registros. Ingrese los datos manualmente.');
+          clearAssociatedFields();
         }
       },
       error: function(xhr) {
-        showFeedback('plate', 'Error buscando patente, puede ingresar manualmente', false);
-        console.error('Error:', xhr.responseText);
+        showFeedback('plate', 'Error buscando patente', null);
+        showAlert('danger', 'Error al buscar la patente. Intente nuevamente.');
+        clearAssociatedFields();
       },
       complete: function() {
         plateLoading.hide();
@@ -188,7 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') {
       e.preventDefault();
       searchByPlate($(this).val().trim());
-      return false;
     }
   }).on('input', function() {
     const plate = $(this).val().trim().toUpperCase();

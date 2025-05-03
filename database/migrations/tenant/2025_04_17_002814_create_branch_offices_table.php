@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('branch_offices', function (Blueprint $table) {
             $table->id('id_branch');
+            $table->string('name_branch_offices');
             $table->string('schedule');
             $table->string('street');
             $table->unsignedBigInteger('id_business');

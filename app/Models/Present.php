@@ -16,9 +16,9 @@ class Present extends Model
         'id_contact_information'
     ];
 
-    public function presents_contract_information()
+    public function presents_contact_information()
     {
-        return $this->belongsTo(ContractInformation::class, 'id_contact_information', 'id_contact_information');
+        return $this->belongsTo(ContactInformation::class, 'id_contact_information', 'id_contact_information');
     }
 
     public function presents_contract()

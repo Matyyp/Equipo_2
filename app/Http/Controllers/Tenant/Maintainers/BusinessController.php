@@ -80,34 +80,35 @@ class BusinessController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name_business' => 'required|string',
-            'logo' => 'image', 
-            'electronic_transfer' => 'required|string',  
+            'name_business' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'electronic_transfer' => 'required|string|max:255',
         ]);
-        if($request->logo){
-
-            $path = $request->file('logo')->store('logos', 'tenant_public');
-            $foto_url = $path;
-
-            business::where('id_business', $id)
-            ->update([
-                'name_business' => $request->name_business,
-                'logo' => $foto_url, 
-                'electronic_transfer' => $request->electronic_transfer, 
-            ]);
-
-        }else{
-
-            business::where('id_business', $id)
-            ->update([
-                'name_business' => $request->name_business,
-                'electronic_transfer' => $request->electronic_transfer, 
-            ]);
+    
+        $business = Business::findOrFail($id);
+        $data = [
+            'name_business' => $request->name_business,
+            'electronic_transfer' => $request->electronic_transfer,
+        ];
+    
+        if ($request->hasFile('logo')) {
+            $domain = request()->getHost();
+            $filename = $request->file('logo')->hashName();
+    
+            Storage::disk('tenants_public_shared')->putFileAs(
+                "{$domain}/imagenes",
+                $request->file('logo'),
+                $filename
+            );
+    
+            $data['logo'] = $filename;
         }
-
+    
+        $business->update($data);
+    
         return redirect()->route('empresa.index');
-        
     }
+    
 
     /**
      * Remove the specified resource from storage.

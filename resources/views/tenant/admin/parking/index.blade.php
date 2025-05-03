@@ -5,11 +5,8 @@
 @section('page_title', 'Listado de Ingresos')
 
 @push('styles')
-  <!-- DataTables Bootstrap4 CSS -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css"
-  />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css" />
 @endpush
 
 @section('content')
@@ -19,21 +16,23 @@
       <i class="fas fa-table me-2"></i>Listado de Ingresos
     </div>
     <div class="card-body">
-      <table id="parking-table" class="table table-striped table-bordered w-100">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Patente</th>
-            <th>Auto</th>
-            <th>Inicio</th>
-            <th>Término</th>
-            <th>Días</th>
-            <th>Precio Servicio</th>
-            <th>Total</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-      </table>
+      <div class="table-responsive">
+        <table id="parking-table" class="table table-striped table-bordered nowrap w-100">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Patente</th>
+              <th>Auto</th>
+              <th>Inicio</th>
+              <th>Término</th>
+              <th>Días</th>
+              <th>Precio Servicio</th>
+              <th>Total</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -42,15 +41,18 @@
 @push('scripts')
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   $('#parking-table').DataTable({
+    responsive: true,
     processing: true,
     serverSide: true,
     ajax: {
-      url: '{{ route("estacionamiento.index") }}',  
-      dataSrc: 'data'                                
+      url: '{{ route("estacionamiento.index") }}',
+      dataSrc: 'data'
     },
     columns: [
       { data: 'owner_name' },
@@ -67,19 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
         searchable: false,
         render: function(id) {
           return `
-            <a href="/contrato/${id}/print" target="_blank" 
-               class="btn btn-sm btn-outline-primary me-1" 
-               title="Contrato">
+            <a href="/contrato/${id}/print" target="_blank" class="btn btn-sm btn-outline-primary me-1" title="Contrato">
               <i class="fas fa-file-contract"></i>
             </a>
-            <a href="/estacionamiento/${id}/ticket" 
-               class="btn btn-sm btn-outline-secondary me-1" 
-               title="Ticket">
+            <a href="/ticket/${id}/print" class="btn btn-sm btn-outline-secondary me-1" title="Ticket">
               <i class="fas fa-ticket-alt"></i>
             </a>
-            <a href="/estacionamiento/${id}/edit" 
-               class="btn btn-sm btn-outline-info me-1" 
-               title="Editar">
+            <a href="/estacionamiento/${id}/edit" class="btn btn-sm btn-outline-info me-1" title="Editar">
               <i class="fas fa-edit"></i>
             </a>
             <form action="/estacionamiento/${id}/checkout" method="POST" class="d-inline">
@@ -92,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     ],
-    order: [[3, 'desc']], 
+    order: [[3, 'desc']],
     language: {
       url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
     }

@@ -16,6 +16,7 @@ class BranchOffice extends Model
         'street',
         'id_location',
         'id_business',
+        'name_branch_offices'
     ];
 
     public function branch_office_business()

@@ -41,13 +41,6 @@
                             <a href="{{ route('contratos.edit', $contract['id_contract']) }}" class="btn btn-warning btn-sm">
                                 <i class="fas fa-edit"></i> Editar
                             </a>
-                            <form action="{{ route('contratos.destroy', $contract['id_contract']) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro de eliminar este contrato?')">
-                                    <i class="fas fa-trash"></i> Eliminar
-                                </button>
-                            </form>
                         </td>
                     </tr>
                     @endforeach

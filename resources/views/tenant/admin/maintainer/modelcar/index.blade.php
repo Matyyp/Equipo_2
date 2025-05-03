@@ -30,13 +30,6 @@
                                     <a href="{{ route('modelo.edit', $model->id_model) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <form action="{{ route('modelo.destroy', $model->id_model) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach

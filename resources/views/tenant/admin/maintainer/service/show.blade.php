@@ -7,6 +7,8 @@
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Servicios Registrados</h3>
+        <br>
+        <h4 class="card-title">En la sucursal {{$sucursal}} ubicada en {{$direccion}}</h4>
         <a href="{{ route('servicios.create') }}?sucursal_id={{ $sucursalId }}" class="btn btn-success btn-sm float-right">
             <i class="fas fa-plus"></i> Ingresar Servicio
         </a>
@@ -33,7 +35,8 @@
                                 <td>${{ number_format($service->price_net, 0, ',', '.') }}</td>
                                 <td>
                                     @switch($service->type_service)
-                                        @case('parking') Estacionamiento @break
+                                        @case('parking_daily') Estacionamiento Diario @break
+                                        @case('parking_annual') Estacionamiento Anual@break
                                         @case('car_wash') Lavado de Autos @break
                                         @case('rent') Arriendo @break
                                         @default -
@@ -43,13 +46,6 @@
                                     <a href="{{ route('servicios.edit', $service->id_service) }}" class="btn btn-warning btn-sm mb-1">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <form action="{{ route('servicios.destroy', $service->id_service) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach

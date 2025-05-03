@@ -19,6 +19,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>ID</th>
+                            <th>Sucursal</th>
                             <th>Horario</th>
                             <th>Calle</th>
                             <th>Región</th>
@@ -31,6 +32,7 @@
                         @foreach ($data as $branch)
                             <tr>
                                 <td>{{ $branch['id'] }}</td>
+                                <td>{{ $branch['name_branch_offices'] }}</td>
                                 <td>{{ $branch['schedule'] }}</td>
                                 <td>{{ $branch['street'] }}</td>
                                 <td>{{ $branch['region'] }}</td>

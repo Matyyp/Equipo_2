@@ -32,13 +32,6 @@
                                     <a href="{{ route('informacion_contacto.edit', $item->id_contact_information) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <form action="{{ route('informacion_contacto.destroy', $item->id_contact_information) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach
