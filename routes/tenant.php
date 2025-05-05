@@ -19,9 +19,8 @@ use App\Http\Controllers\Tenant\Maintainers\BelongsController;
 use App\Http\Controllers\Tenant\Maintainers\BranchOfficeController;
 use App\Http\Controllers\Tenant\Maintainers\ServiceController;
 use App\Http\Controllers\Tenant\Maintainers\ContractController;
-use App\Http\Controllers\Tenant\Maintainers\PaymentRegisterController;
 use App\Http\Controllers\Tenant\Parking\ParkingController;
-
+use App\Http\Controllers\Tenant\Maintainers\PaymentRecordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,12 +72,8 @@ Route::middleware([
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
         Route::resource('contratos', ContractController::class);
-        Route::resource('payment', PaymentRegisterController::class);
-        // Ruta que devuelve JSON
-Route::get(
-    'payments/data', 
-    [PaymentRegisterController::class, 'data']
-)->name('payments.data');
+        Route::resource('payment', PaymentRecordController::class);
+
 
 
         Route::get('estacionamiento/data', [ParkingController::class, 'data'])

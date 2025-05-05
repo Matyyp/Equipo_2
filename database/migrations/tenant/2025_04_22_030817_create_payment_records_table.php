@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('type_payment'); 
             $table->date('payment_date');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

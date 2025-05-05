@@ -12,11 +12,10 @@ class PaymentRecord extends Model
 {
     use HasFactory, SoftDeletes;
 
-    // Si tu tabla se llama payment_records y la PK es id_payment:
-    protected $table      = 'payment_records';
-    protected $primaryKey = 'id_payment';
-    public $incrementing  = true;
-    protected $keyType    = 'int';
+    protected $table = 'payment_records';
+
+    protected $primaryKey = 'id_payment'; // si realmente es la PK
+    
 
     protected $fillable = [
         'id_service',
@@ -27,31 +26,18 @@ class PaymentRecord extends Model
     ];
 
     /**
-     * Relación con Service
+     * Relación con Payment como "servicio pagado"
      */
-    public function paymentRecordPayment()
+    public function paymentService()
     {
-        return $this->belongsTo(
-            Payment::class,
-            'id_service',   // FK en esta tabla
-            'id_service'    // PK en services
-        );
+        return $this->belongsTo(Payment::class, 'id_service', 'id_service');
     }
 
     /**
-     * Relación con Voucher
+     * Relación con Payment como "voucher utilizado"
      */
-    public function PaymentRecordsVoucher()
+    public function paymentVoucher()
     {
-        return $this->belongsTo(
-            Payment::class,
-            'id_voucher',   // FK en esta tabla
-            'id_voucher'    // PK en vouchers
-        );
-    }
-    public function paymentRecords()
-    {
-        // FK en payment_records = id_register, PK local = id
-        return $this->hasMany(PaymentRecord::class, 'id_register', 'id');
+        return $this->belongsTo(Payment::class, 'id_voucher', 'id_voucher');
     }
 }
