@@ -15,6 +15,8 @@ class ModelCar extends Model
         'name_model',
     ];
 
+    protected $primaryKey = 'id_model';
+
     public function model_car_car()
     {
         return $this->hasMany(Car::class, 'id_model', 'id_model');

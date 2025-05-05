@@ -48,7 +48,7 @@ class InitialSetupSeeder extends Seeder
         // Tabla brand_cars
         $brands = ['Toyota', 'Nissan', 'Hyundai', 'Kia', 'Chevrolet', 'Suzuki', 'Ford', 'Mazda', 'Volkswagen', 'Peugeot'];
         foreach ($brands as $brand) {
-            DB::table('brand_cars')->insert([
+            DB::table('brands')->insert([
                 'name_brand' => $brand,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

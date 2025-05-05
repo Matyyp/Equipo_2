@@ -6,6 +6,13 @@
 @section('content')
 <div class="card">
     <div class="card-body">
+        <h5 class="mb-3">Sucursal: <strong>{{ $branchName ?? 'N/D' }}</strong></h5>
+        <h6 class="mb-4">Tipo de Contrato: 
+            <span class="badge bg-info text-dark">
+                {{ strtoupper(str_replace('_', ' ', $type)) }}
+            </span>
+        </h6>
+
         @if($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -18,47 +25,22 @@
 
         <form action="{{ route('contratos.store') }}" method="POST">
             @csrf
+            <input type="hidden" name="branch_id" value="{{ $branchId }}">
+            <input type="hidden" name="contract_type" value="{{ $type }}">
 
-            <div class="form-group">
-                <label>Tipo de Contrato</label>
-                <select name="contract_type" id="contract_type" class="form-control" required>
-                    <option value="">Seleccione</option>
-                    @if(!$hasRent)
-                    <option value="rent">Renta</option>
-                    @endif
-                    @if(!$hasAnnual || !$hasDaily)
-                    <option value="parking">Estacionamiento</option>
-                    @endif
-                </select>
+            @if($type === 'parking_annual')
+            <div class="form-group mb-3">
+                <label for="important_note">Nota Importante</label>
+                <input type="text" name="important_note" id="important_note" class="form-control" value="{{ old('important_note') }}">
             </div>
 
-            <div class="form-group" id="parking_type_group" style="display:none;">
-                <label>Tipo de Estacionamiento</label>
-                <select name="parking_type" id="parking_type" class="form-control">
-                    <option value="">Seleccione</option>
-                    @if(!$hasAnnual)
-                    <option value="annual">Anual</option>
-                    @endif
-                    @if(!$hasDaily)
-                    <option value="daily">Diario</option>
-                    @endif
-                </select>
+            <div class="form-group mb-3">
+                <label for="expiration_date">Fecha de Expiración</label>
+                <input type="date" name="expiration_date" id="expiration_date" class="form-control" value="{{ old('expiration_date') }}">
             </div>
+            @endif
 
-            {{-- Aquí estarán los datos solo si es anual --}}
-            <div id="annual_fields" style="display:none;">
-                <div class="form-group">
-                    <label for="important_note">Nota Importante</label>
-                    <input type="text" name="important_note" id="important_note" class="form-control" value="{{ old('important_note') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="expiration_date">Fecha de Expiración</label>
-                    <input type="date" name="expiration_date" id="expiration_date" class="form-control" value="{{ old('expiration_date') }}">
-                </div>
-            </div>
-
-            <div class="form-group">
+            <div class="form-group mb-4">
                 <label>Datos de Contacto</label>
                 @foreach($contactInformation as $contact)
                 <div class="form-check">
@@ -69,56 +51,23 @@
             </div>
 
             <div class="form-group">
-                <label>Reglas</label>
-                @foreach($rules as $rule)
-                <div class="form-check">
-                    <input type="checkbox" name="rules[]" value="{{ $rule->id_rule }}" class="form-check-input">
-                    <label class="form-check-label">{{ $rule->description }}</label>
-                </div>
-                @endforeach
+                <label>Reglas asociadas</label>
+                @forelse($rules as $rule)
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="rules[]" value="{{ $rule->id_rule }}" class="form-check-input">
+                        <label class="form-check-label">
+                            <strong>{{ ucfirst($rule->name) }}</strong><br>
+                            <small class="text-muted">{{ $rule->description }}</small>
+                        </label>
+                    </div>
+                @empty
+                    <p class="text-muted">No hay reglas disponibles para este tipo de contrato.</p>
+                @endforelse
             </div>
 
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <a href="{{ route('contratos.index') }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+            <a href="{{ route('contratos.show', $branchId) }}" class="btn btn-secondary mt-3">Cancelar</a>
         </form>
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const contractType = document.getElementById('contract_type');
-        const parkingType = document.getElementById('parking_type');
-        const parkingTypeGroup = document.getElementById('parking_type_group');
-        const annualFields = document.getElementById('annual_fields');
-
-        function toggleFields() {
-            if (contractType.value === 'parking') {
-                parkingTypeGroup.style.display = 'block';
-                parkingType.required = true;
-                toggleAnnualFields(); 
-            } else {
-                parkingTypeGroup.style.display = 'none';
-                annualFields.style.display = 'none';
-                parkingType.value = '';
-                parkingType.required = false;
-            }
-        }
-
-        function toggleAnnualFields() {
-            if (parkingType.value === 'annual') {
-                annualFields.style.display = 'block';
-            } else {
-                annualFields.style.display = 'none';
-            }
-        }
-
-        contractType.addEventListener('change', toggleFields);
-        parkingType.addEventListener('change', toggleAnnualFields);
-
-        toggleFields();
-        toggleAnnualFields();
-    });
-</script>
-@endpush

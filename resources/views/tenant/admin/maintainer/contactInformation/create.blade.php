@@ -21,11 +21,19 @@
         {{-- Formulario de creación --}}
         <form action="{{ route('informacion_contacto.store') }}" method="POST">
             @csrf
+            <input type="hidden" name="id_branch_office" value="{{ $branchId }}">
 
             <div class="form-group mb-3">
                 <label for="type_contact">Tipo de Contacto</label>
-                <input type="text" name="type_contact" id="type_contact" class="form-control"
-                       value="{{ old('type_contact') }}" required>
+                <select name="type_contact" id="type_contact" class="form-control" required>
+                    <option value="">Seleccione...</option>
+                    <option value="email" {{ old('type_contact') == 'email' ? 'selected' : '' }}>Correo Electrónico</option>
+                    <option value="phone" {{ old('type_contact') == 'phone' ? 'selected' : '' }}>Teléfono</option>
+                    <option value="mobile" {{ old('type_contact') == 'mobile' ? 'selected' : '' }}>Celular</option>
+                    <option value="whatsapp" {{ old('type_contact') == 'whatsapp' ? 'selected' : '' }}>WhatsApp</option>
+                    <option value="website" {{ old('type_contact') == 'website' ? 'selected' : '' }}>Sitio Web</option>
+                    <option value="social" {{ old('type_contact') == 'social' ? 'selected' : '' }}>Red Social</option>
+                </select>
             </div>
 
             <div class="form-group mb-4">
@@ -38,7 +46,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar
                 </button>
-                <a href="{{ route('informacion_contacto.index') }}" class="btn btn-secondary">
+                <a href="{{ route('informacion_contacto.show', $branchId) }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Volver
                 </a>
             </div>

@@ -69,7 +69,8 @@ Route::middleware([
         Route::resource('locacion', LocationController::class);
         
         Route::resource('accesorio', AccessoryController::class);
-        Route::resource('informacion_contacto', ContactInformationController::class);
+        Route::get('informacion_contacto/create/{branch}', [ContactInformationController::class, 'create'])->name('informacion_contacto.create');
+        Route::resource('informacion_contacto', ContactInformationController::class)->except(['create']);
         Route::resource('modelo', ModelcarController::class);
         Route::resource('marca', BrandController::class);
         Route::resource('dueños', OwnerController::class);
@@ -79,6 +80,7 @@ Route::middleware([
         Route::resource('asociado', BelongsController::class);
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
+        Route::get('contratos/create/{branch}/{type}', [ContractController::class, 'create'])->name('contratos.create');
         Route::resource('contratos', ContractController::class);
         Route::get('region/data', [RegionController::class, 'index'])->name('region.data');
         Route::resource('region', RegionController::class);
@@ -89,10 +91,13 @@ Route::middleware([
         Route::get('cuentas_bancarias/data', [BankDetailController::class, 'data'])->name('cuentas_bancarias.data');
         Route::resource('cuentas_bancarias', BankDetailController::class);
 
+        Route::get('estacionamiento/check-contrato', [ParkingController::class, 'checkContrato'])->name('estacionamiento.checkContrato');
         Route::get('estacionamiento/data', [ParkingController::class, 'data'])
         ->name('estacionamiento.data');
         Route::get('estacionamiento/search', [ParkingController::class, 'search'])
         ->name('estacionamiento.search');
+        Route::get('estacionamiento/search-phone', [ParkingController::class, 'searchPhone'])
+        ->name('estacionamiento.searchPhone');
         Route::get('estacionamiento/history', [ParkingController::class, 'history'])
         ->name('estacionamiento.history');
         Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])

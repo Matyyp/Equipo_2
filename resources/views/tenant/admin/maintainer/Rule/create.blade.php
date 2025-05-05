@@ -28,9 +28,19 @@
                        value="{{ old('name') }}" required>
             </div>
 
-            <div class="form-group mb-4">
+            <div class="form-group mb-3">
                 <label for="description">Descripción</label>
                 <textarea name="description" id="description" class="form-control" rows="4" required>{{ old('description') }}</textarea>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="type_contract">Tipo de Contrato</label>
+                <select name="type_contract" id="type_contract" class="form-control" required>
+                    <option value="">Seleccione...</option>
+                    <option value="rent" {{ old('type_contract') == 'rent' ? 'selected' : '' }}>Renta</option>
+                    <option value="parking_daily" {{ old('type_contract') == 'parking_daily' ? 'selected' : '' }}>Estacionamiento Diario</option>
+                    <option value="parking_annual" {{ old('type_contract') == 'parking_annual' ? 'selected' : '' }}>Estacionamiento Anual</option>
+                </select>
             </div>
 
             <div class="form-group">

@@ -34,6 +34,11 @@
                 <textarea name="description" id="description" rows="4" class="form-control" required>{{ old('description', $rule->description) }}</textarea>
             </div>
 
+            <div class="form-group mb-4">
+                <label>Tipo de Contrato Asociado</label>
+                <input type="text" class="form-control bg-light" value="{{ strtoupper(str_replace('_', ' ', $rule->type_contract)) }}" readonly>
+            </div>
+
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Actualizar

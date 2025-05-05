@@ -14,6 +14,7 @@ class Rule extends Model
     protected $fillable = [
         'name',
         'description',
+        'type_contract'
     ];
 
     public function rule_contains()

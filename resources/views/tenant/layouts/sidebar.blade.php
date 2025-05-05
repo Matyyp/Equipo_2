@@ -169,22 +169,12 @@
                         </li>
 
                         {{-- Configuración Contrato --}}
-                        <li class="nav-item has-treeview {{ request()->is('contratos*') || request()->is('reglas*') || request()->is('informacion_contacto*')? 'menu-open' : '' }}">
-                            <a href="#" class="nav-link {{ request()->is('contratos*') || request()->is('reglas*')|| request()->is('informacion_contacto*') ? 'active' : '' }}">
+                        <li class="nav-item has-treeview {{ request()->is('reglas*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('reglas*') ? 'active' : '' }}">
                                 <i class="fas fa-file-signature nav-icon"></i>
-                                <p>Configuración Contrato<i class="right fas fa-angle-left"></i></p>
+                                <p>Configuracion contrato<i class="right fas fa-angle-left"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('contratos.index') }}" class="nav-link {{ request()->routeIs('contratos.index') ? 'active' : '' }}">
-                                        <p>Contratos</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('informacion_contacto.index') }}" class="nav-link {{ request()->routeIs('informacion_contacto.index') ? 'active' : '' }}">
-                                        <p>informacion_contacto</p>
-                                    </a>
-                                </li>
                                 <li class="nav-item">
                                     <a href="{{ route('reglas.index') }}" class="nav-link {{ request()->routeIs('reglas.index') ? 'active' : '' }}">
                                         <p>Reglas de contrato</p>
@@ -192,6 +182,7 @@
                                 </li>
                             </ul>
                         </li>
+
 
                         {{-- Configuración Auto --}}
                         <li class="nav-item has-treeview {{ request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ? 'menu-open' : '' }}">

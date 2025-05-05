@@ -13,6 +13,7 @@ use App\Models\DailyContract;
 use App\Models\AnnualContract;
 use App\Models\Present;
 use App\Models\Contain;
+use App\Models\BranchOffice;
 use Carbon\Carbon;   
 
 class ContractController extends Controller
@@ -22,59 +23,27 @@ class ContractController extends Controller
      */
     public function index()
     {
-        $contracts = Contract::with('contract_contract_rent',
-        'contract_contract_parking.contract_parking_contract_annual',
-        'contract_contract_parking.contract_parking_contract_daily')->get();
 
-        $contracts = $contracts->map(function ($dato) {
-            return [
-                'id_contract'          => $dato->id_contract,
-                'id_rent'    => $dato->contract_contract_rent?->id_contract,
-                'id_parking_daily'      => $dato->contract_contract_parking?->contract_parking_contract_daily?->id_contract,
-                'id_parking_annual'      => $dato->contract_contract_parking?->contract_parking_contract_annual?->id_contract
-            ];
-        });
-
-        $hasRent = $contracts->contains('id_rent', '!=', null);
-        $hasDaily = $contracts->contains('id_parking_daily', '!=', null);
-        $hasAnnual = $contracts->contains('id_parking_annual', '!=', null);
-
-        $allContractsCreated = $hasRent && $hasDaily && $hasAnnual;
-
-        return view('tenant.admin.maintainer.contract.index', compact('contracts', 'allContractsCreated'));
 
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $contactInformation = ContactInformation::all();
-        $rules = Rule::all();
-
-        $contracts = Contract::with([
-            'contract_contract_rent',
-            'contract_contract_parking.contract_parking_contract_daily',
-            'contract_contract_parking.contract_parking_contract_annual'
-        ])->get();
-
-        $contracts = $contracts->map(function ($dato) {
-            return [
-                'id_contract' => $dato->id_contract,
-                'id_rent' => $dato->contract_contract_rent?->id_contract,
-                'id_parking_daily' => $dato->contract_contract_parking?->contract_parking_contract_daily?->id_contract,
-                'id_parking_annual' => $dato->contract_contract_parking?->contract_parking_contract_annual?->id_contract,
-            ];
-        });
-
-        $hasRent = $contracts->contains('id_rent', '!=', null);
-        $hasAnnual = $contracts->contains('id_parking_annual', '!=', null);
-        $hasDaily = $contracts->contains('id_parking_daily', '!=', null);
-
-        return view('tenant.admin.maintainer.contract.create', compact('contactInformation', 'rules', 'hasRent', 'hasAnnual', 'hasDaily'));
-
+        $branchId = $request->branch;
+        $type     = $request->type;
+    
+        $branchName = BranchOffice::find($branchId)?->name_branch_offices ?? 'Desconocida';
+        $rules = Rule::where('type_contract', $type)->get();
+        $contactInformation = ContactInformation::where('id_branch_office', $branchId)->get();
+    
+        return view('tenant.admin.maintainer.contract.create', compact(
+            'rules', 'contactInformation', 'type', 'branchId', 'branchName'
+        ));
     }
+    
 
     /**
      * Store a newly created resource in storage.
@@ -82,106 +51,116 @@ class ContractController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'contract_type' => 'required|in:rent,parking',
+            'contract_type' => 'required|in:rent,parking_daily,parking_annual',
+            'branch_id' => 'required|exists:branch_offices,id_branch',
             'contact_information' => 'required|array|min:1',
             'rules' => 'required|array|min:1',
-            'parking_type' => [
-                'required_if:contract_type,parking',
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->contract_type === 'parking' && !in_array($value, ['annual', 'daily'])) {
-                        $fail('El tipo de estacionamiento seleccionado no es válido.');
-                    }
-                }
-            ],
         ]);
-        
-    
-        $contracts = Contract::with([
-            'contract_contract_rent',
-            'contract_contract_parking.contract_parking_contract_daily',
-            'contract_contract_parking.contract_parking_contract_annual'
-        ])->get();
-    
-        $contracts = $contracts->map(function ($dato) {
-            return [
-                'id_contract' => $dato->id_contract,
-                'id_rent' => $dato->contract_contract_rent?->id_contract,
-                'id_parking_daily' => $dato->contract_contract_parking?->contract_parking_contract_daily?->id_contract,
-                'id_parking_annual' => $dato->contract_contract_parking?->contract_parking_contract_annual?->id_contract,
-            ];
-        });
-    
-        $hasRent = $contracts->contains('id_rent', '!=', null);
-        $hasAnnual = $contracts->contains('id_parking_annual', '!=', null);
-        $hasDaily = $contracts->contains('id_parking_daily', '!=', null);
-    
+
+        $existingContracts = Contract::where('id_branch_office', $request->branch_id)
+            ->with([
+                'contract_contract_rent',
+                'contract_contract_parking.contract_parking_contract_daily',
+                'contract_contract_parking.contract_parking_contract_annual'
+            ])
+            ->get();
+
+        $hasRent = $existingContracts->contains(fn($c) => $c->contract_contract_rent);
+        $hasAnnual = $existingContracts->contains(fn($c) => $c->contract_contract_parking?->contract_parking_contract_annual);
+        $hasDaily = $existingContracts->contains(fn($c) => $c->contract_contract_parking?->contract_parking_contract_daily);
+
         if ($request->contract_type === 'rent' && $hasRent) {
             return back()->withErrors(['contract_type' => 'Ya existe un contrato de tipo Renta.'])->withInput();
         }
-    
-        if ($request->contract_type === 'parking') {
-            if ($request->parking_type === 'annual' && $hasAnnual) {
-                return back()->withErrors(['parking_type' => 'Ya existe un contrato de tipo Estacionamiento Anual.'])->withInput();
-            }
-            if ($request->parking_type === 'daily' && $hasDaily) {
-                return back()->withErrors(['parking_type' => 'Ya existe un contrato de tipo Estacionamiento Diario.'])->withInput();
-            }
+
+        if ($request->contract_type === 'parking_annual' && $hasAnnual) {
+            return back()->withErrors(['contract_type' => 'Ya existe un contrato de Estacionamiento Anual.'])->withInput();
         }
-    
+
+        if ($request->contract_type === 'parking_daily' && $hasDaily) {
+            return back()->withErrors(['contract_type' => 'Ya existe un contrato de Estacionamiento Diario.'])->withInput();
+        }
+
         $contract = new Contract();
+        $contract->id_branch_office = $request->branch_id;
         $contract->save();
-    
+
         if ($request->contract_type === 'rent') {
-            $contractRent = new ContractRent();
-            $contractRent->id_contract = $contract->id_contract;
-            $contractRent->save();
+            ContractRent::create(['id_contract' => $contract->id_contract]);
         }
-    
-        if ($request->contract_type === 'parking') {
-            $contractParking = new ContractParking();
-            $contractParking->id_contract = $contract->id_contract;
-            $contractParking->save();
-    
-            if ($request->parking_type === 'annual') {
-                $contractAnnual = new AnnualContract();
-                $contractAnnual->id_contract = $contractParking->id_contract;
-                $contractAnnual->important_note = $request->important_note ?? null;
-                $contractAnnual->expiration_date = $request->expiration_date ?? null;
-                $contractAnnual->save();
-            } elseif ($request->parking_type === 'daily') {
-                $contractDaily = new DailyContract();
-                $contractDaily->id_contract = $contractParking->id_contract;
-                $contractDaily->save();
+
+        if (str_starts_with($request->contract_type, 'parking')) {
+            $contractParking = ContractParking::create(['id_contract' => $contract->id_contract]);
+
+            if ($request->contract_type === 'parking_annual') {
+                AnnualContract::create([
+                    'id_contract' => $contractParking->id_contract,
+                    'important_note' => $request->important_note,
+                    'expiration_date' => $request->expiration_date,
+                ]);
+            }
+
+            if ($request->contract_type === 'parking_daily') {
+                DailyContract::create(['id_contract' => $contractParking->id_contract]);
             }
         }
-    
+
         foreach ($request->contact_information as $contactId) {
             Present::create([
                 'id_contract' => $contract->id_contract,
                 'id_contact_information' => $contactId
             ]);
         }
-    
+
         foreach ($request->rules as $ruleId) {
             Contain::create([
                 'id_contract' => $contract->id_contract,
                 'id_rule' => $ruleId
             ]);
         }
-    
-        return redirect()->route('contratos.index')->with('success', 'Contrato creado exitosamente.');
+
+        return redirect()->route('contratos.show', $request->branch_id)
+            ->with('success', 'Contrato creado exitosamente.');
     }
+
     
 
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id_branch)
     {
-        //
+        $contracts = Contract::with([
+            'contract_contract_rent',
+            'contract_contract_parking.contract_parking_contract_annual',
+            'contract_contract_parking.contract_parking_contract_daily'
+        ])
+        ->where('id_branch_office', $id_branch)
+        ->get();
+    
+        $contracts = $contracts->map(function ($dato) {
+            return [
+                'id_contract'         => $dato->id_contract,
+                'id_rent'             => $dato->contract_contract_rent?->id_contract,
+                'id_parking_daily'    => $dato->contract_contract_parking?->contract_parking_contract_daily?->id_contract,
+                'id_parking_annual'   => $dato->contract_contract_parking?->contract_parking_contract_annual?->id_contract,
+            ];
+        });
+    
+        $hasRent   = $contracts->contains('id_rent', '!=', null);
+        $hasDaily  = $contracts->contains('id_parking_daily', '!=', null);
+        $hasAnnual = $contracts->contains('id_parking_annual', '!=', null);
+    
+        $allContractsCreated = $hasRent && $hasDaily && $hasAnnual;
+    
+        return view('tenant.admin.maintainer.contract.index', compact(
+            'contracts',
+            'allContractsCreated',
+            'id_branch' // <- así se pasa correctamente
+        ))->with('branchId', $id_branch); // <- esta línea asegura que $branchId esté disponible en el Blade
     }
-
+    
     /**
      * Show the form for editing the specified resource.
      */
@@ -189,21 +168,31 @@ class ContractController extends Controller
     {
         $contract = Contract::with([
             'contract_contract_parking.contract_parking_contract_annual',
-            'contract_contract_parking.contract_parking_contract_daily'
+            'contract_contract_parking.contract_parking_contract_daily',
+            'contract_contract_rent',
+            'contract_branch_office' // <-- esto es clave
         ])->findOrFail($id);
     
         $contactInformation = ContactInformation::all();
-        $rules = Rule::all();
-    
         $contactIds = Present::where('id_contract', $id)->pluck('id_contact_information')->toArray();
         $ruleIds = Contain::where('id_contract', $id)->pluck('id_rule')->toArray();
     
-        $contractTypeParking = null;
-        if ($contract->contract_contract_parking?->contract_parking_contract_annual) {
-            $contractTypeParking = 'annual';
+        // Detectar tipo de contrato
+        if ($contract->contract_contract_rent) {
+            $type = 'rent';
+        } elseif ($contract->contract_contract_parking?->contract_parking_contract_annual) {
+            $type = 'parking_annual';
         } elseif ($contract->contract_contract_parking?->contract_parking_contract_daily) {
-            $contractTypeParking = 'daily';
+            $type = 'parking_daily';
+        } else {
+            $type = null;
         }
+    
+        // Cargar reglas solo del tipo de contrato
+        $rules = Rule::where('type_contract', $type)->get();
+    
+        // Obtener nombre de la sucursal
+        $branchName = optional($contract->contract_branch_office)->name_branch_offices;
     
         return view('tenant.admin.maintainer.contract.edit', compact(
             'contract',
@@ -211,9 +200,13 @@ class ContractController extends Controller
             'rules',
             'contactIds',
             'ruleIds',
-            'contractTypeParking'
+            'type',
+            'branchName' // ← asegurarse de pasarlo a la vista
         ));
     }
+    
+    
+    
     
 
 
@@ -231,9 +224,23 @@ class ContractController extends Controller
         ]);
     
         $contract = Contract::with([
-            'contract_contract_parking.contract_parking_contract_annual'
+            'contract_contract_parking.contract_parking_contract_annual',
+            'contract_contract_parking.contract_parking_contract_daily',
+            'contract_contract_rent',
         ])->findOrFail($id);
     
+        // Determinar el tipo de contrato
+        if ($contract->contract_contract_rent) {
+            $type = 'rent';
+        } elseif ($contract->contract_contract_parking?->contract_parking_contract_annual) {
+            $type = 'parking_annual';
+        } elseif ($contract->contract_contract_parking?->contract_parking_contract_daily) {
+            $type = 'parking_daily';
+        } else {
+            $type = null;
+        }
+    
+        // Actualizar contactos
         Present::where('id_contract', $id)->delete();
         foreach ($request->contact_information as $contactId) {
             Present::create([
@@ -242,23 +249,30 @@ class ContractController extends Controller
             ]);
         }
     
+        // Actualizar reglas
         Contain::where('id_contract', $id)->delete();
         foreach ($request->rules as $ruleId) {
-            Contain::create([
-                'id_contract' => $id,
-                'id_rule' => $ruleId
-            ]);
+            $rule = Rule::find($ruleId);
+            if ($rule && $rule->type_contract === $type) {
+                Contain::create([
+                    'id_contract' => $id,
+                    'id_rule' => $ruleId
+                ]);
+            }
         }
     
-        if ($contract->contract_contract_parking?->contract_parking_contract_annual) {
-            $contractAnnual = $contract->contract_contract_parking->contract_parking_contract_annual;
-            $contractAnnual->important_note = $request->important_note;
-            $contractAnnual->expiration_date = $request->expiration_date;
-            $contractAnnual->save();
+        // Si es anual, actualiza campos especiales
+        if ($type === 'parking_annual') {
+            $annual = $contract->contract_contract_parking->contract_parking_contract_annual;
+            $annual->important_note = $request->important_note;
+            $annual->expiration_date = $request->expiration_date;
+            $annual->save();
         }
     
-        return redirect()->route('contratos.index')->with('success', 'Contrato actualizado exitosamente.');
+        return redirect()->route('contratos.show', $contract->id_branch_office)
+            ->with('success', 'Contrato actualizado exitosamente.');
     }
+    
     
 
     /**

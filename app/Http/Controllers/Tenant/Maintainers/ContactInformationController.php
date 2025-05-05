@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant\Maintainers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ContactInformation;
+use App\Models\BranchOffice;
 
 class ContactInformationController extends Controller
 {
@@ -13,17 +14,18 @@ class ContactInformationController extends Controller
      */
     public function index()
     {
-        $data = ContactInformation::all();
-        return view('tenant.admin.maintainer.contactInformation.index', compact('data'));
+
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($branchId)
     {
-        return view('tenant.admin.maintainer.contactInformation.create');
+        return view('tenant.admin.maintainer.contactInformation.create', compact('branchId'));
     }
+    
+    
 
     /**
      * Store a newly created resource in storage.
@@ -33,24 +35,29 @@ class ContactInformationController extends Controller
         $request->validate([
             'type_contact' => 'required|string|max:100',
             'data_contact' => 'required|string|max:255',
+            'id_branch_office' => 'required|exists:branch_offices,id_branch',
         ]);
     
         ContactInformation::create([
-            'type_contact' => $request->type_contact,
-            'data_contact' => $request->data_contact,
+            'type_contact'      => $request->type_contact,
+            'data_contact'      => $request->data_contact,
+            'id_branch_office'  => $request->id_branch_office,
         ]);
-
-        return redirect()->route('informacion_contacto.index');
+    
+        return redirect()->route('informacion_contacto.show', $request->id_branch_office);
     }
+    
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        
+        $data = ContactInformation::where('id_branch_office', $id)->get();
+        $branch = BranchOffice::findOrFail($id); // <- Obtener datos de la sucursal
+        return view('tenant.admin.maintainer.contactInformation.index', compact('data', 'branch'));
     }
-
+    
     /**
      * Show the form for editing the specified resource.
      */

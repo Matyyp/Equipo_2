@@ -32,18 +32,19 @@ class RuleController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-
+            'description' => 'required|string',
+            'type_contract' => 'required|in:rent,parking_daily,parking_annual',
         ]);
-
+    
         Rule::create([
             'name' => $request->name,
-            'description' => $request->description
-
+            'description' => $request->description,
+            'type_contract' => $request->type_contract,
         ]);
-
-        return redirect()->route('reglas.index');
+    
+        return redirect()->route('reglas.index')->with('success', 'Regla registrada exitosamente.');
     }
+    
 
     /**
      * Display the specified resource.

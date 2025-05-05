@@ -14,6 +14,7 @@ class ContactInformation extends Model
     protected $fillable = [
         'data_contact',
         'type_contact',
+        'id_branch_office'
     ];
 
     public function contact_information_presents()
