@@ -24,6 +24,6 @@ class Generate extends Model
 
     public function generates_contract_parking()
     {
-        return $this->belongsTo(ContractParking::class, 'id_voucher', 'id_voucher');
+        return $this->belongsTo(ContractParking::class, 'id_contract', 'id_contract');
     }
 }

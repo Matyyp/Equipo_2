@@ -5,88 +5,112 @@ namespace App\Http\Controllers\Tenant\Maintainers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Location;
+use App\Models\Region;
+use Yajra\DataTables\Facades\DataTables;
 
 class LocationController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra el listado de ubicaciones o devuelve datos para DataTables.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Location::all();
-        return view('tenant.admin.maintainer.location.index', compact('data'));
+        if ($request->ajax()) {
+            $locations = Location::with('location_region')->select('locations.*');
+
+            return DataTables::of($locations)
+                ->addColumn('region', function ($location) {
+                    return $location->location_region->name_region ?? '-';
+                })
+                ->addColumn('action', function ($location) {
+                    $editUrl = route('locacion.edit', $location->id_location);
+                    $deleteUrl = route('locacion.destroy', $location->id_location);
+                
+                    return '
+                        <a href="' . $editUrl . '" class="btn btn-warning btn-sm me-1">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                
+                        <form action="' . $deleteUrl . '" method="POST" class="d-inline delete-form">
+                            ' . csrf_field() . method_field('DELETE') . '
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    ';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('tenant.admin.maintainer.location.index');
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear una nueva ubicación.
      */
     public function create()
     {
-        return view('tenant.admin.maintainer.location.create');
+        $region = Region::all();
+        return view('tenant.admin.maintainer.location.create', compact('region'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena una nueva ubicación en la base de datos.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'region' => 'required|string|max:255',
+            'region' => 'required|exists:regions,id',
             'commune' => 'required|string|max:255',
-
         ]);
 
-        location::create([
-            'region' => $request->region,
-            'commune' => $request->commune, 
+        Location::create([
+            'id_region' => $request->region,
+            'commune' => $request->commune,
         ]);
 
-        return redirect()->route('locacion.index');
+        return redirect()->route('locacion.index')->with('success', 'Ubicación creada correctamente.');
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar una ubicación existente.
      */
     public function edit(string $id)
     {
-        $location = location::where('id_location', $id)->first();
-        return view('tenant.admin.maintainer.location.edit', compact('location'));
+        $location = Location::with('location_region')->findOrFail($id);
+        $region = Region::all();
+
+        return view('tenant.admin.maintainer.location.edit', compact('location', 'region'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una ubicación existente en la base de datos.
      */
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'region' => 'required|string|max:255',
+            'region' => 'required|exists:regions,id',
             'commune' => 'required|string|max:255',
-
         ]);
 
-        location::where('id_location', $id)
-        ->update([
-            'region' => $request->region,
+        $location = Location::findOrFail($id);
+        $location->update([
+            'id_region' => $request->region,
             'commune' => $request->commune,
         ]);
 
-        return redirect()->route('locacion.index');
+        return redirect()->route('locacion.index')->with('success', 'Ubicación actualizada correctamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una ubicación de la base de datos.
      */
     public function destroy(string $id)
     {
-        location::where('id_location', $id)->delete();
-        return redirect()->route('locacion.index');
+        $location = Location::findOrFail($id);
+        $location->delete();
+
+        return redirect()->route('locacion.index')->with('success', 'Ubicación eliminada correctamente.');
     }
 }

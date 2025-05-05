@@ -12,12 +12,19 @@ class Location extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'region',
-        'commune'
+        'commune',
+        'id_region'
     ];
+
+    protected $primaryKey = 'id_location';
 
     public function location_branch_office()
     {
         return $this->hasMany(BranchOffice::class, 'id_location', 'id_location');
+    }
+
+    public function location_region()
+    {
+        return $this->belongsTo(Region::class, 'id_region', 'id');
     }
 }

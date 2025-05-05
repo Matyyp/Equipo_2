@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\BranchOffice;
 use App\Models\Location;
 use App\Models\Business;
+use App\Models\Region;
 class BranchOfficeController extends Controller
 {
     /**
@@ -14,22 +15,31 @@ class BranchOfficeController extends Controller
      */
     public function index()
     {
-        $office = BranchOffice::with(['branch_office_location', 'branch_office_business'])->get();
-
+        $office = BranchOffice::with([
+            'branch_office_location.location_region',
+            'branch_office_business'
+        ])->get();
+        
         $office = $office->map(function ($branch) {
+            $location = optional($branch->branch_office_location);
+            $region   = optional($location->location_region);
+            $business = optional($branch->branch_office_business);
+        
             return [
-                'id'          => $branch->id_branch,
-                'schedule'    => $branch->schedule,
-                'street'      => $branch->street,
-                'region'      => $branch->branch_office_location->region ?? 'N/D',
-                'commune'     => $branch->branch_office_location->commune ?? 'N/D',
-                'business'    => $branch->branch_office_business->name_business ?? 'N/D',
+                'id'                   => $branch->id_branch,
+                'schedule'             => $branch->schedule,
+                'street'               => $branch->street,
+                'name_branch_offices' => $branch->name_branch_offices,
+                'region'               => $region->name_region ?? 'N/D',
+                'commune'              => $location->commune ?? 'N/D',
+                'business'             => $business->name_business ?? 'N/D',
             ];
         });
-
+        
         return view('tenant.admin.maintainer.branch_office.index', [
             'data' => $office
         ]);
+        
     }
 
 
@@ -39,9 +49,10 @@ class BranchOfficeController extends Controller
     public function create()
     {
         $locacion = Location::all();
+        $region = Region::all();
         $business = Business::all();
 
-        return view('tenant.admin.maintainer.branch_office.create', compact('locacion', 'business'));
+        return view('tenant.admin.maintainer.branch_office.create', compact('locacion', 'business', 'region'));
     }
 
     /**
@@ -52,6 +63,7 @@ class BranchOfficeController extends Controller
         $request->validate([
             'schedule'    => 'required|string|max:100',
             'street'      => 'required|string|max:150',
+            'name_branch_offices'      => 'required|string|max:250',
             'id_location' => 'required|exists:locations,id_location',
             'id_business' => 'required|exists:businesses,id_business',
         ]);
@@ -59,6 +71,7 @@ class BranchOfficeController extends Controller
         BranchOffice::create([
             'schedule'    => $request->schedule,
             'street'      => $request->street,
+            'name_branch_offices' => $request->name_branch_offices,
             'id_location' => $request->id_location,
             'id_business' => $request->id_business,
         ]);
@@ -99,6 +112,7 @@ class BranchOfficeController extends Controller
         $request->validate([
             'schedule'    => 'required|string|max:100',
             'street'      => 'required|string|max:150',
+            'name_branch_offices'      => 'required|string|max:150',
             'id_location' => 'required|exists:locations,id_location',
             'id_business' => 'required|exists:businesses,id_business',
         ]);
@@ -107,6 +121,7 @@ class BranchOfficeController extends Controller
         ->update([
             'schedule'    => $request->schedule,
             'street'      => $request->street,
+            'name_branch_offices' => $request->name_branch_offices,
             'id_location' => $request->id_location,
             'id_business' => $request->id_business,
         ]);

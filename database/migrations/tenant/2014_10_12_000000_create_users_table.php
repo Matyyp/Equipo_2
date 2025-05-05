@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('cell_phone', 20)->nullable();
             $table->string('url_photo_user')->nullable();
+            $table->string('id_branch_office')->nullable();
             $table->enum('user_type', ['client', 'employee'])->nullable();
         });
     }

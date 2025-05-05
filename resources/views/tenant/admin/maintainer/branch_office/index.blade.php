@@ -19,6 +19,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>ID</th>
+                            <th>Sucursal</th>
                             <th>Horario</th>
                             <th>Calle</th>
                             <th>Región</th>
@@ -31,26 +32,27 @@
                         @foreach ($data as $branch)
                             <tr>
                                 <td>{{ $branch['id'] }}</td>
+                                <td>{{ $branch['name_branch_offices'] }}</td>
                                 <td>{{ $branch['schedule'] }}</td>
                                 <td>{{ $branch['street'] }}</td>
                                 <td>{{ $branch['region'] }}</td>
                                 <td>{{ $branch['commune'] }}</td>
                                 <td>{{ $branch['business'] }}</td>
                                 <td class="text-right">
-                                    <a href="{{ route('sucursales.edit', $branch['id']) }}" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('sucursales.edit', $branch['id']) }}" class="btn btn-warning btn-sm mb-1">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
 
-                                    <form action="{{ route('sucursales.destroy', $branch['id']) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
-
-                                    <a href="{{ route('servicios.show', $branch['id']) }}" class="btn btn-info btn-sm">
+                                    <a href="{{ route('servicios.show', $branch['id']) }}" class="btn btn-info btn-sm mb-1">
                                         <i class="fas fa-concierge-bell"></i> Servicios
+                                    </a>
+
+                                    <a href="{{ route('contratos.show', $branch['id']) }}" class="btn btn-primary btn-sm mb-1">
+                                        <i class="fas fa-file-contract"></i> Contratos
+                                    </a>
+
+                                    <a href="{{ url('informacion_contacto/' . $branch['id']) }}" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-address-book"></i> Info. Contacto
                                     </a>
                                 </td>
                             </tr>

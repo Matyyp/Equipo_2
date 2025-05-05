@@ -20,7 +20,6 @@
                         <tr>
                             <th>Tipo</th>
                             <th>Nombre</th>
-                            <th>Apellido</th>
                             <th>Teléfono</th>
                             <th class="text-right">Acciones</th>
                         </tr>
@@ -30,20 +29,11 @@
                             <tr>
                                 <td>{{ $item->type_owner }}</td>
                                 <td>{{ $item->name }}</td>
-                                <td>{{ $item->last_name }}</td>
                                 <td>{{ $item->number_phone }}</td>
                                 <td class="text-right">
                                     <a href="{{ route('dueños.edit', $item->id_owner) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-
-                                    <form action="{{ route('dueños.destroy', $item->id_owner) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
 
                                     <a href="{{ route('asociado.show', $item->id_owner) }}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-car"></i> Ver Autos

@@ -12,9 +12,16 @@ use App\Models\Belong;
 use App\Models\Park;
 use App\Models\Register;
 use App\Models\Owner;
+use App\Models\BranchOffice;
 use App\Models\ParkingRegister;
+use App\Models\DailyContract;
+use App\Models\AnnualContract;
+use App\Models\Generate;
 use Carbon\Carbon;
+use App\Models\PaymentRecord;
+use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -25,75 +32,83 @@ class ParkingController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        if ($request->ajax()) {
-            $rows = ParkingRegister::all()
-                ->filter(function ($reg) {
-                    $park = Park::find($reg->id_park);
-                    return $park && $park->deleted_at === null;
-                })
-                ->map(function ($reg) {
-                    $park = Park::find($reg->id_park);
-                    $car = $park?->park_car; // relación en Park: belongsTo(Car::class, 'id_car')
-                    $owner = $car?->car_belongs->first()?->belongs_owner;
-                    $brand = $car?->car_brand?->name_brand;
-                    $model = $car?->car_model?->name_model;
-                    $service = Service::find($park?->id_service); // o $park?->service si tienes la relación
-    
-                    return [
-                        'owner_name'          => $owner?->name ?? '-',
-                        'patent'              => $car?->patent ?? '-',
-                        'brand_model'         => trim(($brand ?? '') . ' ' . ($model ?? '')),
-                        'start_date'          => $reg->start_date,
-                        'end_date'            => $reg->end_date,
-                        'days'                => $reg->days,
-                        'service_price'       => $service?->price_net ?? 0,
-                        'total_value'         => $reg->total_value,
-                        'id_parking_register' => $reg->getKey(),
-                    ];
-                });
-    
-            return response()->json(['data' => $rows->values()]);
-        }
-    
-        return view('tenant.admin.parking.index');
-    }
 
-    public function search(Request $request)
-    {
-        $plate = $request->query('plate', '');
-    
-        if (! $plate) {
-            return response()->json([
-                'found'  => false,
-                'message'=> 'No se envió patente',
-            ], 200);
-        }
-    
-        $car = Car::where('patent', $plate)
-            ->with(['car_belongs.belongs_owner', 'car_brand', 'car_model'])
-            ->first();
-    
-        if (! $car) {
-            return response()->json([
-                'found'  => false,
-                'message'=> 'Patente no encontrada',
-            ], 200);
-        }
-    
-        $owner = $car->car_belongs->first()?->belongs_owner;
-    
-        return response()->json([
-            'found'      => true,
-            'name'       => trim("{$owner->name} {$owner->last_name}"),
-            'phone'      => $owner->number_phone,
-            'id_brand'   => $car->car_brand?->id_brand,
-            'name_brand' => $car->car_brand?->name_brand,
-            'id_model'   => $car->car_model?->id_model,
-            'name_model' => $car->car_model?->name_model,
-        ], 200);
-    }
+     public function index(Request $request)
+     {
+         if ($request->ajax()) {
+             $data = ParkingRegister::all()
+                 ->filter(function ($reg) {
+                     $park = Park::find($reg->id_park);
+                     return $park && $park->deleted_at === null;
+                 })
+                 ->map(function ($reg) {
+                     $park = Park::find($reg->id_park);
+                     $car = $park?->park_car;
+                     $owner = $car?->car_belongs->first()?->belongs_owner;
+                     $brand = $car?->car_brand?->name_brand;
+                     $model = $car?->car_model?->name_model;
+                     $service = Service::find($park?->id_service);
+     
+                     return [
+                         'owner_name'    => $owner?->name ?? '-',
+                         'patent'        => $car?->patent ?? '-',
+                         'brand_model'   => trim(($brand ?? '') . ' ' . ($model ?? '')),
+                         'start_date'    => $reg->start_date ? \Carbon\Carbon::parse($reg->start_date)->format('d-m-Y') : '[NULO]',
+                         'end_date'      => $reg->end_date ? \Carbon\Carbon::parse($reg->end_date)->format('d-m-Y') : '[NULO]',
+                         'days'          => $reg->days,
+                         'service_price' => number_format($service?->price_net ?? 0, 0, ',', '.'),
+                         'total_value'   => number_format($reg->total_value, 0, ',', '.'),
+                         'id_parking_register' => $reg->getKey(),
+                     ];
+                 });
+     
+             return DataTables::of(collect($data))->toJson();
+         }
+     
+         return view('tenant.admin.parking.index');
+     }
+     
+
+     public function search(Request $request)
+     {
+         $plate = $request->input('plate');
+     
+         $parks = Park::with('park_car')->get();
+     
+         $park = $parks->first(function ($p) use ($plate) {
+             return $p->park_car && $p->park_car->patent === $plate && !$p->checked_out;
+         });
+     
+         if ($park) {
+             $car = $park->park_car;
+             $owner = $car->car_belongs->first()?->belongs_owner;
+             return response()->json([
+                 'found' => true,
+                 'name' => $owner?->name,
+                 'phone' => $owner?->number_phone,
+                 'brand' => $car->car_brand->name_brand,
+                 'model' => $car->car_model->name_model,
+                 'parked' => true // 👈 indica que ya está estacionado
+             ]);
+         }
+     
+         // Si no está estacionado, pero existe el auto:
+         $car = Car::where('patent', $plate)->first();
+         if ($car) {
+             $owner = $car->car_belongs->first()?->belongs_owner;
+             return response()->json([
+                 'found' => true,
+                 'name' => $owner?->name,
+                 'phone' => $owner?->number_phone,
+                 'brand' => $car->car_brand->name_brand,
+                 'model' => $car->car_model->name_model,
+                 'parked' => false
+             ]);
+         }
+     
+         return response()->json(['found' => false]);
+     }
+     
     
 
 
@@ -124,21 +139,88 @@ class ParkingController extends Controller
             ->rawColumns(['actions'])
             ->make(true);
     }
+
+    public function checkContrato(Request $request)
+    {
+        $service = Service::with('service_branch_office.branch_office_contract')
+            ->find($request->service_id);
+
+        if (!$service || !$service->service_branch_office) {
+            return response()->json(['contract_exists' => false]);
+        }
+
+        $contracts = $service->service_branch_office->branch_office_contract;
+
+        // Tomamos el primero porque solo hay uno
+        $contract = $contracts->first();
+
+        if (!$contract) {
+            return response()->json(['contract_exists' => false]);
+        }
+
+        // Verificamos según el tipo del servicio
+        $exists = match ($service->type_service) {
+            'parking_daily'  => DailyContract::where('id_contract', $contract->id_contract)->exists(),
+            'parking_annual' => AnnualContract::where('id_contract', $contract->id_contract)->exists(),
+            default          => false,
+        };
+
+        return response()->json(['contract_exists' => $exists]);
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        $brands          = Brand::all();
-        $models          = ModelCar::all();
-        $parkingServices = Service::where('type_service', 'parking')->get();
+        $user = auth()->user();
     
-        return view('tenant.admin.parking.create', compact(
-            'brands',
-            'models',
-            'parkingServices'
-        ));
+        $parkingServices = Service::with('service_branch_office.branch_office_contract') // eager loading para evitar N+1
+            ->whereIn('type_service', ['parking_daily', 'parking_annual'])
+            ->where('id_branch_office', $user->id_branch_office)
+            ->get();
+    
+        $hasContract = false;
+    
+        foreach ($parkingServices as $svc) {
+            $contract = $svc->service_branch_office->branch_office_contract->first(); // obtenemos un único contrato
+    
+            if ($contract) {
+                if (
+                    ($svc->type_service === 'parking_daily' && DailyContract::where('id_contract', $contract->id_contract)->exists()) ||
+                    ($svc->type_service === 'parking_annual' && AnnualContract::where('id_contract', $contract->id_contract)->exists())
+                ) {
+                    $hasContract = true;
+                    break;
+                }
+            }
+        }
+    
+        $parks = Park::with('park_car')->get();
+    
+        return view('tenant.admin.parking.create', compact('parkingServices', 'parks', 'hasContract'));
     }
+    
+    
+    
+
+    public function searchPhone(Request $request)
+    {
+        $request->validate(['phone' => 'required|string|max:9']);
+
+        $owner = Owner::where('number_phone', $request->phone)->first();
+
+        if ($owner) {
+            return response()->json([
+                'found' => true,
+                'name'  => $owner->name,
+            ]);
+        }
+
+        return response()->json(['found' => false]);
+    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -153,67 +235,78 @@ class ParkingController extends Controller
             'end_date'     => 'required|date|after_or_equal:start_date',
             'arrival_km'   => 'nullable|integer|min:0',
             'km_exit'      => 'nullable|integer|min:0',
-            'id_brand'     => 'required|exists:brands,id_brand',
-            'id_model'     => 'required|exists:model_cars,id_model',
+            'brand_name'   => 'required|string|max:100',
+            'model_name'   => 'required|string|max:100',
             'service_id'   => 'required|exists:services,id_service',
-            //'wash_service' => 'nullable|boolean',
         ]);
+    
+        $brandName = Str::title(trim($data['brand_name']));
+        $brand = Brand::all()->first(function ($b) use ($brandName) {
+            return levenshtein(strtolower($b->name_brand), strtolower($brandName)) <= 2;
+        }) ?? Brand::create(['name_brand' => $brandName]);
 
+        $modelName = Str::title(trim($data['model_name']));
+        $model = ModelCar::all()->first(function ($m) use ($modelName) {
+            return levenshtein(strtolower($m->name_model), strtolower($modelName)) <= 2;
+        }) ?? ModelCar::create(['name_model' => $modelName]);
+    
         $owner = Owner::firstOrCreate(
             ['number_phone' => $data['phone']],
-            [
-                'name'       => $data['name'],
-                'type_owner' => 'cliente'
-            ]
+            ['name' => $data['name'], 'type_owner' => 'cliente']
         );
-
+    
         $car = Car::firstOrCreate(
             ['patent' => strtoupper($data['plate'])],
-            [
-                'id_brand' => $data['id_brand'],
-                'id_model' => $data['id_model']
-            ]
+            ['id_brand' => $brand->id_brand, 'id_model' => $model->id_model]
         );
-
-        Belong::create([
+    
+        Belong::firstOrCreate([
             'id_car' => $car->id_car,
             'id_owner' => $owner->id_owner
         ]);
-
-        $service = Service::findOrFail($data['service_id']);
-
-        $start = Carbon::parse($data['start_date']);
-        $end   = Carbon::parse($data['end_date']);
-        $days  = $start->diffInDays($end) + 1;
     
-        $total = $days * $service->price_net; 
-        
+        $service = Service::findOrFail($data['service_id']);
+        $start = Carbon::parse($data['start_date']);
+        $end = Carbon::parse($data['end_date']);
+        $days = $start->diffInDays($end) + 1;
+        $total = $days * $service->price_net;
+    
         $park = Park::create([
-            'id_car' => $car->id_car,
+            'id_car'     => $car->id_car,
             'id_service' => $data['service_id']
         ]);
-
+    
         $parking = ParkingRegister::create([
-            'id_brand'     => $data['id_brand'],
-            'id_model'     => $data['id_model'],
+            'id_brand'     => $brand->id_brand,
+            'id_model'     => $model->id_model,
             'start_date'   => $data['start_date'],
             'end_date'     => $data['end_date'],
             'arrival_km'   => $data['arrival_km'] ?? null,
-            'km_exit'      => $data['km_exit']    ?? null,
-            'days'        => $days,
-            'total_value' => $total,
-            'id_park' => $park->id
+            'km_exit'      => $data['km_exit'] ?? null,
+            'days'         => $days,
+            'total_value'  => $total,
+            'id_park'      => $park->id
         ]);
-
+    
         Register::create([
-            'id_service' => $data['service_id'],
+            'id_service'          => $data['service_id'],
             'id_parking_register' => $parking->id_parking_register
         ]);
-        
-
-        return redirect()->route('estacionamiento.index');
-
+        $tipo_servicio = $service->type_service;
+        if ($tipo_servicio === 'parking_daily') {
+            $id_contract = DailyContract::select('id_contract')->first();
+        } elseif ($tipo_servicio === 'parking_annual') {
+            $id_contract = AnnualContract::select('id_contract')->first();
+        }
+    
+        Generate::create([
+            'id_contract'          => $id_contract->id_contract,
+            'id_parking_register'  => $parking->id_parking_register
+        ]);
+    
+        return redirect()->route('estacionamiento.index')->with('success', 'Registro creado correctamente');
     }
+    
 
     /**
      * Display the specified resource.
@@ -239,12 +332,14 @@ class ParkingController extends Controller
         $park     = $link->register_parking;
         $pivot    = $park->parking_park->first();
         $car      = $pivot->park_car;
+        $brands   = $pivot->park_car->car_brand->name_brand;
+        $models   = $pivot->park_car->car_model->name_model;;
         $owner    = $car->car_belongs->first()->belongs_owner;
         $service  = $park->parking_service;
 
-        $brands          = Brand::all();
-        $models          = ModelCar::all();
-        $parkingServices = Service::where('type_service','parking')->get();
+        $parkingServices = Service::whereIn('type_service', ['parking_daily', 'parking_annual'])
+        ->where('id_branch_office', auth()->user()->id_branch_office)
+        ->get();
 
         return view('tenant.admin.parking.edit', compact(
             'parking','car','owner','service','brands','models','parkingServices'
@@ -259,63 +354,83 @@ class ParkingController extends Controller
         $data = $request->validate([
             'plate'        => 'required|string|max:8',
             'name'         => 'required|string|max:255',
-            'phone'        => 'required|string|max:20',
+            'phone'        => 'required|string|max:9',
             'start_date'   => 'required|date',
             'end_date'     => 'required|date|after_or_equal:start_date',
             'arrival_km'   => 'nullable|integer|min:0',
             'km_exit'      => 'nullable|integer|min:0',
-            'id_brand'     => 'required|exists:brands,id_brand',
-            'id_model'     => 'required|exists:model_cars,id_model',
-            'service_id'   => 'required|exists:services,id_service',
-            'wash_service' => 'sometimes|boolean',
+            'brand_name'   => 'required|string|max:255',
+            'model_name'   => 'required|string|max:255',
+            'wash_service' => 'nullable|boolean'
         ]);
     
-        $parking = ParkingRegister::findOrFail($id);
+        DB::transaction(function () use ($data, $id) {
+            $parking = ParkingRegister::with([
+                'parking_register_register.register_parking.parking_park.park_car',
+                'parking_register_register.register_parking.parking_service'
+            ])->findOrFail($id);
     
-        $linkReg   = $parking->parking_register_register()->first();     
-        $parkEntry = $linkReg?->register_parking;                        
-        $pivotPark = $parkEntry?->parking_park()->first();                
-        $car       = $pivotPark?->park_car;                              
-        $ownerRel  = $car->car_belongs()->first()->belongs_owner;         
+            $link = $parking->parking_register_register->first();
+            $park = $link->register_parking;
+            $pivot = $park->parking_park->first();
+            $car = $pivot->park_car;
     
-        $car->update([
-            'patent'   => $data['plate'],
-            'id_brand' => $data['id_brand'],
-            'id_model' => $data['id_model'],
-        ]);
+            $owner = $car->car_belongs->first()->belongs_owner;
+            $owner->update([
+                'name' => $data['name'],
+                'number_phone' => $data['phone']
+            ]);
     
-        $ownerRel->update([
-            'name'         => $data['name'],
-            'number_phone' => $data['phone'],
-        ]);
+            // Marca
+            $brand = Brand::where('name_brand', 'like', "%{$data['brand_name']}%")->first();
+            if ($brand) {
+                $brandCarsCount = Car::where('id_brand', $car->id_brand)->count();
+                if ($brandCarsCount <= 1 && $car->id_brand != $brand->id_brand) {
+                    Brand::where('id_brand', $car->id_brand)->delete();
+                }
+                $car->id_brand = $brand->id_brand;
+            } else {
+                $newBrand = Brand::create(['name_brand' => Str::title($data['brand_name'])]);
+                $car->id_brand = $newBrand->id_brand;
+            }
     
-        $parking->update([
-            'start_date'   => $data['start_date'],
-            'end_date'     => $data['end_date'],
-            'arrival_km'   => $data['arrival_km'] ?? null,
-            'km_exit'      => $data['km_exit']    ?? null,
-            'wash_service' => ! empty($data['wash_service']),
-        ]);
+            // Modelo
+            $model = ModelCar::where('name_model', 'like', "%{$data['model_name']}%")->first();
+            if ($model) {
+                $modelCarsCount = Car::where('id_model', $car->id_model)->count();
+                if ($modelCarsCount <= 1 && $car->id_model != $model->id_model) {
+                    ModelCar::where('id_model', $car->id_model)->delete();
+                }
+                $car->id_model = $model->id_model;
+            } else {
+                $newModel = ModelCar::create(['name_model' => Str::title($data['model_name'])]);
+                $car->id_model = $newModel->id_model;
+            }
     
-        $start   = Carbon::parse($data['start_date']);
-        $end     = Carbon::parse($data['end_date']);
-        $days    = $start->diffInDays($end) + 1;
-        $service = Service::findOrFail($data['service_id']);
-        $total   = $days * $service->price_net;
+            $car->save();
     
-        $parking->update([
-            'days'        => $days,
-            'total_value' => $total,
-        ]);
+            // Cálculo de días y total
+            $startDate = Carbon::parse($data['start_date']);
+            $endDate   = Carbon::parse($data['end_date']);
+            $days      = $startDate->diffInDays($endDate) + 1;
     
-        Register::updateOrCreate(
-            ['id_parking_register' => $parking->id_parking_register],
-            ['id_service'         => $data['service_id']]
-        );
+            // Accede al servicio a través del camino indirecto
+            $service = optional($link->register_parking?->parking_service);
+            $priceNet = $service?->price_net ?? 0;
+            $total    = $days * $priceNet;
     
-        return redirect()
-            ->route('estacionamiento.index')
-            ->with('success', 'Ingreso actualizado correctamente.');
+            // Actualiza ParkingRegister
+            $parking->update([
+                'start_date'   => $startDate,
+                'end_date'     => $endDate,
+                'arrival_km'   => $data['arrival_km'] ?? null,
+                'km_exit'      => $data['km_exit'] ?? null,
+                'days'         => $days,
+                'total_value'  => $total,
+            ]);
+        });
+    
+        return redirect()->route('estacionamiento.index')->with('success', 'Registro actualizado correctamente.');
     }
 
     public function history(Request $request)
@@ -364,35 +479,123 @@ class ParkingController extends Controller
 
     public function print($parkingId)
     {
-        $parking = ParkingRegister::findOrFail($parkingId);
+        $parking = ParkingRegister::with([
+            'parking_register_register.register_parking.parking_service.service_branch_office.branch_office_business',
+            'parking_register_generates.generates_contract_parking.contract_parking_contract.contract_presents.presents_contact_information',
+            'parking_register_generates.generates_contract_parking.contract_parking_contract.contract_contains.contains_rule',
+        ])->findOrFail($parkingId);
     
-        $startDate = Carbon::parse($parking->start_date);
-        $endDate   = Carbon::parse($parking->end_date);
+        $client = Park::where('id', $parking->id_park)
+            ->with([
+                'park_car.car_belongs.belongs_owner',
+                'park_car.car_model',
+                'park_car.car_brand'
+            ])
+            ->firstOrFail();
     
-        $dias_totales = $startDate->diffInDays($endDate);
+        // Logo
+        $logoNombre = $parking->parking_register_register
+            ->register_parking
+            ->parking_service
+            ->service_branch_office
+            ->branch_office_business
+            ->logo ?? 'logo_empresa.png';
     
-        $tarifa_diaria  = 3000;
-        $tarifa_extra   = 20000;
-        $valor_total    = ($tarifa_diaria * $dias_totales)
-                        + ($tarifa_extra * max(0, $dias_totales - 1));
+        $logoPath = public_path('storage/tenants/' . request()->getHost() . '/imagenes/' . $logoNombre);
     
-        $cliente = $parking->id_park; 
+        // Datos de contacto
+        $datosContacto = $parking->parking_register_generates
+            ->flatMap(fn($gen) =>
+                $gen->generates_contract_parking?->contract_parking_contract?->contract_presents ?? []
+            )
+            ->flatMap(fn($present) =>
+                $present->presents_contact_information ? [$present->presents_contact_information] : []
+            );
     
-        $pdfContent = Pdf::loadView('pdf.ContractDaily', [
-            'cliente'        => $cliente,
-            'parking'        => $parking,
-            'tarifa_diaria'  => $tarifa_diaria,
-            'tarifa_extra'   => $tarifa_extra,
-            'dias_totales'   => $dias_totales,
-            'valor_total'    => $valor_total,
+        // Reglas del contrato
+        $reglas = $parking->parking_register_generates
+            ->flatMap(fn($gen) =>
+                $gen->generates_contract_parking?->contract_parking_contract?->contract_contains ?? []
+            )
+            ->map(fn($contain) => $contain->contains_rule);
+    
+        // PDF
+        $pdfContent = \PDF::loadView('pdf.ContractDaily', [
+            'nombre'                => $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible',
+            'telefono'              => $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible',
+            'patente'               => $client->park_car->patent ?? 'No disponible',
+            'marca'                 => $client->park_car->car_brand->name_brand ?? 'No disponible',
+            'modelo'                => $client->park_car->car_model->name_model ?? 'No disponible',
+            'inicio'  => Carbon::parse($parking->start_date)->format('d-m-Y'),
+            'termino' => Carbon::parse($parking->end_date)->format('d-m-Y'),
+            'dias'                  => $parking->days,
+            'valor_total'           => $parking->total_value,
+            'url_logo'              => $logoPath,
+            'direccion_sucursal'    => $parking->parking_register_register->register_parking->parking_service->service_branch_office->street ?? 'No disponible',
+            'valor_estacionamiento' => $parking->parking_register_register->register_parking->parking_service->price_net ?? 'No disponible',
+            'dato_contacto'         => $parking->parking_register_register->register_parking->parking_service->service_branch_office->contact_info ?? 'No disponible',
+            'horario'               => $parking->parking_register_register->register_parking->parking_service->service_branch_office->schedule ?? 'No disponible',
+            'dueño'                 => $parking->parking_register_register->register_parking->parking_service->service_branch_office->branch_office_business->owner_business ?? 'No disponible',
+            'rut'                   => $parking->parking_register_register->register_parking->parking_service->service_branch_office->branch_office_business->owner_rut ?? 'No disponible',
+            'datos_contacto'        => $datosContacto,
+            'reglas'                => $reglas,
         ])
-        ->setPaper('a4','portrait')
+        ->setPaper('a4', 'portrait')
         ->output();
     
         $pdfBase64 = base64_encode($pdfContent);
     
-        return response()->view('pdf.print_contrato', compact('pdfBase64'));
+        return view('pdf.print_contrato', compact('pdfBase64'));
     }
+
+
+
+    public function printTicket($parkingId)
+    {
+        $parking = ParkingRegister::with([
+            'parking_register_register.register_parking.parking_service.service_branch_office.branch_office_business',
+            'parking_register_generates.generates_contract_parking.contract_parking_contract.contract_presents.presents_contact_information',
+        ])->findOrFail($parkingId);
+
+        $client = Park::where('id', $parking->id_park)
+            ->with([
+                'park_car.car_belongs.belongs_owner',
+                'park_car.car_model',
+                'park_car.car_brand'
+            ])
+            ->firstOrFail();
+
+        // Datos base
+        $nombre   = $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible';
+        $telefono = $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible';
+        $marca    = $client->park_car->car_brand->name_brand ?? 'No disponible';
+        $modelo   = $client->park_car->car_model->name_model ?? 'No disponible';
+        $patente  = $client->park_car->patent ?? 'No disponible';
+
+        // Fechas formateadas
+        $inicio  = Carbon::parse($parking->start_date)->format('d-m-Y');
+        $termino = Carbon::parse($parking->end_date)->format('d-m-Y');
+
+        // Generar PDF tipo ticket horizontal
+        $pdfContent = PDF::loadView('pdf.TicketParking', [
+            'nombre'   => $nombre,
+            'telefono' => $telefono,
+            'marca'    => $marca,
+            'modelo'   => $modelo,
+            'patente'  => $patente,
+            'inicio'   => $inicio,
+            'termino'  => $termino,
+        ])
+        ->setPaper([0, 0, 300, 125]) // ~10.5 cm ancho x ~4.4 cm alto
+        ->output();
+
+        $pdfBase64 = base64_encode($pdfContent);
+
+        return view('pdf.print_contrato', compact('pdfBase64'));
+    }
+
+    
+    
     
 
     /**

@@ -14,6 +14,7 @@ class Brand extends Model
     protected $fillable = [
         'name_brand',
     ];
+    protected $primaryKey = 'id_brand';
 
     public function brand_car()
     {

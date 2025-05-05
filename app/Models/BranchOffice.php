@@ -16,7 +16,10 @@ class BranchOffice extends Model
         'street',
         'id_location',
         'id_business',
+        'name_branch_offices'
     ];
+
+    protected $primaryKey = 'id_branch';
 
     public function branch_office_business()
     {
@@ -31,6 +34,11 @@ class BranchOffice extends Model
     public function branch_office_service()
     {
         return $this->hasMany(Service::class, 'id_branch', 'id_branch');
+    }
+
+    public function branch_office_contract()
+    {
+        return $this->hasMany(Contract::class, 'id_branch_office', 'id_branch');
     }
 
 }

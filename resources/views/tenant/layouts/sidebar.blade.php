@@ -52,9 +52,7 @@
                         <i class="nav-icon fa-solid fa-calendar-days"></i>
                         <p>Reservas<i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        {{-- Submódulos aquí --}}
-                    </ul>
+                    <ul class="nav nav-treeview"></ul>
                 </li>
 
                 {{-- Ventas --}}
@@ -80,9 +78,7 @@
                         <i class="nav-icon fa-solid fa-screwdriver-wrench"></i>
                         <p>Mant. Vehículos<i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        {{-- Submódulos aquí --}}
-                    </ul>
+                    <ul class="nav nav-treeview"></ul>
                 </li>
 
                 {{-- Administración --}}
@@ -97,77 +93,104 @@
                         {{-- Configuración Interna --}}
                         <li class="nav-item has-treeview
                             {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ||
-                               request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ? 'menu-open' : '' }}">
+                               request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ||
+                               request()->is('region*') || request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') ? 'menu-open' : '' }}">
                             <a href="#" class="nav-link
                                 {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ||
-                                   request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ? 'active' : '' }}">
+                                   request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ||
+                                   request()->is('region*') || request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-cogs"></i>
                                 <p>Configuración Interna<i class="right fas fa-angle-left"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 @can('users.index')
                                 <li class="nav-item">
-                                    <a href="{{ route('users.index') }}"
-                                       class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
-                                        <i class="fas fa-users nav-icon"></i>
-                                        <p>Usuarios</p>
+                                    <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
+                                        <i class="fas fa-users nav-icon"></i><p>Usuarios</p>
                                     </a>
                                 </li>
                                 @endcan
                                 @role('Admin')
                                 <li class="nav-item">
-                                    <a href="{{ route('roles.index') }}"
-                                       class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
-                                        <i class="fas fa-user-shield nav-icon"></i>
-                                        <p>Roles</p>
+                                    <a href="{{ route('roles.index') }}" class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
+                                        <i class="fas fa-user-shield nav-icon"></i><p>Roles</p>
                                     </a>
                                 </li>
                                 @endrole
                                 <li class="nav-item">
-                                    <a href="{{ route('empresa.index') }}"
-                                       class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
-                                        <i class="fas fa-briefcase nav-icon"></i>
-                                        <p>Datos Empresa</p>
+                                    <a href="{{ route('empresa.index') }}" class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
+                                        <i class="fas fa-briefcase nav-icon"></i><p>Datos Empresa</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('locacion.index') }}"
-                                       class="nav-link {{ request()->routeIs('locacion.index') ? 'active' : '' }}">
+
+                                {{-- Submenú: Ubicación --}}
+                                <li class="nav-item has-treeview {{ request()->is('locacion*') || request()->is('region*') ? 'menu-open' : '' }}">
+                                    <a href="#" class="nav-link {{ request()->is('locacion*') || request()->is('region*') ? 'active' : '' }}">
                                         <i class="fas fa-map-marker-alt nav-icon"></i>
-                                        <p>Ubicación</p>
+                                        <p>Ubicación<i class="right fas fa-angle-left"></i></p>
                                     </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ route('locacion.index') }}" class="nav-link {{ request()->routeIs('locacion.index') ? 'active' : '' }}">
+                                                <p>Locación</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('region.index') }}" class="nav-link {{ request()->routeIs('region.index') ? 'active' : '' }}">
+                                                <p>Región</p>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
+
+                                {{-- Submenú: Bancos --}}
+                                <li class="nav-item has-treeview {{ request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') ? 'menu-open' : '' }}">
+                                    <a href="#" class="nav-link {{ request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') ? 'active' : '' }}">
+                                        <i class="fas fa-university nav-icon"></i>
+                                        <p>Bancos<i class="right fas fa-angle-left"></i></p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ route('banco.index') }}" class="nav-link {{ request()->routeIs('banco.index') ? 'active' : '' }}">
+                                                <p>Banco</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('tipo_cuenta.index') }}" class="nav-link {{ request()->routeIs('tipo_cuenta.index') ? 'active' : '' }}">
+                                                <p>Tipo de Cuenta</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('cuentas_bancarias.index') }}" class="nav-link {{ request()->routeIs('cuentas_bancarias.index') ? 'active' : '' }}">
+                                                <p>Cuentas Bancarias</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
                                 <li class="nav-item">
-                                    <a href="{{ route('sucursales.index') }}"
-                                       class="nav-link {{ request()->routeIs('sucursales.index') ? 'active' : '' }}">
-                                        <i class="fas fa-store nav-icon"></i>
-                                        <p>Sucursal</p>
+                                    <a href="{{ route('sucursales.index') }}" class="nav-link {{ request()->routeIs('sucursales.index') ? 'active' : '' }}">
+                                        <i class="fas fa-store nav-icon"></i><p>Sucursal</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
 
                         {{-- Configuración Contrato --}}
-                        <li class="nav-item has-treeview {{ request()->is('contratos*') || request()->is('reglas*') ? 'menu-open' : '' }}">
-                            <a href="#" class="nav-link {{ request()->is('contratos*') || request()->is('reglas*') ? 'active' : '' }}">
+                        <li class="nav-item has-treeview {{ request()->is('reglas*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link {{ request()->is('reglas*') ? 'active' : '' }}">
                                 <i class="fas fa-file-signature nav-icon"></i>
-                                <p>Configuración Contrato<i class="right fas fa-angle-left"></i></p>
+                                <p>Configuracion contrato<i class="right fas fa-angle-left"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="{{ route('contratos.index') }}"
-                                       class="nav-link {{ request()->routeIs('contratos.index') ? 'active' : '' }}">
-                                        <p>Contratos</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('reglas.index') }}"
-                                       class="nav-link {{ request()->routeIs('reglas.index') ? 'active' : '' }}">
+                                    <a href="{{ route('reglas.index') }}" class="nav-link {{ request()->routeIs('reglas.index') ? 'active' : '' }}">
                                         <p>Reglas de contrato</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
+
 
                         {{-- Configuración Auto --}}
                         <li class="nav-item has-treeview {{ request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ? 'menu-open' : '' }}">
@@ -177,26 +200,22 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="{{ route('autos.index') }}"
-                                       class="nav-link {{ request()->routeIs('autos.index') ? 'active' : '' }}">
+                                    <a href="{{ route('autos.index') }}" class="nav-link {{ request()->routeIs('autos.index') ? 'active' : '' }}">
                                         <p>Nuevo auto</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('marca.index') }}"
-                                       class="nav-link {{ request()->routeIs('marca.index') ? 'active' : '' }}">
+                                    <a href="{{ route('marca.index') }}" class="nav-link {{ request()->routeIs('marca.index') ? 'active' : '' }}">
                                         <p>Marcas</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('modelo.index') }}"
-                                       class="nav-link {{ request()->routeIs('modelo.index') ? 'active' : '' }}">
+                                    <a href="{{ route('modelo.index') }}" class="nav-link {{ request()->routeIs('modelo.index') ? 'active' : '' }}">
                                         <p>Modelos</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('dueños.index') }}"
-                                       class="nav-link {{ request()->routeIs('dueños.index') ? 'active' : '' }}">
+                                    <a href="{{ route('dueños.index') }}" class="nav-link {{ request()->routeIs('dueños.index') ? 'active' : '' }}">
                                         <p>Dueños</p>
                                     </a>
                                 </li>

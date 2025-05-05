@@ -41,7 +41,8 @@
                 <label for="type_service">Tipo de Servicio</label>
                 <select name="type_service" id="type_service" class="form-select" required>
                     <option value="">Seleccione...</option>
-                    <option value="parking" {{ old('type_service') == 'parking' ? 'selected' : '' }}>Estacionamiento</option>
+                    <option value="parking_daily" {{ old('type_service') == 'parking_daily' ? 'selected' : '' }}>Estacionamiento diario</option>
+                    <option value="parking_annual" {{ old('type_service') == 'parking_annual' ? 'selected' : '' }}>Estacionamiento anual</option>
                     <option value="car_wash" {{ old('type_service') == 'car_wash' ? 'selected' : '' }}>Lavado de Autos</option>
                     <option value="rent" {{ old('type_service') == 'rent' ? 'selected' : '' }}>Arriendo</option>
                 </select>

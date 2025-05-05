@@ -17,6 +17,8 @@ class Business extends Model
         'electronic_transfer'
     ];
 
+    protected $primaryKey = 'id_business';
+
     public function business_branch_office()
     {
         return $this->hasMany(BranchOffice::class, 'id_business', 'id_business');

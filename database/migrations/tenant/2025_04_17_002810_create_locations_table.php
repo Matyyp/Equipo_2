@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('locations', function (Blueprint $table) {
             $table->id('id_location');
             $table->string('commune');
-            $table->string('region');
+            $table->unsignedBigInteger('id_region');
+            $table->foreign('id_region')->references('id')->on('regions')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

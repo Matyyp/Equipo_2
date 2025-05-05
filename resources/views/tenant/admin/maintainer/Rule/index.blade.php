@@ -1,6 +1,6 @@
 @extends('tenant.layouts.admin')
 
-@section('title', 'Reglas del Sistema')
+@section('title', 'Reglas de contratos')
 @section('page_title', 'Listado de Reglas')
 
 @section('content')
@@ -20,6 +20,7 @@
                         <tr>
                             <th>Nombre</th>
                             <th>Descripción</th>
+                            <th>Tipo de Contrato</th>
                             <th class="text-right">Acciones</th>
                         </tr>
                     </thead>
@@ -28,17 +29,25 @@
                             <tr>
                                 <td>{{ $rule->name }}</td>
                                 <td>{{ $rule->description }}</td>
+                                <td>
+                                    @switch($rule->type_contract)
+                                        @case('rent')
+                                            <span class="badge bg-primary">Renta</span>
+                                            @break
+                                        @case('parking_daily')
+                                            <span class="badge bg-info text-dark">Estacionamiento Diario</span>
+                                            @break
+                                        @case('parking_annual')
+                                            <span class="badge bg-secondary">Estacionamiento Anual</span>
+                                            @break
+                                        @default
+                                            <span class="badge bg-light text-muted">Sin tipo</span>
+                                    @endswitch
+                                </td>
                                 <td class="text-right">
                                     <a href="{{ route('reglas.edit', $rule->id_rule) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <form action="{{ route('reglas.destroy', $rule->id_rule) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach

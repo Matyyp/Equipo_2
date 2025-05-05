@@ -14,6 +14,7 @@ class AdminUserSeeder extends Seeder
             [
                 'name'     => 'Administrador',
                 'password' => bcrypt('12341234'),
+                'id_branch_office' => '1'
             ]
         );
 

@@ -11,6 +11,10 @@ class Contract extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $fillable = [
+        'id_branch_office',
+    ];
+
     protected $primaryKey = 'id_contract';
 
 
@@ -32,5 +36,10 @@ class Contract extends Model
     public function contract_contract_parking()
     {
         return $this->hasOne(ContractParking::class, 'id_contract', 'id_contract');
+    }
+
+    public function contract_branch_office()
+    {
+        return $this->belongsTo(BranchOffice::class, 'id_branch_office', 'id_branch');
     }
 }

@@ -19,8 +19,14 @@ use App\Http\Controllers\Tenant\Maintainers\BelongsController;
 use App\Http\Controllers\Tenant\Maintainers\BranchOfficeController;
 use App\Http\Controllers\Tenant\Maintainers\ServiceController;
 use App\Http\Controllers\Tenant\Maintainers\ContractController;
+use App\Http\Controllers\Tenant\Maintainers\RegionController;
+use App\Http\Controllers\Tenant\Maintainers\BankController;
+use App\Http\Controllers\Tenant\Maintainers\TypeAccountController;
 use App\Http\Controllers\Tenant\Parking\ParkingController;
 use App\Http\Controllers\Tenant\Maintainers\PaymentRecordController;
+use App\Http\Controllers\Tenant\Maintainers\BankDetailController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -59,9 +65,13 @@ Route::middleware([
     //Mantenedores
     Route::middleware(['auth', 'permission:mantenedores.access'])->group(function () {
         Route::resource('empresa', BusinessController::class);
+
+        Route::get('locacion/data', [LocationController::class, 'data'])->name('locacion.data');
         Route::resource('locacion', LocationController::class);
+        
         Route::resource('accesorio', AccessoryController::class);
-        Route::resource('informacion_contacto', ContactInformationController::class);
+        Route::get('informacion_contacto/create/{branch}', [ContactInformationController::class, 'create'])->name('informacion_contacto.create');
+        Route::resource('informacion_contacto', ContactInformationController::class)->except(['create']);
         Route::resource('modelo', ModelcarController::class);
         Route::resource('marca', BrandController::class);
         Route::resource('dueños', OwnerController::class);
@@ -71,18 +81,32 @@ Route::middleware([
         Route::resource('asociado', BelongsController::class);
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
+        Route::get('contratos/create/{branch}/{type}', [ContractController::class, 'create'])->name('contratos.create');
         Route::resource('contratos', ContractController::class);
         Route::resource('payment', PaymentRecordController::class);
 
 
+        Route::get('region/data', [RegionController::class, 'index'])->name('region.data');
+        Route::resource('region', RegionController::class);
+        Route::get('banco/data', [BankController::class, 'data'])->name('banco.data');
+        Route::resource('banco', BankController::class);
+        Route::get('tipo_cuenta/data', [TypeAccountController::class, 'data'])->name('tipo_cuenta.data');
+        Route::resource('tipo_cuenta', TypeAccountController::class);
+        Route::get('cuentas_bancarias/data', [BankDetailController::class, 'data'])->name('cuentas_bancarias.data');
+        Route::resource('cuentas_bancarias', BankDetailController::class);
 
+        Route::get('estacionamiento/check-contrato', [ParkingController::class, 'checkContrato'])->name('estacionamiento.checkContrato');
         Route::get('estacionamiento/data', [ParkingController::class, 'data'])
         ->name('estacionamiento.data');
         Route::get('estacionamiento/search', [ParkingController::class, 'search'])
         ->name('estacionamiento.search');
+        Route::get('estacionamiento/search-phone', [ParkingController::class, 'searchPhone'])
+        ->name('estacionamiento.searchPhone');
         Route::get('estacionamiento/history', [ParkingController::class, 'history'])
         ->name('estacionamiento.history');
         Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])
+        ->name('contrato.print');
+        Route::get('/ticket/{parking}/print', [ParkingController::class, 'printTicket'])
         ->name('contrato.print');
 
         Route::resource('estacionamiento', ParkingController::class);

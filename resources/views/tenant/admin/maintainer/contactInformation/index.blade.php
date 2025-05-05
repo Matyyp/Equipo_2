@@ -5,14 +5,24 @@
 
 @section('content')
 <div class="card">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h3 class="card-title">Información de Contacto</h3>
-        <a href="{{ route('informacion_contacto.create') }}" class="btn btn-success btn-sm float-right">
-            <i class="fas fa-plus"></i> Nuevo Contacto
+        <a href="{{ route('informacion_contacto.create', $branch->id_branch) }}" class="btn btn-dark btn-sm">
+            <i class="fas fa-info-circle"></i> Agregar Contacto
         </a>
     </div>
 
     <div class="card-body p-0">
+        @php
+            $labels = [
+                'phone' => 'Teléfono',
+                'email' => 'Correo Electrónico',
+                'whatsapp' => 'WhatsApp',
+                'website' => 'Sitio Web',
+                'other' => 'Otro'
+            ];
+        @endphp
+
         @if ($data->count())
             <div class="table-responsive">
                 <table class="table table-bordered mb-0">
@@ -26,19 +36,12 @@
                     <tbody>
                         @foreach ($data as $item)
                             <tr>
-                                <td>{{ $item->type_contact }}</td>
+                                <td>{{ $labels[$item->type_contact] ?? ucfirst($item->type_contact) }}</td>
                                 <td>{{ $item->data_contact }}</td>
                                 <td class="text-right">
                                     <a href="{{ route('informacion_contacto.edit', $item->id_contact_information) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <form action="{{ route('informacion_contacto.destroy', $item->id_contact_information) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach

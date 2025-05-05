@@ -5,79 +5,76 @@
 
 @section('content')
 <div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Ubicaciones registradas</h3>
-        <a href="{{ route('locacion.create') }}" class="btn btn-success btn-sm float-right">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title mb-0">Ubicaciones registradas</h3>
+        <a href="{{ route('locacion.create') }}" class="btn btn-success btn-sm">
             <i class="fas fa-plus"></i> Ingresar Ubicación
         </a>
     </div>
 
-    <div class="card-body p-0">
-        @if ($data->count())
-            <div class="table-responsive">
-                <table class="table table-bordered mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Región</th>
-                            <th>Comuna</th>
-                            <th class="text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($data as $location)
-                            <tr>
-                                <td>{{ $location->region }}</td>
-                                <td>{{ $location->commune }}</td>
-                                <td class="text-right">
-                                    <a href="{{ route('locacion.edit', $location->id_location) }}" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i> Editar
-                                    </a>
-
-                                    <form action="{{ route('locacion.destroy', $location->id_location) }}"
-                                          method="POST"
-                                          class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @else
-            <div class="alert alert-info m-3">No hay ubicaciones registradas.</div>
-        @endif
+    <div class="card-body">
+        <table id="locations-table" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Región</th>
+                    <th>Comuna</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
 @endsection
 
 @push('scripts')
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    document.querySelectorAll('.delete-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: '¿Eliminar ubicación?',
-                text: 'Esta acción no se puede deshacer.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d'
-            }).then(result => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
+$(document).ready(function() {
+    $('#locations-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route("locacion.index") }}',
+        columns: [
+            { data: 'region', name: 'region' },
+            { data: 'commune', name: 'commune' },
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
+        ],
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        }
+    });
+
+    // Confirmación para eliminar
+    $(document).on('submit', '.delete-form', function(e) {
+        e.preventDefault();
+        const form = this;
+        Swal.fire({
+            title: '¿Eliminar ubicación?',
+            text: 'Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
         });
     });
 
+    // Notificación de éxito
     @if (session('success'))
         Swal.fire({
             icon: 'success',
@@ -87,5 +84,6 @@
             showConfirmButton: false
         });
     @endif
+});
 </script>
 @endpush

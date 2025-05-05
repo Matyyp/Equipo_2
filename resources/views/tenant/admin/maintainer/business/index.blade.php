@@ -48,15 +48,6 @@
                                        class="btn btn-warning btn-sm mb-1">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-
-                                    <form action="{{ route('empresa.destroy', $business->id_business) }}"
-                                          method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach

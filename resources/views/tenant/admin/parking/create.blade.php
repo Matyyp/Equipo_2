@@ -1,4 +1,3 @@
-{{-- resources/views/tenant/admin/parking/parking_register.blade.php --}}
 @extends('tenant.layouts.admin')
 
 @section('title', 'Registro de Estacionamiento')
@@ -8,9 +7,15 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-    .loading-spinner { display: none; color: #0d6efd; margin-left: 10px; }
-    .is-valid { border-color: #198754 !important; }
-    .is-invalid { border-color: #dc3545 !important; }
+  .loading-spinner { display: none; color: #0d6efd; margin-left: 10px; }
+  .form-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  input[readonly] {
+    background-color: #e9ecef !important;
+    color: #000;
+  }
 </style>
 @endpush
 
@@ -21,25 +26,51 @@
       <i class="fas fa-car me-2"></i>Ingreso de Vehículo al estacionamiento
     </div>
     <div class="card-body">
-      <form action="{{ route('estacionamiento.store') }}" method="POST" autocomplete="off">
+      @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+      @endif
+
+      @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+      @endif
+
+      @if($parkingServices->isEmpty())
+        <div class="alert alert-warning">
+          No hay servicios de estacionamiento disponibles. Por favor, active alguno antes de registrar vehículos.
+        </div>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            $('#form-register :input:not([name="_token"])').prop('disabled', true);
+          });
+        </script>
+      @elseif(!$hasContract)
+        <div class="alert alert-warning">
+          No hay contratos activos asociados a los servicios disponibles. Por favor, cree uno antes de registrar vehículos.
+        </div>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            $('#form-register :input:not([name="_token"])').prop('disabled', true);
+          });
+        </script>
+      @endif
+
+      <form action="{{ route('estacionamiento.store') }}" method="POST" autocomplete="off" id="form-register">
         @csrf
 
-        {{-- Patente --}}
         <div class="row mb-3">
           <div class="col-md-4 position-relative">
             <label for="plate" class="form-label">Patente</label>
             <div class="input-group">
-              <input type="text" id="plate" name="plate" class="form-control" placeholder="Ej: AB123CD" maxlength="8" required>
+              <input type="text" id="plate" name="plate" class="form-control" placeholder="Ej: AB123C" minlength="6" maxlength="6" pattern="[A-Z0-9]{6}" required>
               <span class="input-group-text"><i class="fas fa-search"></i></span>
             </div>
-            <div id="plateFeedback" class="invalid-feedback"></div>
+            <div id="plateAlert" class="mt-2"></div>
             <div id="plateLoading" class="loading-spinner position-absolute end-0 top-50 me-3">
               <i class="fas fa-spinner fa-spin"></i>
             </div>
           </div>
         </div>
 
-        {{-- Nombre y teléfono --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="name" class="form-label">Nombre</label>
@@ -47,11 +78,10 @@
           </div>
           <div class="col-md-6">
             <label for="phone" class="form-label">Teléfono</label>
-            <input type="tel" id="phone" name="phone" class="form-control" required>
+            <input type="number" id="phone" name="phone" class="form-control" min="100000000" max="999999999" required>
           </div>
         </div>
 
-        {{-- Fechas --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="start_date" class="form-label">Fecha de Inicio</label>
@@ -63,7 +93,6 @@
           </div>
         </div>
 
-        {{-- KMs --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="arrival_km" class="form-label">Km Entrada (opcional)</label>
@@ -75,29 +104,17 @@
           </div>
         </div>
 
-        {{-- Marca y Modelo --}}
-        <div class="row mb-4">
+        <div class="row mb-3">
           <div class="col-md-6">
-            <label for="id_brand" class="form-label">Marca</label>
-            <select id="id_brand" name="id_brand" class="selectpicker form-control" data-live-search="true" required>
-              <option value="">Seleccione una marca</option>
-              @foreach($brands as $brand)
-                <option value="{{ $brand->id_brand }}">{{ $brand->name_brand }}</option>
-              @endforeach
-            </select>
+            <label for="brand_name" class="form-label">Marca</label>
+            <input type="text" id="brand_name" name="brand_name" class="form-control" required>
           </div>
           <div class="col-md-6">
-            <label for="id_model" class="form-label">Modelo</label>
-            <select id="id_model" name="id_model" class="selectpicker form-control" data-live-search="true" required>
-              <option value="">Seleccione un modelo</option>
-              @foreach($models as $model)
-                <option value="{{ $model->id_model }}">{{ $model->name_model }}</option>
-              @endforeach
-            </select>
+            <label for="model_name" class="form-label">Modelo</label>
+            <input type="text" id="model_name" name="model_name" class="form-control" required>
           </div>
         </div>
 
-        {{-- Servicio --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="service_id" class="form-label">Tipo de Estacionamiento</label>
@@ -110,7 +127,6 @@
           </div>
         </div>
 
-        {{-- Lavado --}}
         <div class="form-check mb-4">
           <input type="checkbox" id="wash_service" name="wash_service" class="form-check-input">
           <label for="wash_service" class="form-check-label">Incluye Servicio de Lavado</label>
@@ -118,7 +134,7 @@
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
           <button type="reset" class="btn btn-secondary me-md-2"><i class="fas fa-eraser me-1"></i> Limpiar</button>
-          <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Guardar</button>
+          <button type="submit" class="btn btn-primary" id="submit-btn"><i class="fas fa-save me-1"></i> Guardar</button>
         </div>
       </form>
     </div>
@@ -132,51 +148,57 @@
 document.addEventListener('DOMContentLoaded', () => {
   $('.selectpicker').selectpicker();
 
-  const searchUrl = '{{ route("estacionamiento.search") }}';
-  let debounceTimer;
-
   const plateInput = $('#plate');
-  const plateFeedback = $('#plateFeedback');
-  const plateLoading = $('#plateLoading');
-  const nameInput = $('#name');
   const phoneInput = $('#phone');
-  const brandSelect = $('#id_brand');
-  const modelSelect = $('#id_model');
+  const nameInput = $('#name');
+  const brandInput = $('#brand_name');
+  const modelInput = $('#model_name');
+  const plateAlert = $('#plateAlert');
+  const plateLoading = $('#plateLoading');
+  const contratoUrl = '{{ route("estacionamiento.checkContrato") }}';
+  const submitBtn = $('#submit-btn');
+  let debounceTimer;
+  let plateChecked = false;
 
-  function showFeedback(element, message, isValid) {
-    const input = $(`#${element}`);
-    const feedback = $(`#${element}Feedback`);
-    input.removeClass('is-invalid is-valid');
-    feedback.text('');
-    if (message) {
-      input.addClass(isValid ? 'is-valid' : 'is-invalid');
-      if (!isValid) feedback.text(message);
-    }
+  function showAlert(type, message) {
+    plateAlert.removeClass().addClass(`alert alert-${type} mt-2`).text(message);
+  }
+
+  function clearAssociatedFields() {
+    nameInput.val('').prop('readonly', false);
+    phoneInput.val('').prop('readonly', false);
+    brandInput.val('').prop('readonly', false);
+    modelInput.val('').prop('readonly', false);
   }
 
   function searchByPlate(plate) {
     if (!plate) return;
     plateLoading.show();
+    plateChecked = false;
 
     $.ajax({
-      url: searchUrl,
+      url: '{{ route("estacionamiento.search") }}',
       method: 'GET',
-      dataType: 'json',
       data: { plate },
       success: function(response) {
         if (response.found) {
-          nameInput.val(response.name || '');
-          phoneInput.val(response.phone || '');
-          if (response.id_brand) brandSelect.val(response.id_brand).selectpicker('refresh');
-          if (response.id_model) modelSelect.val(response.id_model).selectpicker('refresh');
-          showFeedback('plate', 'Datos encontrados', true);
+          if (response.parked) {
+            showAlert('danger', 'Este vehículo ya se encuentra estacionado.');
+            clearAssociatedFields();
+            plateChecked = false;
+          } else {
+            nameInput.val(response.name || '').prop('readonly', true);
+            phoneInput.val(response.phone || '').prop('readonly', true);
+            brandInput.val(response.brand || '').prop('readonly', true);
+            modelInput.val(response.model || '').prop('readonly', true);
+            showAlert('success', 'Vehículo disponible. Puede continuar con el ingreso.');
+            plateChecked = true;
+          }
         } else {
-          showFeedback('plate', 'Patente no encontrada, puede ingresar manualmente', false);
+          showAlert('warning', 'La patente no existe en los registros. Ingrese los datos manualmente.');
+          clearAssociatedFields();
+          plateChecked = true;
         }
-      },
-      error: function(xhr) {
-        showFeedback('plate', 'Error buscando patente, puede ingresar manualmente', false);
-        console.error('Error:', xhr.responseText);
       },
       complete: function() {
         plateLoading.hide();
@@ -184,19 +206,65 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  plateInput.on('keydown', function(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      searchByPlate($(this).val().trim());
-      return false;
-    }
-  }).on('input', function() {
+  plateInput.on('input', function() {
     const plate = $(this).val().trim().toUpperCase();
     $(this).val(plate);
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => searchByPlate(plate), 500);
-  }).on('blur', function() {
-    searchByPlate($(this).val().trim());
+  });
+
+  phoneInput.on('input', function () {
+    const phone = $(this).val().trim();
+    if (phone.length === 9) {
+      $.ajax({
+        url: '{{ route("estacionamiento.searchPhone") }}',
+        method: 'GET',
+        data: { phone },
+        success: function (res) {
+          if (res.found) {
+            nameInput.val(res.name).prop('readonly', true);
+            phoneInput.prop('readonly', true);
+            showAlert('info', 'Este número ya está registrado a nombre de ' + res.name);
+          } else {
+            nameInput.prop('readonly', false);
+            phoneInput.prop('readonly', false);
+          }
+        },
+        error: function () {
+          showAlert('danger', 'Error al verificar el número. Intente de nuevo.');
+        }
+      });
+    }
+  });
+
+  $('#service_id').on('changed.bs.select', function () {
+    const serviceId = $(this).val();
+    if (!serviceId) return;
+
+    $.ajax({
+      url: contratoUrl,
+      method: 'GET',
+      data: { service_id: serviceId },
+      success: function (res) {
+        $('#contract-warning').remove();
+        if (!res.contract_exists) {
+          submitBtn.prop('disabled', true);
+          submitBtn.after('<div id="contract-warning" class="text-danger mt-2">Este servicio no tiene contrato activo.</div>');
+        } else {
+          submitBtn.prop('disabled', false);
+        }
+      },
+      error: function () {
+        alert('No se pudo verificar el contrato del servicio.');
+      }
+    });
+  });
+
+  $('#form-register').on('submit', function(e) {
+    if (!plateChecked) {
+      e.preventDefault();
+      alert('Debe verificar la patente antes de guardar.');
+    }
   });
 
   const today = new Date().toISOString().slice(0, 10);
