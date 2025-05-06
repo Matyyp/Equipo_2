@@ -25,4 +25,12 @@ class Park extends Model
     {
         return $this->belongsTo(Car::class, 'id_car', 'id_car');
     }
+    public function service()
+    {
+        return $this->belongsTo(
+            \App\Models\Service::class,
+            'id_service', // FK en parks
+            'id_service'  // PK en services
+        );
+    }
 }

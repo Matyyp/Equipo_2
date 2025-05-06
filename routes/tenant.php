@@ -110,6 +110,12 @@ Route::middleware([
         ->name('contrato.print');
 
         Route::resource('estacionamiento', ParkingController::class);
+        // Ruta para procesar el Check-Out
+        Route::post('/estacionamiento/{parking}/checkout', [ParkingController::class, 'checkout'])->name('estacionamiento.checkout');
+
+
+        // Luego tu resource:
+        Route::resource('estacionamiento', App\Http\Controllers\Tenant\Parking\ParkingController::class);
         
     });
 

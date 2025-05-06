@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PaymentRecord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Carbon\Carbon;
 class PaymentRecordController extends Controller
 {
     /**
@@ -14,47 +14,46 @@ class PaymentRecordController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-            $rows = PaymentRecord::with([
-                'paymentService.service.service_parking.parking_register' => fn($q) => $q->withTrashed(),
-                'paymentService.service.service_parking.parking_register.register_parking_register' => fn($q) => $q->withTrashed(),
-                'paymentService.service.service_parking.parking_park' => fn($q) => $q->withTrashed(),
-                'paymentService.service.service_parking.parking_park.park_car.car_belongs.belongs_owner',
-                'paymentVoucher',
-            ])
-            ->get()
-            ->map(function ($record) {
-                $payment = $record->paymentService;
-                $service = $payment?->service;
-                $voucher = $record->paymentVoucher;
-    
-                $parkingReg = $service?->service_parking?->parking_register?->first();
-                $register   = $parkingReg?->register_parking_register;
-                $idPark     = $register?->id_park;
-                $park       = $service?->service_parking?->parking_park?->firstWhere('id', $idPark);
-                $car        = $park?->park_car;
-                $owner      = $car?->car_belongs?->first()?->belongs_owner;
-    
-                return [
-                    'id_payment'    => $record->id_payment,
-                    'payment_date'  => $record->payment_date,
-                    'amount'        => $record->amount,
-                    'type_payment'  => $record->type_payment,
-                    'voucher_id'    => $voucher?->id_voucher ?? '-',
-                    'service_name'  => $service?->name ?? '-',
-                    'type_service'  => $service?->type_service ?? '-',
-                    'price_net'     => $service?->price_net ?? 0,
-                    'car_patent'    => $car?->patent ?? '-',
-                    'owner_name'    => $owner?->name ?? '-',
-                    'total_value'   => $register?->total_value ?? 0,
-                ];
-            });
-    
-            return response()->json(['data' => $rows->values()]);
+        if (! $request->ajax()) {
+            return view('tenant.admin.maintainer.payment.index');
         }
     
-        return view('tenant.admin.maintainer.payment.index');
-    }    
+        $rows = PaymentRecord::with('paymentVoucher')->get();
+    
+        $mapped = $rows->map(function ($payment) {
+            $parking = \App\Models\ParkingRegister::withTrashed()
+                ->with([
+                    'park' => fn($q) => $q->withTrashed()
+                        ->with([
+                            'park_car.car_belongs.belongs_owner',
+                            'service'
+                        ])
+                ])->find($payment->id_parking_register);
+    
+            $park    = $parking?->park;
+            $car     = $park?->park_car;
+            $owner   = $car?->car_belongs->first()?->belongs_owner;
+            $service = $park?->service;
+    
+            return [
+                'id_payment'   => $payment->id_payment,
+                'payment_date' => $payment->payment_date,
+                'amount'       => $payment->amount,
+                'type_payment' => $payment->type_payment,
+                'service_name' => $service?->name ?? 'N/D',
+                'type_service' => $service?->type_service ?? 'N/D',
+                'price_net'    => $service?->price_net ?? 'N/D',
+                'car_patent'   => $car?->patent ?? 'N/D',
+                'owner_name'   => $owner?->name ?? 'N/D',
+                'total_value'  => $parking?->total_value ?? 'N/D',
+            ];
+        });
+    
+        return response()->json(['data' => $mapped]);
+    }
+    
+
+
 
     /**
      * Show the form for creating a new resource.

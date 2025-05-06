@@ -1,17 +1,23 @@
+{{-- resources/views/tenant/admin/maintainer/payment/index.blade.php --}}
 @extends('tenant.layouts.admin')
 
 @section('title', 'Pagos Registrados')
 @section('page_title', 'Pagos Registrados')
 
 @push('styles')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<link
+  rel="stylesheet"
+  href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"
+/>
 @endpush
 
 @section('content')
 <div class="container mt-4">
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            <h5 class="mb-0"><i class="fas fa-money-check-alt me-2"></i> Lista de Pagos</h5>
+            <h5 class="mb-0">
+                <i class="fas fa-money-check-alt me-2"></i> Lista de Pagos
+            </h5>
         </div>
         <div class="card-body">
             <table id="payment-table" class="table table-striped table-bordered w-100">
@@ -21,13 +27,14 @@
                         <th>Fecha</th>
                         <th>Monto</th>
                         <th>Tipo Pago</th>
-                        <th>Voucher</th>
+
                         <th>Servicio</th>
                         <th>Tipo Servicio</th>
                         <th>Precio Neto</th>
                         <th>Patente</th>
                         <th>Dueño</th>
                         <th>Total</th>
+                        <th>Acciones</th> {{-- Nueva columna --}}
                     </tr>
                 </thead>
             </table>
@@ -48,17 +55,35 @@ $(document).ready(function () {
         serverSide: false,
         ajax: '{{ route("payment.index") }}',
         columns: [
-            { data: 'id_payment', title: '#' },
-            { data: 'payment_date', title: 'Fecha' },
-            { data: 'amount', title: 'Monto' },
-            { data: 'type_payment', title: 'Tipo Pago' },
-            { data: 'voucher_id', title: 'Voucher' },
-            { data: 'service_name', title: 'Servicio' },
-            { data: 'type_service', title: 'Tipo Servicio' },
-            { data: 'price_net', title: 'Precio Neto' },
-            { data: 'car_patent', title: 'Patente' },
-            { data: 'owner_name', title: 'Dueño' },
-            { data: 'total_value', title: 'Total' },
+            { data: 'id_payment',     title: '#' },
+            { data: 'payment_date',   title: 'Fecha' },
+            { data: 'amount',         title: 'Monto' },
+            { data: 'type_payment',   title: 'Tipo Pago' },
+
+            { data: 'service_name',   title: 'Servicio' },
+            { data: 'type_service',   title: 'Tipo Servicio' },
+            { data: 'price_net',      title: 'Precio Neto' },
+            { data: 'car_patent',     title: 'Patente' },
+            { data: 'owner_name',     title: 'Dueño' },
+            { data: 'total_value',    title: 'Total' },
+            {
+                // Columna “Acciones”
+                data: null,
+                orderable: false,
+                searchable: false,
+                title: 'Acciones',
+                render: function (row) {
+                    return `
+                        <a
+                          href="/payment/${row.id_payment}/voucher"
+                          class="btn btn-sm btn-outline-primary"
+                          title="Generar Voucher"
+                        >
+                          <i class="fas fa-file-invoice-dollar"></i>
+                        </a>
+                    `;
+                }
+            }
         ],
         language: {
             url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-CL.json'

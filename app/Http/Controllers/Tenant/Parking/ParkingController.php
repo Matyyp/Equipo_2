@@ -10,6 +10,7 @@ use App\Models\Car;
 use App\Models\Service;
 use App\Models\Belong;
 use App\Models\Park;
+use App\Models\Parking;
 use App\Models\Register;
 use App\Models\Owner;
 use App\Models\BranchOffice;
@@ -19,6 +20,7 @@ use App\Models\AnnualContract;
 use App\Models\Generate;
 use Carbon\Carbon;
 use App\Models\PaymentRecord;
+use App\Models\Payment;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
@@ -520,7 +522,7 @@ class ParkingController extends Controller
             ->map(fn($contain) => $contain->contains_rule);
     
         // PDF
-        $pdfContent = \PDF::loadView('pdf.ContractDaily', [
+        $pdfContent = PDF::loadView('pdf.ContractDaily', [
             'nombre'                => $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible',
             'telefono'              => $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible',
             'patente'               => $client->park_car->patent ?? 'No disponible',
@@ -594,6 +596,55 @@ class ParkingController extends Controller
         return view('pdf.print_contrato', compact('pdfBase64'));
     }
 
+    public function checkout(Request $request)
+    {
+        $request->validate([
+            'type_payment'         => 'required|string',
+            'id_parking_register'  => 'required|exists:parking_registers,id_parking_register',
+        ]);
+    
+        $parking = ParkingRegister::with('park.service')->findOrFail($request->id_parking_register);
+    
+        if (! $parking->park) {
+            return back()->withErrors('No hay parqueo asociado.');
+        }
+    
+        if (! $parking->park->service) {
+            return back()->withErrors('No hay servicio asociado.');
+        }
+    
+        DB::transaction(function () use ($request, $parking) {
+            $serviceId = $parking->park->service->id_service;
+            $voucherId = $parking->id_voucher ?? null;
+    
+            // Crear Payment (relación entre servicio y voucher)
+            $payment = \App\Models\Payment::create([
+                'id_service' => $serviceId,
+                'id_voucher' => $voucherId,
+            ]);
+    
+            // Crear registro de pago
+            \App\Models\PaymentRecord::create([
+                'id_service'          => $serviceId,
+                'id_parking_register' => $request->id_parking_register,
+                'type_payment'        => $request->type_payment,
+                'amount'              => $parking->total_value,
+                'payment_date'        => now(),
+                'id_voucher'          => $voucherId,
+            ]);
+    
+            // Actualizar fecha de salida
+            park::where('id',$parking->id_park)->delete();
+            $parking->delete();
+        });
+    
+        return redirect()
+            ->route('estacionamiento.index')
+            ->with('success', 'Check-Out y pago registrados correctamente.');
+    }
+    
+
+    
     
     
     

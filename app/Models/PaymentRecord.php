@@ -19,11 +19,13 @@ class PaymentRecord extends Model
 
     protected $fillable = [
         'id_service',
-        'id_voucher',
-        'payment_date',
+        'id_parking_register',
         'type_payment',
         'amount',
+        'payment_date',
+        'id_voucher',
     ];
+    
 
     /**
      * Relación con Payment como "servicio pagado"

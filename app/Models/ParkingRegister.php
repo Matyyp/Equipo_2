@@ -32,4 +32,12 @@ class ParkingRegister extends Model
     {
         return $this->hasMany(Generate::class, 'id_parking_register', 'id_parking_register');
     }
+    public function park()
+    {
+        return $this->belongsTo(
+            \App\Models\Park::class,
+            'id_park',  // FK en parking_registers
+            'id'        // PK en parks
+        );
+    }
 }
