@@ -24,6 +24,7 @@ return new class extends Migration
                 ->on('payments')
                 ->onDelete('cascade');
             $table->integer('amount');
+            $table->integer('id_parking_register');
             $table->string('type_payment'); 
             $table->date('payment_date');
             $table->timestamps();
