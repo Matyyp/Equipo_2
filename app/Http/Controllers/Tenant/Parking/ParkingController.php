@@ -438,7 +438,6 @@ class ParkingController extends Controller
     public function history(Request $request)
     {
         if ($request->ajax()) {
-
             $parks = Park::onlyTrashed()
                 ->with([
                     'park_car.car_brand',
@@ -446,7 +445,11 @@ class ParkingController extends Controller
                     'park_car.car_belongs.belongs_owner',
                     'park_parking.parking_service',
                     'park_parking.parking_register' => function ($q) {
-                        $q->with('register_parking_register');
+                        $q->withTrashed()->with([
+                            'register_parking_register' => function ($r) {
+                                $r->withTrashed();
+                            }
+                        ]);
                     },
                 ])
                 ->orderBy('deleted_at', 'desc')
@@ -457,19 +460,23 @@ class ParkingController extends Controller
                 $owner   = optional(optional($car)->car_belongs->first())->belongs_owner;
                 $pivot   = $park->park_parking;
                 $service = optional($pivot)->parking_service;
-                $reg     = optional(optional($pivot)->parking_register[0])->register_parking_register;
+    
+                // Obtener el primer parking_register (si existe)
+                $register = collect(optional($pivot)->parking_register)->first();
+                $reg      = $register?->register_parking_register;
     
                 return [
-                    'owner_name'   => $owner?->name ?? '-',
-                    'owner_phone'  => $owner?->number_phone ?? '-',
-                    'patent'       => $car?->patent ?? '-',
-                    'brand'        => $car?->car_brand?->name_brand ?? '-',
-                    'model'        => $car?->car_model?->name_model ?? '-',
-                    'start_date'   => $reg?->start_date ?? '-',
-                    'end_date'     => $reg?->end_date ?? '-',
-                    'days'         => $reg?->days ?? '-',
-                    'price'        => $service?->price_net ?? '-',
-                    'total_value'  => $reg?->total_value ?? '-',
+                    'owner_name'          => $owner?->name ?? '-',
+                    'owner_phone'         => $owner?->number_phone ?? '-',
+                    'patent'              => $car?->patent ?? '-',
+                    'brand'               => $car?->car_brand?->name_brand ?? '-',
+                    'model'               => $car?->car_model?->name_model ?? '-',
+                    'start_date'          => $reg?->start_date,
+                    'end_date'            => $reg?->end_date,
+                    'days'                => $reg?->days,
+                    'price'               => $service?->price_net,
+                    'total_value'         => $reg?->total_value,
+                    'id_parking_register' => $register?->id_parking_register, // necesario para el botón
                 ];
             })->filter()->values();
     
@@ -478,6 +485,7 @@ class ParkingController extends Controller
     
         return view('tenant.admin.parking.history');
     }
+    
 
     public function print($parkingId)
     {

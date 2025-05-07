@@ -76,16 +76,17 @@ class ContactInformationController extends Controller
             'type_contact' => 'required|string|max:100',
             'data_contact' => 'required|string|max:255',
         ]);
-
-        ContactInformation::where('id_contact_information', $id)
-        ->update([
+    
+        $contact = ContactInformation::findOrFail($id);
+    
+        $contact->update([
             'type_contact' => $request->type_contact,
             'data_contact' => $request->data_contact,
         ]);
-
-        return redirect()->route('informacion_contacto.index');
+    
+        return redirect()->route('informacion_contacto.show', $contact->id_branch_office);
     }
-
+    
     /**
      * Remove the specified resource from storage.
      */

@@ -17,6 +17,8 @@ class ContactInformation extends Model
         'id_branch_office'
     ];
 
+    protected $primaryKey = 'id_contact_information';
+
     public function contact_information_presents()
     {
         return $this->hasMany(Present::class, 'id_contact_information', 'id_contact_information');

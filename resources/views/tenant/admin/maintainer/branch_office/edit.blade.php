@@ -48,11 +48,12 @@
 
           <div class="col-md-6">
             <label class="form-label">Región</label>
-            <select id="region-select" class="selectpicker form-control" data-live-search="true" required>
+            <select name="region" id="region-select" class="selectpicker form-control" data-live-search="true" required>
               <option value="">Seleccione región</option>
-              @foreach ($locacion->pluck('region')->unique() as $region)
-                <option value="{{ $region }}" {{ $branch->branch_office_location?->region == $region ? 'selected' : '' }}>
-                  {{ $region }}
+              @foreach ($locacion->pluck('location_region')->filter()->unique('id') as $region)
+                <option value="{{ $region->name_region }}" 
+                    {{ old('region', $branch->branch_office_location?->location_region?->name_region) == $region->name_region ? 'selected' : '' }}>
+                  {{ $region->name_region }}
                 </option>
               @endforeach
             </select>
@@ -65,7 +66,9 @@
             <select name="id_location" id="commune-select" class="selectpicker form-control" data-live-search="true" required>
               <option value="">Seleccione comuna</option>
               @foreach ($locacion as $loc)
-                <option value="{{ $loc->id_location }}" data-region="{{ $loc->region }}" {{ $branch->id_location == $loc->id_location ? 'selected' : '' }}>
+                <option value="{{ $loc->id_location }}"
+                        data-region="{{ $loc->location_region?->name_region }}"
+                        {{ $branch->id_location == $loc->id_location ? 'selected' : '' }}>
                   {{ $loc->commune }}
                 </option>
               @endforeach

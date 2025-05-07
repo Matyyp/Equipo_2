@@ -93,10 +93,10 @@ class BranchOfficeController extends Controller
     public function edit($id)
     {
         $branch = BranchOffice::where('id_branch', $id)
-            ->with(['branch_office_location', 'branch_office_business'])
+            ->with(['branch_office_location.location_region', 'branch_office_business'])
             ->firstOrFail();
 
-        $locacion = Location::all();
+        $locacion = Location::with('location_region')->get();
         $business = Business::all();
 
         return view('tenant.admin.maintainer.branch_office.edit', compact('branch', 'locacion', 'business'));
