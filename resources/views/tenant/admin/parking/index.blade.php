@@ -11,8 +11,15 @@
 @section('content')
 <div class="container mt-5">
   <div class="card">
-    <div class="card-header bg-secondary text-white">
-      <i class="fas fa-table me-2"></i>Listado de Ingresos
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div>
+        <i class="fas fa-history"></i> Listado de Estacionados
+      </div>
+      <div>
+        <button onclick="location.href='/estacionamiento/create'" class="btn btn-sm btn-light text-info">
+        <i class="fas fa-car"></i>Ingresar vehiculo
+        </button>
+      </div>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -105,7 +112,7 @@
         { data: 'end_date' },
         { data: 'days' },
         { data: 'service_price' },
-        { data: 'total_value' },
+        { data: 'total_formatted' },
         {
           data: null,
           orderable: false,

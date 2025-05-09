@@ -25,11 +25,6 @@
       <div>
         <i class="fas fa-history"></i> Historial de Ingresos
       </div>
-      <div>
-        <button onclick="location.reload()" class="btn btn-sm btn-light text-info">
-          <i class="fas fa-sync-alt"></i> Actualizar
-        </button>
-      </div>
     </div>
     <div class="card-body">
       <div class="table-responsive">

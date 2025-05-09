@@ -18,8 +18,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_branch_office');
             $table->foreign('id_branch_office')->references('id_branch')->on('branch_offices')->onDelete('cascade');
             $table->enum('type_service', ['car_wash', 'parking_daily', 'parking_annual', 'rent']);
+            $table->enum('status', ['available', 'not_available']);
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

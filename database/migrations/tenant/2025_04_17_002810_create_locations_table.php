@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_region');
             $table->foreign('id_region')->references('id')->on('regions')->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

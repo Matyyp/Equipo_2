@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('id_maintenance')->references('id_maintenance')->on('car_maintenances')->onDelete('cascade');
             $table->foreign('id_car')->references('id_car')->on('cars')->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

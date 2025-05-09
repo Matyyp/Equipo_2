@@ -17,8 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_service');
             $table->foreign('id_service')->references('id_service')->on('parkings')->onDelete('cascade');
             $table->foreign('id_car')->references('id_car')->on('cars')->onDelete('cascade');
+            $table->enum('status', ['parked', 'not_parked']);
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

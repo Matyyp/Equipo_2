@@ -24,7 +24,7 @@ return new class extends Migration
                 ->on('parking_registers')
                 ->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

@@ -4,12 +4,12 @@ namespace App\Models;
 use App\Models\PaymentRegister;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Service extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+
 
     protected $primaryKey = 'id_service';
 
@@ -18,6 +18,7 @@ class Service extends Model
         'price_net',
         'type_service',
         'id_branch_office',
+        'status'
     ];
 
     public function service_branch_office()

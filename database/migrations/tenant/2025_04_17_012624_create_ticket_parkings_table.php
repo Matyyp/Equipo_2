@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('id_ticket');
             $table->boolean('status')->default(false);
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

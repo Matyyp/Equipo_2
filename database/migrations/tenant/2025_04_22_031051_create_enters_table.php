@@ -23,7 +23,7 @@ return new class extends Migration
                 ->references('id_rent_register')
                 ->on('rent_registers')
                 ->onDelete('cascade');
-            $table->softDeletes();
+
             $table->timestamps();
         });
     }

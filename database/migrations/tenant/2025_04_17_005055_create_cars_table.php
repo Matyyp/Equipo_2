@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('id_model')->references('id_model')->on('model_cars')->onDelete('cascade');
             $table->boolean('is_rentable')->default(false);
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

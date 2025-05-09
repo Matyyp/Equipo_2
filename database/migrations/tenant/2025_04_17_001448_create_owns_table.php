@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('id_accessory')->references('id_accessory')->on('accessory')->onDelete('cascade');
             $table->foreign('id_contract')->references('id_contract')->on('contract_rents')->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

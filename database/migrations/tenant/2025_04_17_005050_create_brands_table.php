@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('id_brand');
             $table->string('name_brand');
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

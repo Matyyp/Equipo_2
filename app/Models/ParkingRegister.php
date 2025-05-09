@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class ParkingRegister extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+
 
     protected $fillable = [
         'arrival_km',
@@ -18,7 +18,8 @@ class ParkingRegister extends Model
         'start_date',
         'end_date',
         'days',
-        'id_park'
+        'id_park',
+        'status'
     ];
 
     protected $primaryKey = 'id_parking_register';
