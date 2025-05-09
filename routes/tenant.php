@@ -116,7 +116,8 @@ Route::middleware([
 
         // Luego tu resource:
         Route::resource('estacionamiento', App\Http\Controllers\Tenant\Parking\ParkingController::class);
-        
+        Route::get('/payment/{id}/voucher', [PaymentRecordController::class, 'downloadPdf'])->name('payment.record');
+
     });
 
     // CRUD Usuarios

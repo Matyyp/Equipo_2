@@ -42,4 +42,17 @@ class PaymentRecord extends Model
     {
         return $this->belongsTo(Payment::class, 'id_voucher', 'id_voucher');
     }
+    public function voucher()
+    {
+        return $this->belongsTo(Voucher::class, 'id_voucher');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'id_service');
+    }
+    public function parkingRegister()
+    {
+        return $this->belongsTo(ParkingRegister::class, 'id_parking_register');
+    }
 }
