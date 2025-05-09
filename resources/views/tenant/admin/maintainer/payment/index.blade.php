@@ -16,24 +16,21 @@
     <div class="card">
         <div class="card-header bg-secondary text-white">
             <h5 class="mb-0">
-                <i class="fas fa-money-check-alt me-2"></i> Lista de Pagos
+                <i class="fas fa-money-check-alt me-2"></i> Historial de Pagos
             </h5>
         </div>
         <div class="card-body">
             <table id="payment-table" class="table table-striped table-bordered w-100">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Id</th>
                         <th>Fecha</th>
                         <th>Monto</th>
                         <th>Tipo Pago</th>
-
                         <th>Servicio</th>
-                        <th>Tipo Servicio</th>
-                        <th>Precio Neto</th>
+                        <th>Precio Servicio</th>
                         <th>Patente</th>
                         <th>Dueño</th>
-                        <th>Total</th>
                         <th>Acciones</th> {{-- Nueva columna --}}
                     </tr>
                 </thead>
@@ -55,17 +52,14 @@ $(document).ready(function () {
         serverSide: false,
         ajax: '{{ route("payment.index") }}',
         columns: [
-            { data: 'id_payment',     title: '#' },
+            { data: 'id_payment',     title: 'Id' },
             { data: 'payment_date',   title: 'Fecha' },
             { data: 'amount',         title: 'Monto' },
             { data: 'type_payment',   title: 'Tipo Pago' },
-
             { data: 'service_name',   title: 'Servicio' },
-            { data: 'type_service',   title: 'Tipo Servicio' },
-            { data: 'price_net',      title: 'Precio Neto' },
+            { data: 'price_net',      title: 'Precio Servicio' },
             { data: 'car_patent',     title: 'Patente' },
             { data: 'owner_name',     title: 'Dueño' },
-            { data: 'total_value',    title: 'Total' },
             {
                 // Columna “Acciones”
                 data: null,

@@ -41,7 +41,7 @@ class ParkingController extends Controller
              $data = ParkingRegister::all()
                  ->filter(function ($reg) {
                      $park = Park::find($reg->id_park);
-                     return $park && $park->deleted_at === null;
+                     return $park && $park->status === 'parked';
                  })
                  ->map(function ($reg) {
                      $park = Park::find($reg->id_park);
@@ -59,7 +59,8 @@ class ParkingController extends Controller
                          'end_date'      => $reg->end_date ? \Carbon\Carbon::parse($reg->end_date)->format('d-m-Y') : '[NULO]',
                          'days'          => $reg->days,
                          'service_price' => number_format($service?->price_net ?? 0, 0, ',', '.'),
-                         'total_value'   => number_format($reg->total_value, 0, ',', '.'),
+                         'total_value' => $reg->total_value,
+                         'total_formatted' => number_format($reg->total_value, 0, ',', '.'),
                          'id_parking_register' => $reg->getKey(),
                      ];
                  });
@@ -75,29 +76,38 @@ class ParkingController extends Controller
      {
          $plate = $request->input('plate');
      
-         $parks = Park::with('park_car')->get();
-     
-         $park = $parks->first(function ($p) use ($plate) {
-             return $p->park_car && $p->park_car->patent === $plate && !$p->checked_out;
-         });
+         // Buscar si el auto está actualmente estacionado (status = 'parked')
+         $park = Park::where('status', 'parked')
+             ->whereHas('park_car', fn($q) => $q->where('patent', $plate))
+             ->with([
+                 'park_car.car_belongs.belongs_owner',
+                 'park_car.car_brand',
+                 'park_car.car_model'
+             ])
+             ->first();
      
          if ($park) {
              $car = $park->park_car;
              $owner = $car->car_belongs->first()?->belongs_owner;
+     
              return response()->json([
                  'found' => true,
                  'name' => $owner?->name,
                  'phone' => $owner?->number_phone,
                  'brand' => $car->car_brand->name_brand,
                  'model' => $car->car_model->name_model,
-                 'parked' => true // 👈 indica que ya está estacionado
+                 'parked' => true
              ]);
          }
      
-         // Si no está estacionado, pero existe el auto:
-         $car = Car::where('patent', $plate)->first();
+         // Si no está estacionado, buscar auto por patente
+         $car = Car::where('patent', $plate)
+             ->with(['car_belongs.belongs_owner', 'car_brand', 'car_model'])
+             ->first();
+     
          if ($car) {
              $owner = $car->car_belongs->first()?->belongs_owner;
+     
              return response()->json([
                  'found' => true,
                  'name' => $owner?->name,
@@ -111,10 +121,7 @@ class ParkingController extends Controller
          return response()->json(['found' => false]);
      }
      
-    
-
-
-    
+     
     public function data(Request $request)
     {
         $query = Parking::with(['brand','model']); // relación Eloquent
@@ -181,6 +188,7 @@ class ParkingController extends Controller
         $parkingServices = Service::with('service_branch_office.branch_office_contract') // eager loading para evitar N+1
             ->whereIn('type_service', ['parking_daily', 'parking_annual'])
             ->where('id_branch_office', $user->id_branch_office)
+            ->where('status', 'available')
             ->get();
     
         $hasContract = false;
@@ -287,7 +295,8 @@ class ParkingController extends Controller
             'km_exit'      => $data['km_exit'] ?? null,
             'days'         => $days,
             'total_value'  => $total,
-            'id_park'      => $park->id
+            'id_park'      => $park->id,
+            'status'       => 'unpaid'
         ]);
     
         Register::create([
@@ -438,38 +447,43 @@ class ParkingController extends Controller
     public function history(Request $request)
     {
         if ($request->ajax()) {
-
-            $parks = Park::onlyTrashed()
-                ->with([
-                    'park_car.car_brand',
-                    'park_car.car_model',
-                    'park_car.car_belongs.belongs_owner',
-                    'park_parking.parking_service',
-                    'park_parking.parking_register' => function ($q) {
-                        $q->with('register_parking_register');
-                    },
-                ])
-                ->orderBy('deleted_at', 'desc')
-                ->get();
+            $parks = Park::with([
+                'park_car.car_brand',
+                'park_car.car_model',
+                'park_car.car_belongs.belongs_owner',
+                'park_parking.parking_service',
+                'park_parking.parking_register' => function ($q) {
+                    $q->with([
+                        'register_parking_register' => function ($r) {
+                            $r->where('status', 'paid');
+                        }
+                    ]);
+                },
+            ])->get();
+                   
     
             $rows = $parks->map(function ($park) {
                 $car     = $park->park_car;
                 $owner   = optional(optional($car)->car_belongs->first())->belongs_owner;
                 $pivot   = $park->park_parking;
                 $service = optional($pivot)->parking_service;
-                $reg     = optional(optional($pivot)->parking_register[0])->register_parking_register;
+    
+                // Obtener el primer parking_register (si existe)
+                $register = collect(optional($pivot)->parking_register)->first();
+                $reg      = $register?->register_parking_register;
     
                 return [
-                    'owner_name'   => $owner?->name ?? '-',
-                    'owner_phone'  => $owner?->number_phone ?? '-',
-                    'patent'       => $car?->patent ?? '-',
-                    'brand'        => $car?->car_brand?->name_brand ?? '-',
-                    'model'        => $car?->car_model?->name_model ?? '-',
-                    'start_date'   => $reg?->start_date ?? '-',
-                    'end_date'     => $reg?->end_date ?? '-',
-                    'days'         => $reg?->days ?? '-',
-                    'price'        => $service?->price_net ?? '-',
-                    'total_value'  => $reg?->total_value ?? '-',
+                    'owner_name'          => $owner?->name ?? '-',
+                    'owner_phone'         => $owner?->number_phone ?? '-',
+                    'patent'              => $car?->patent ?? '-',
+                    'brand'               => $car?->car_brand?->name_brand ?? '-',
+                    'model'               => $car?->car_model?->name_model ?? '-',
+                    'start_date'          => $reg?->start_date,
+                    'end_date'            => $reg?->end_date,
+                    'days'                => $reg?->days,
+                    'price'               => $service?->price_net,
+                    'total_value'         => $reg?->total_value,
+                    'id_parking_register' => $register?->id_parking_register, // necesario para el botón
                 ];
             })->filter()->values();
     
@@ -478,6 +492,7 @@ class ParkingController extends Controller
     
         return view('tenant.admin.parking.history');
     }
+    
 
     public function print($parkingId)
     {
@@ -617,14 +632,13 @@ class ParkingController extends Controller
             $serviceId = $parking->park->service->id_service;
             $voucherId = $parking->id_voucher ?? null;
     
-            // Crear Payment (relación entre servicio y voucher)
-            $payment = \App\Models\Payment::create([
+            $payment = Payment::create([
                 'id_service' => $serviceId,
                 'id_voucher' => $voucherId,
             ]);
     
-            // Crear registro de pago
-            \App\Models\PaymentRecord::create([
+ 
+            PaymentRecord::create([
                 'id_service'          => $serviceId,
                 'id_parking_register' => $request->id_parking_register,
                 'type_payment'        => $request->type_payment,
@@ -634,8 +648,8 @@ class ParkingController extends Controller
             ]);
     
             // Actualizar fecha de salida
-            park::where('id',$parking->id_park)->delete();
-            $parking->delete();
+            Park::where('id', $parking->id_park)->update(['status' => 'not_parked']);
+            $parking->update(['status' => 'paid']);
         });
     
         return redirect()

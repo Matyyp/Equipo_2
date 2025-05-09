@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('logo');
             $table->string('electronic_transfer');
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('next_km');
             $table->boolean('filtros')->default(false);
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

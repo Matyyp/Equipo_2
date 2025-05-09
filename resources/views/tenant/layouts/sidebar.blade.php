@@ -32,12 +32,6 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('estacionamiento.create') }}"
-                               class="nav-link {{ request()->routeIs('estacionamiento.create') ? 'active' : '' }}">
-                                <p>Ingresar</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="{{ route('estacionamiento.history') }}"
                                class="nav-link {{ request()->routeIs('estacionamiento.history') ? 'active' : '' }}">
                                 <p>Historial</p>

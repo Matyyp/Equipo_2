@@ -4,18 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class ContactInformation extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+
 
     protected $fillable = [
         'data_contact',
         'type_contact',
         'id_branch_office'
     ];
+
+    protected $primaryKey = 'id_contact_information';
 
     public function contact_information_presents()
     {

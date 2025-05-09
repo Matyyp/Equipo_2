@@ -39,11 +39,13 @@ class ServiceController extends Controller
             'price_net' => 'required|numeric|min:0',
             'type_service' => 'required|in:parking_daily,parking_annual,car_wash,rent',
             'id_branch_office' => 'required|exists:branch_offices,id_branch',
+            'status'=>'available',
         ]);
     
         // Verificar si ya existe ese tipo de servicio en la sucursal
         $exists = Service::where('type_service', $validated['type_service'])
                         ->where('id_branch_office', $validated['id_branch_office'])
+                        ->where('status', 'available')
                         ->exists();
     
         if ($exists) {
@@ -100,7 +102,7 @@ class ServiceController extends Controller
             'rent'           => 'Arriendo',
         ];
     
-        $registrados = Service::where('id_branch_office', $id)->get()->keyBy('type_service');
+        $registrados = Service::where('id_branch_office', $id)->where('status', 'available')->get()->keyBy('type_service');
     
         return view('tenant.admin.maintainer.service.show', [
             'tipos'      => $tipos,
@@ -132,16 +134,26 @@ class ServiceController extends Controller
             'type_service' => 'required|in:parking_daily,parking_annual,car_wash,rent',
         ]);
     
-        Service::where('id_service', $id)->update([
+        $old_service = Service::findOrFail($id);
+
+        $old_service->update([
+            'status' => 'not_available',
+        ]);
+    
+        $new_service = Service::create([
             'name' => $request->name,
             'price_net' => $request->price_net,
             'type_service' => $request->type_service,
+            'id_branch_office' => $old_service->id_branch_office,
         ]);
-
-        return redirect()->route('servicios.show', $id); 
-
-
+    
+        Parking::create([
+            'id_service' => $new_service->id_service
+        ]);
+    
+        return redirect()->route('servicios.show', $old_service->id_branch_office);
     }
+    
 
     /**
      * Remove the specified resource from storage.

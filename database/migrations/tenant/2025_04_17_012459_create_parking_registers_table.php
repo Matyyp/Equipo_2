@@ -20,8 +20,9 @@ return new class extends Migration
             $table->integer('id_park');
             $table->date('start_date');
             $table->date('end_date');
+            $table->enum('status', ['paid', 'unpaid']);
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

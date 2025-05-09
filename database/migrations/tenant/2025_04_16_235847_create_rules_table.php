@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->enum('type_contract', ['parking_daily', 'parking_annual', 'rent'])->nullable();
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

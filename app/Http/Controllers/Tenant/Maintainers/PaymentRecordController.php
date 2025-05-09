@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant\Maintainers;
 
 use App\Http\Controllers\Controller;
 use App\Models\PaymentRecord;
+use App\Models\ParkingRegister;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -21,14 +22,13 @@ class PaymentRecordController extends Controller
         $rows = PaymentRecord::with('paymentVoucher')->get();
     
         $mapped = $rows->map(function ($payment) {
-            $parking = \App\Models\ParkingRegister::withTrashed()
-                ->with([
-                    'park' => fn($q) => $q->withTrashed()
-                        ->with([
-                            'park_car.car_belongs.belongs_owner',
-                            'service'
-                        ])
-                ])->find($payment->id_parking_register);
+            $parking = ParkingRegister::with([
+                'park' => fn($q) => $q->with([
+                    'park_car.car_belongs.belongs_owner',
+                    'service'
+                ])
+            ])->find($payment->id_parking_register);
+            
     
             $park    = $parking?->park;
             $car     = $park?->park_car;
@@ -41,7 +41,6 @@ class PaymentRecordController extends Controller
                 'amount'       => $payment->amount,
                 'type_payment' => $payment->type_payment,
                 'service_name' => $service?->name ?? 'N/D',
-                'type_service' => $service?->type_service ?? 'N/D',
                 'price_net'    => $service?->price_net ?? 'N/D',
                 'car_patent'   => $car?->patent ?? 'N/D',
                 'owner_name'   => $owner?->name ?? 'N/D',

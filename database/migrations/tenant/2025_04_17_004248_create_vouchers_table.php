@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('id_register');  //Benja dice: lo puedes eliminar en caso de que no lo necesites 
             $table->integer('discount');
             $table->timestamps();
-            $table->softDeletes();
+
         });
     }
 

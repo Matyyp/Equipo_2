@@ -215,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   phoneInput.on('input', function () {
     const phone = $(this).val().trim();
+
     if (phone.length === 9) {
       $.ajax({
         url: '{{ route("estacionamiento.searchPhone") }}',
@@ -222,20 +223,27 @@ document.addEventListener('DOMContentLoaded', () => {
         data: { phone },
         success: function (res) {
           if (res.found) {
-            nameInput.val(res.name).prop('readonly', true);
-            phoneInput.prop('readonly', true);
+            nameInput.val(res.name);
             showAlert('info', 'Este número ya está registrado a nombre de ' + res.name);
+
+            // Desactivar botón guardar
+            $('#submit-btn').prop('disabled', true);
           } else {
-            nameInput.prop('readonly', false);
-            phoneInput.prop('readonly', false);
+            nameInput.val('');
+            $('#submit-btn').prop('disabled', false);
           }
         },
         error: function () {
           showAlert('danger', 'Error al verificar el número. Intente de nuevo.');
+          $('#submit-btn').prop('disabled', true);
         }
       });
+    } else {
+      // Si aún no hay 9 dígitos, desactivar el botón como precaución
+      $('#submit-btn').prop('disabled', true);
     }
   });
+
 
   $('#service_id').on('changed.bs.select', function () {
     const serviceId = $(this).val();

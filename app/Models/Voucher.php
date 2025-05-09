@@ -6,11 +6,11 @@ use App\Models\PaymentRegister;
 use App\Models\Make;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Voucher extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $primaryKey = 'id_voucher';
     // protected $table = 'vouchers'; // sólo si usas un nombre distinto

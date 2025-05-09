@@ -16,7 +16,6 @@
             <table class="table table-bordered mb-0 align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Precio Neto</th>
                         <th>Tipo de Servicio</th>
@@ -29,7 +28,6 @@
                             $service = $registrados[$key] ?? null;
                         @endphp
                         <tr>
-                            <td>{{ $service->id_service ?? '-' }}</td>
                             <td>{{ $service->name ?? $nombre }}</td>
                             <td>
                                 {{ $service ? '$' . number_format($service->price_net, 0, ',', '.') : '—' }}
