@@ -21,6 +21,8 @@ use App\Models\Generate;
 use Carbon\Carbon;
 use App\Models\PaymentRecord;
 use App\Models\Payment;
+use App\Models\Voucher;
+
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
@@ -612,50 +614,67 @@ class ParkingController extends Controller
     }
 
     public function checkout(Request $request)
-    {
-        $request->validate([
-            'type_payment'         => 'required|string',
-            'id_parking_register'  => 'required|exists:parking_registers,id_parking_register',
-        ]);
-    
-        $parking = ParkingRegister::with('park.service')->findOrFail($request->id_parking_register);
-    
-        if (! $parking->park) {
-            return back()->withErrors('No hay parqueo asociado.');
-        }
-    
-        if (! $parking->park->service) {
-            return back()->withErrors('No hay servicio asociado.');
-        }
-    
-        DB::transaction(function () use ($request, $parking) {
-            $serviceId = $parking->park->service->id_service;
-            $voucherId = $parking->id_voucher ?? null;
-    
-            $payment = Payment::create([
-                'id_service' => $serviceId,
-                'id_voucher' => $voucherId,
-            ]);
-    
- 
-            PaymentRecord::create([
-                'id_service'          => $serviceId,
-                'id_parking_register' => $request->id_parking_register,
-                'type_payment'        => $request->type_payment,
-                'amount'              => $parking->total_value,
-                'payment_date'        => now(),
-                'id_voucher'          => $voucherId,
-            ]);
-    
-            // Actualizar fecha de salida
-            Park::where('id', $parking->id_park)->update(['status' => 'not_parked']);
-            $parking->update(['status' => 'paid']);
-        });
-    
-        return redirect()
-            ->route('estacionamiento.index')
-            ->with('success', 'Check-Out y pago registrados correctamente.');
+{
+    $request->validate([
+        'type_payment'         => 'required|string',
+        'id_parking_register'  => 'required|exists:parking_registers,id_parking_register',
+    ]);
+
+    $parking = ParkingRegister::with('park.service')->findOrFail($request->id_parking_register);
+
+    if (! $parking->park) {
+        return back()->withErrors('No hay parqueo asociado.');
     }
+
+    if (! $parking->park->service) {
+        return back()->withErrors('No hay servicio asociado.');
+    }
+
+    DB::transaction(function () use ($request, $parking) {
+        $serviceId = $parking->park->service->id_service;
+
+        $payment = Payment::create([
+            'id_service' => $serviceId,
+            'id_voucher' => null,
+        ]);
+
+        $paymentRecord = PaymentRecord::create([
+            'id_payment'          => $payment->id,
+            'id_service'          => $serviceId,
+            'id_parking_register' => $request->id_parking_register,
+            'type_payment'        => $request->type_payment,
+            'amount'              => $parking->total_value,
+            'payment_date'        => now(),
+            'id_voucher'          => null,
+        ]);
+
+        $voucher = Voucher::create([
+            'code'         => random_int(100000, 999999),
+            'payment'      => $paymentRecord->type_payment,
+            'amount'       => $paymentRecord->amount,
+            'id_register'  => $paymentRecord->id_parking_register,
+            'discount'     => 0, // Ajusta si hay lógica de descuento
+            'created_at'   => now(),
+            'updated_at'   => now(),
+        ]);
+
+        $payment->update([
+            'id_voucher' => $voucher->id_voucher,
+        ]);
+
+        $paymentRecord->update([
+            'id_voucher' => $voucher->id_voucher,
+        ]);
+
+        Park::where('id', $parking->id_park)->update(['status' => 'not_parked']);
+        $parking->update(['status' => 'paid']);
+    });
+
+    return redirect()
+        ->route('estacionamiento.index')
+        ->with('success', 'Check-Out y pago registrados correctamente.');
+}
+
     
 
     
