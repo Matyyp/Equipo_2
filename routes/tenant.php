@@ -25,7 +25,7 @@ use App\Http\Controllers\Tenant\Maintainers\TypeAccountController;
 use App\Http\Controllers\Tenant\Parking\ParkingController;
 use App\Http\Controllers\Tenant\Maintainers\PaymentRecordController;
 use App\Http\Controllers\Tenant\Maintainers\BankDetailController;
-
+use App\Http\Controllers\Tenant\Dashboard\DashboardController;
 
 
 /*
@@ -53,6 +53,13 @@ Route::middleware([
         Route::get('/dashboard', function () {
             return view('tenant.admin.dashboard');
         })->name('dashboard');
+        // Dashboard principal vía controlador
+       Route::get('/dashboard', [DashboardController::class, 'index'])
+           ->name('dashboard');
+
+       // Endpoint que devuelve JSON para Chart.js
+       Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData'])
+           ->name('dashboard.chart.data');
     });
     
     Route::middleware('auth')->group(function () {
