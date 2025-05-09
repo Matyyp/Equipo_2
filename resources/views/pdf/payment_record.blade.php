@@ -72,7 +72,7 @@
     <div class="section">
         <div class="row">
             <span class="label">Fecha:</span>
-            <span>{{ \Carbon\Carbon::parse($record->payment_date)->format('d/m/Y H:i') }}</span>
+            <span>{{ \Carbon\Carbon::parse($record->created_at)->format('d/m/Y H:i') }}</span>
         </div>
         <div class="row">
             <span class="label">Pago:</span>
@@ -101,7 +101,7 @@
             </div>
             <div class="row">
                 <span class="label">KM Salida:</span>
-                <span>{{ $record->parkingRegister->exit_km }} km</span>
+                <span>{{ $record->parkingRegister->km_exit }} km</span>
             </div>
         </div>
     @endif
