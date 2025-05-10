@@ -49,7 +49,7 @@ Route::middleware([
         return view('welcome');
     });
     //aca agregar todos los roles que necesiten entran al panel de admin
-    Route::middleware(['auth', 'role:Admin|Empleado'])->group(function () {
+    Route::middleware(['auth', 'role:Admin|Trabajador'])->group(function () {
         Route::get('/dashboard', function () {
             return view('tenant.admin.dashboard');
         })->name('dashboard');
