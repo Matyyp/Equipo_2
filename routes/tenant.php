@@ -10,7 +10,7 @@ use App\Http\Controllers\Tenant\Maintainers\BusinessController;
 use App\Http\Controllers\Tenant\Maintainers\LocationController;
 use App\Http\Controllers\Tenant\Maintainers\AccessoryController;
 use App\Http\Controllers\Tenant\Maintainers\BrandController;
-use App\Http\Controllers\Tenant\Maintainers\ContactinformationController;
+use App\Http\Controllers\Tenant\Maintainers\ContactInformationController;
 use App\Http\Controllers\Tenant\Maintainers\ModelcarController;
 use App\Http\Controllers\Tenant\Maintainers\OwnerController;
 use App\Http\Controllers\Tenant\Maintainers\RuleController;
@@ -85,6 +85,7 @@ Route::middleware([
         Route::resource('asociado', BelongsController::class);
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
+        Route::patch('/servicios/{id}/disable', [ServiceController::class, 'disable'])->name('servicios.disable');
         Route::get('contratos/create/{branch}/{type}', [ContractController::class, 'create'])->name('contratos.create');
         Route::resource('contratos', ContractController::class);
         Route::resource('pagos', PaymentRecordController::class)->names('payment');

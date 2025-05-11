@@ -51,7 +51,7 @@
             <select name="region" id="region-select" class="selectpicker form-control" data-live-search="true" required>
               <option value="">Seleccione región</option>
               @foreach ($locacion->pluck('location_region')->filter()->unique('id') as $region)
-                <option value="{{ $region->name_region }}" 
+                <option value="{{ $region->name_region }}"
                     {{ old('region', $branch->branch_office_location?->location_region?->name_region) == $region->name_region ? 'selected' : '' }}>
                   {{ $region->name_region }}
                 </option>
@@ -75,10 +75,9 @@
             </select>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-6" style="display: none;">
             <label class="form-label">Negocio</label>
-            <select name="id_business" class="selectpicker form-control" data-live-search="true" required>
-              <option value="">Seleccione negocio</option>
+            <select name="id_business" class="selectpicker form-control" data-live-search="true">
               @foreach ($business as $b)
                 <option value="{{ $b->id_business }}" {{ $branch->id_business == $b->id_business ? 'selected' : '' }}>
                   {{ $b->name_business }}
@@ -88,13 +87,17 @@
           </div>
         </div>
 
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <a href="{{ route('sucursales.index') }}" class="btn btn-secondary me-md-2">
-            <i class="fas fa-arrow-left me-1"></i> Volver
-          </a>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save me-1"></i> Actualizar
-          </button>
+        <div class="form-group row justify-content-end mt-4">
+            <div class="col-auto">
+              <a href="{{ route('sucursales.index') }}" class="btn btn-secondary mr-2">
+                <i class="fas fa-arrow-left mr-1"></i> Volver
+              </a>
+            </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-1"></i> Guardar
+                </button>
+            </div>
         </div>
       </form>
     </div>
@@ -110,11 +113,12 @@
 
     const regionSelect = document.getElementById('region-select');
     const communeSelect = document.getElementById('commune-select');
+    const form = document.querySelector('form');
 
     const updateComunas = () => {
       const selectedRegion = regionSelect.value;
-      const hasRegion = !!selectedRegion;
-      communeSelect.disabled = !hasRegion;
+      communeSelect.disabled = !selectedRegion;
+
       Array.from(communeSelect.options).forEach(option => {
         if (!option.value) return;
         option.hidden = option.dataset.region !== selectedRegion;
@@ -129,6 +133,14 @@
 
     regionSelect.addEventListener('change', updateComunas);
     updateComunas();
+
+    form.addEventListener('submit', (e) => {
+      if (!communeSelect.value) {
+        e.preventDefault();
+        alert('Debe seleccionar una comuna válida para continuar.');
+        communeSelect.focus();
+      }
+    });
   });
 </script>
 @endpush

@@ -16,14 +16,18 @@
 <div class="container mt-5">
   <div class="card">
     <div class="card-header bg-secondary text-white">
-      <i class="fas fa-users me-2"></i>Usuarios
-      @can('users.create')
-        <a href="{{ route('users.create') }}"
-           class="btn border btn-sm float-end">
-          <i class="fas fa-user-plus"></i> Nuevo
-        </a>
-      @endcan
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <i class="fas fa-users me-2"></i>Usuarios
+        </div>
+        @can('users.create')
+          <a href="{{ route('users.create') }}" class="btn btn-sm btn-success">
+            <i class="fas fa-user-plus"></i> Nuevo
+          </a>
+        @endcan
+      </div>
     </div>
+
     <div class="card-body">
       <table id="users-table" class="table table-striped table-bordered w-100">
         <thead>

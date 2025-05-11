@@ -1,45 +1,61 @@
 @extends('tenant.layouts.admin')
-@section('title',"Editar permisos: {$role->name}")
-@section('page_title',"Editar permisos: {$role->name}")
+
+@section('title', "Editar permisos: {$role->name}")
+@section('page_title', "Editar permisos: {$role->name}")
 
 @section('content')
-<div class="card">
-  <div class="card-header">
-    <h3 class="card-title">Permisos del rol <strong>{{ $role->name }}</strong></h3>
-    <a href="{{ route('roles.index') }}" class="btn btn-secondary btn-sm float-right">
-      <i class="fas fa-arrow-left"></i> Volver
-    </a>
-  </div>
-  <div class="card-body">
-    <form action="{{ route('roles.update', $role) }}" method="POST">
-      @csrf @method('PUT')
+<div class="container px-3 px-md-5 mt-4">
+  <div class="card shadow-sm">
 
-      <div class="row">
-        @foreach($permissions as $perm)
-          <div class="col-md-4">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                name="permissions[]"
-                value="{{ $perm->name }}"
-                id="perm_{{ $perm->id }}"
-                {{ $role->hasPermissionTo($perm->name) ? 'checked' : '' }}
-              >
-              <label class="form-check-label" for="perm_{{ $perm->id }}">
-                {{ $perm->name }}
-              </label>
-            </div>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        <i class="fas fa-user-cog me-2"></i> Permisos del Rol: <strong>{{ $role->name }}</strong>
+      </h5>
+    </div>
+
+    <div class="card-body">
+      <form action="{{ route('roles.update', $role) }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="form-group mb-4">
+          <label class="form-label">Permisos</label>
+          <div class="row">
+            @foreach($permissions as $perm)
+              <div class="col-md-4 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="permissions[]"
+                    value="{{ $perm->name }}"
+                    id="perm_{{ $perm->id }}"
+                    {{ $role->hasPermissionTo($perm->name) ? 'checked' : '' }}
+                  >
+                  <label class="form-check-label" for="perm_{{ $perm->id }}">
+                    {{ $perm->name }}
+                  </label>
+                </div>
+              </div>
+            @endforeach
           </div>
-        @endforeach
-      </div>
+        </div>
 
-      <div class="mt-4">
-        <button type="submit" class="btn btn-success">
-          <i class="fas fa-save"></i> Guardar cambios
-        </button>
-      </div>
-    </form>
+        <div class="form-group row justify-content-end">
+          <div class="col-auto">
+            <a href="{{ route('roles.index') }}" class="btn btn-secondary mr-2">
+              <i class="fas fa-arrow-left mr-1"></i> Volver
+            </a>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-save me-1"></i> Guardar cambios
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
   </div>
 </div>
 @endsection

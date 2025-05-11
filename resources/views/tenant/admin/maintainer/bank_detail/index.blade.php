@@ -10,12 +10,17 @@
 @section('content')
 <div class="container mt-5">
   <div class="card">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <span><i class="fas fa-piggy-bank me-2"></i> Cuentas Bancarias</span>
-      <a href="{{ route('cuentas_bancarias.create') }}" class="btn btn-light btn-sm">
-        <i class="fas fa-plus-circle me-1"></i> Nueva Cuenta
-      </a>
+    <div class="card-header bg-secondary text-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">
+          <i class="fas fa-piggy-bank me-2"></i>Cuentas Bancarias
+        </span>
+        <a href="{{ route('cuentas_bancarias.create') }}" class="btn btn-sm btn-success">
+          <i class="fas fa-plus-circle me-1"></i> Nueva Cuenta
+        </a>
+      </div>
     </div>
+
     <div class="card-body">
       <table id="bank-details-table" class="table table-bordered table-striped w-100">
         <thead>
@@ -58,9 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
         className: 'text-center'
       }
     ],
-    language: {
-      url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-    }
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      }
   });
 });
 </script>

@@ -4,27 +4,36 @@
 @section('page_title', 'Listado de Ubicaciones')
 
 @section('content')
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h3 class="card-title mb-0">Ubicaciones registradas</h3>
-        <a href="{{ route('locacion.create') }}" class="btn btn-success btn-sm">
-            <i class="fas fa-plus"></i> Ingresar Ubicación
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">
+          <i class="fas fa-map-marker-alt me-2"></i>Ubicaciones registradas
+        </span>
+        <a href="{{ route('locacion.create') }}" class="btn btn-sm btn-success">
+          <i class="fas fa-plus"></i> Ingresar Ubicación
         </a>
+      </div>
     </div>
 
     <div class="card-body">
-        <table id="locations-table" class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Región</th>
-                    <th>Comuna</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
+      <div class="table-responsive">
+        <table id="locations-table" class="table table-striped table-bordered w-100">
+          <thead class="thead-light">
+            <tr>
+              <th>Región</th>
+              <th>Comuna</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
         </table>
+      </div>
     </div>
+  </div>
 </div>
+
 @endsection
 
 @push('scripts')
@@ -49,9 +58,9 @@ $(document).ready(function() {
             { data: 'commune', name: 'commune' },
             { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
         ],
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-        }
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      }
     });
 
     // Confirmación para eliminar

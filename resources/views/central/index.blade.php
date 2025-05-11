@@ -16,7 +16,7 @@
                 <strong>Dominio:</strong> {{ $tenant->domains->first()?->domain }}
 
                 @if($tenant->domains->first())
-                    <a href="//{{ $tenant->domains->first()->domain }}:8000" class="text-green-500 ml-4" target="_blank">Sitio web</a>
+                    <a href="//{{ $tenant->domains->first()->domain }}" class="text-green-500 ml-4" target="_blank">Sitio web</a>
                 @endif
 
                 <a href="{{ route('tenants.edit', $tenant) }}" class="text-blue-500 ml-4">Editar</a>

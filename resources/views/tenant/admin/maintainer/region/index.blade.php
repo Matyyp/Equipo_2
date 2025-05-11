@@ -11,11 +11,15 @@
 @section('content')
 <div class="container mt-5">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <span><i class="fas fa-map-marked-alt me-2"></i>Regiones</span>
-      <a href="{{ route('region.create') }}" class="btn btn-sm btn-primary">
-        <i class="fas fa-plus-circle me-1"></i> Nueva Región
-      </a>
+    <div class="card-header bg-secondary text-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">
+          <i class="fas fa-map-marked-alt me-2"></i>Regiones
+        </span>
+        <a href="{{ route('region.create') }}" class="btn btn-sm btn-success">
+          <i class="fas fa-plus-circle me-1"></i> Nueva Región
+        </a>
+      </div>
     </div>
 
     <div class="card-body">
@@ -23,7 +27,6 @@
         <table id="regions-table" class="table table-striped table-bordered w-100">
           <thead class="thead-light">
             <tr>
-              <th>ID</th>
               <th>Nombre Región</th>
               <th class="text-center">Acciones</th>
             </tr>
@@ -48,7 +51,6 @@
         url: '{{ route("region.data") }}'
       },
       columns: [
-        { data: 'id', name: 'id' },
         { data: 'name_region', name: 'name_region' },
         {
           data: 'action',
@@ -60,7 +62,7 @@
       ],
       order: [[1, 'asc']],
       language: {
-        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
       }
     });
   });

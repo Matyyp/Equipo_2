@@ -16,14 +16,18 @@
 <div class="container mt-5">
   <div class="card">
     <div class="card-header bg-secondary text-white">
-      <i class="fas fa-user-shield me-2"></i>Roles
-      @role('Admin')
-        <a href="{{ route('roles.create') }}"
-           class="btn border btn-sm float-end">
-          <i class="fas fa-plus"></i> Nuevo
-        </a>
-      @endrole
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <i class="fas fa-user-shield me-2"></i>Roles
+        </div>
+        @role('Admin')
+          <a href="{{ route('roles.create') }}" class="btn btn-sm btn-success">
+            <i class="fas fa-plus"></i> Nuevo
+          </a>
+        @endrole
+      </div>
     </div>
+
     <div class="card-body">
       <table id="roles-table" class="table table-striped table-bordered w-100">
         <thead>
@@ -64,7 +68,7 @@
       ],
       order: [[0, 'asc']],
       language: {
-        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
       }
     });
   });

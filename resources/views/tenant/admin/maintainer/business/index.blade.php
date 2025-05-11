@@ -5,19 +5,24 @@
 
 @section('content')
 <div class="card">
-    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Información General</h5>
+    <div class="card-header bg-secondary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+            <i class="fas fa-building me-2"></i>Información General
+            </h5>
 
-        @if ($business)
-            <a href="{{ route('empresa.edit', $business->id_business) }}" class="btn btn-sm btn-outline-primary">
+            @if ($business)
+            <a href="{{ route('empresa.edit', $business->id_business) }}" class="btn btn-sm btn-success">
                 <i class="fas fa-edit"></i> Editar Perfil
             </a>
-        @else
+            @else
             <a href="{{ route('empresa.create') }}" class="btn btn-sm btn-success">
                 <i class="fas fa-plus"></i> Ingresar Perfil de Empresa
             </a>
-        @endif
+            @endif
+        </div>
     </div>
+
 
     <div class="card-body">
         <div class="row mb-3">

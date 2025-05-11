@@ -101,17 +101,46 @@ class ServiceController extends Controller
             'car_wash'       => 'Lavado de Autos',
             'rent'           => 'Arriendo',
         ];
-    
-        $registrados = Service::where('id_branch_office', $id)->where('status', 'available')->get()->keyBy('type_service');
-    
+
+        // Obtener los últimos servicios por tipo (sin importar el status)
+        $allServices = Service::where('id_branch_office', $id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Agrupar por tipo y tomar el último (puede ser available o disabled)
+        $registrados = $allServices->groupBy('type_service')->map(fn($group) => $group->first());
+
         return view('tenant.admin.maintainer.service.show', [
-            'tipos'      => $tipos,
-            'registrados'=> $registrados,
-            'sucursal'   => $branch->name_branch_offices,
-            'direccion'  => $branch->street,
-            'sucursalId' => $branch->id_branch,
+            'tipos'       => $tipos,
+            'registrados' => $registrados,
+            'sucursal'    => $branch->name_branch_offices,
+            'direccion'   => $branch->street,
+            'sucursalId'  => $branch->id_branch,
         ]);
     }
+
+    public function disable($id)
+    {
+        $service = Service::findOrFail($id);
+
+        if ($service->status !== 'available') {
+            return response()->json([
+                'success' => false,
+                'message' => 'El servicio ya está inactivo.'
+            ]);
+        }
+
+        $service->status = 'not_available';
+        $service->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Servicio desactivado correctamente.'
+        ]);
+    }
+
+
+
 
 
     /**

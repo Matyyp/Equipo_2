@@ -74,13 +74,17 @@
 
         </div>
 
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <a href="{{ route('sucursales.index') }}" class="btn btn-secondary me-md-2">
-            <i class="fas fa-arrow-left me-1"></i> Volver
-          </a>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save me-1"></i> Guardar
-          </button>
+        <div class="form-group row justify-content-end mt-4">
+            <div class="col-auto">
+              <a href="{{ route('sucursales.index') }}" class="btn btn-secondary mr-2">
+                <i class="fas fa-arrow-left mr-1"></i> Volver
+              </a>
+            </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-1"></i> Guardar
+                </button>
+            </div>
         </div>
       </form>
     </div>

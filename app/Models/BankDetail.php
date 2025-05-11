@@ -17,6 +17,8 @@ class BankDetail extends Model
         'account_number'
     ];
 
+    protected $primaryKey = 'id_bank_details';
+
     public function bank_detail_bank()
     {
         return $this->belongsTo(Bank::class, 'id_bank', 'id_bank');
@@ -24,6 +26,6 @@ class BankDetail extends Model
 
     public function bank_detail_type_account()
     {
-        return $this->belongsTo(TypeOfAccount::class, 'id_type_account', 'id_type_account');
+        return $this->belongsTo(TypeAccount::class, 'id_type_account', 'id_type_account');
     }
 }

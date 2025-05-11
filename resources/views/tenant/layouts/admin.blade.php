@@ -3,6 +3,16 @@
 <head>
     <meta charset="utf-8">
     <title>@yield('title', 'Admin')</title>
+
+    {{-- Favicon dinámico por tenant --}}
+    @php
+        $host = request()->getHost(); // Ej: cliente2.cl
+        $favicon = "storage/tenants/{$host}/imagenes/favicon.png";
+    @endphp
+    <link rel="icon" href="{{ asset($favicon) }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ asset($favicon) }}">
+
+    {{-- Estilos --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     @stack('styles')
@@ -19,9 +29,8 @@
             </li>
         </ul>
 
-        {{-- 2. (Opcional) Links rápidos o búsqueda al centro --}}
         <ul class="navbar-nav mx-auto">
-            {{-- ... --}}
+            {{-- Opcional: búsqueda u otro contenido --}}
         </ul>
 
         <ul class="navbar-nav ml-auto align-items-center">
@@ -30,22 +39,19 @@
                     <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                     <i class="fas fa-user-circle fa-lg ml-1"></i>
                 </a>
-
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    {{-- Perfil --}}
                     <li class="dropdown-item">
                         <a href="{{ route('profile.edit') }}" class="d-block">
                             <i class="fas fa-user-cog mr-2"></i> {{ __('Profile') }}
                         </a>
                     </li>
                     <li class="dropdown-divider"></li>
-
                     <li class="dropdown-item">
                         <form method="POST" action="{{ route('logout') }}" id="logout-form">
                             @csrf
                             <a href="{{ route('logout') }}"
-                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                            class="d-block text-danger">
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                               class="d-block text-danger">
                                 <i class="fas fa-sign-out-alt mr-2"></i> {{ __('Log Out') }}
                             </a>
                         </form>
@@ -72,17 +78,15 @@
         </section>
     </div>
 
-    {{-- Footer opcional --}}
     <footer class="main-footer text-sm">
-        <strong>&copy; {{ now()->year }} — Tu Empresa</strong>
+        <strong>&copy; {{ now()->year }} — Tu Empresa</strong>
     </footer>
 </div>
 
-{{-- REQUIRED JS --}}
+{{-- JS --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @stack('scripts')
 </body>

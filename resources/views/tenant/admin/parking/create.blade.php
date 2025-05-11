@@ -5,9 +5,16 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
-  .loading-spinner { display: none; color: #0d6efd; margin-left: 10px; }
+  .loading-spinner {
+    display: none;
+    color: #0d6efd;
+    margin-left: 10px;
+  }
+  .loading-spinner.active {
+    display: inline-block;
+  }
   .form-disabled {
     opacity: 0.5;
     pointer-events: none;
@@ -20,26 +27,24 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
-  <div class="card mb-4">
-    <div class="card-header bg-secondary text-white">
-      <i class="fas fa-car me-2"></i>Ingreso de Vehículo al estacionamiento
+<div class="container px-3 px-md-5 mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white d-flex align-items-center">
+      <i class="fas fa-car me-2"></i>
+      <h5 class="mb-0">Ingreso de Vehículo al Estacionamiento</h5>
     </div>
     <div class="card-body">
       @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
       @endif
-
       @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
       @endif
 
       @if($parkingServices->isEmpty())
         <div class="alert alert-warning">
-          No hay servicios de estacionamiento disponibles. 
-          Por favor, activa uno antes de registrar vehículos.
-          <br>
-          <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-light mt-2">
+          No hay servicios de estacionamiento disponibles.
+          <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-success mt-2">
             <i class="fas fa-store"></i> Ir a sucursal
           </a>
         </div>
@@ -50,9 +55,8 @@
         </script>
       @elseif(!$hasContract)
         <div class="alert alert-warning">
-          No hay contratos activos asociados a los servicios disponibles. 
-          Por favor, cree uno antes de registrar vehículos.
-          <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-light mt-2">
+          No hay contratos activos asociados a los servicios disponibles.
+          <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-success mt-2">
             <i class="fas fa-store"></i> Ir a sucursal
           </a>
         </div>
@@ -66,74 +70,72 @@
       <form action="{{ route('estacionamiento.store') }}" method="POST" autocomplete="off" id="form-register">
         @csrf
 
-        <div class="row mb-3">
-          <div class="col-md-4 position-relative">
-            <label for="plate" class="form-label">Patente</label>
-            <div class="input-group">
-              <input type="text" id="plate" name="plate" class="form-control" placeholder="Ej: AB123C" minlength="6" maxlength="6" pattern="[A-Z0-9]{6}" required>
+        <div class="form-group col-3">
+          <label for="plate">Patente</label>
+          <div class="input-group">
+            <input type="text" id="plate" name="plate" class="form-control" placeholder="Ej: AB123C" minlength="6" maxlength="6" pattern="[A-Z0-9]{6}" required>
+            <div class="input-group-append">
               <span class="input-group-text"><i class="fas fa-search"></i></span>
             </div>
-            <div id="plateAlert" class="mt-2"></div>
-            <div id="plateLoading" class="loading-spinner position-absolute end-0 top-50 me-3">
-              <i class="fas fa-spinner fa-spin"></i>
-            </div>
+          </div>
+          <div id="plateAlert" class="mt-2"></div>
+          <div id="plateLoading" class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
           </div>
         </div>
 
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="name" class="form-label">Nombre</label>
+        <div class="form-row">
+          <div class="form-group col-12 col-md-6">
+            <label for="name">Nombre</label>
             <input type="text" id="name" name="name" class="form-control" required>
           </div>
-          <div class="col-md-6">
-            <label for="phone" class="form-label">Teléfono</label>
+          <div class="form-group col-12 col-md-6">
+            <label for="phone">Teléfono</label>
             <input type="number" id="phone" name="phone" class="form-control" min="100000000" max="999999999" required>
           </div>
         </div>
 
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="start_date" class="form-label">Fecha de Inicio</label>
+        <div class="form-row">
+          <div class="form-group col-12 col-md-6">
+            <label for="start_date">Fecha de Inicio</label>
             <input type="date" id="start_date" name="start_date" class="form-control" required>
           </div>
-          <div class="col-md-6">
-            <label for="end_date" class="form-label">Fecha de Término</label>
+          <div class="form-group col-12 col-md-6">
+            <label for="end_date">Fecha de Término</label>
             <input type="date" id="end_date" name="end_date" class="form-control" required>
           </div>
         </div>
 
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="arrival_km" class="form-label">Km Entrada (opcional)</label>
+        <div class="form-row">
+          <div class="form-group col-12 col-md-6">
+            <label for="arrival_km">Km Entrada (opcional)</label>
             <input type="number" id="arrival_km" name="arrival_km" class="form-control" min="0">
           </div>
-          <div class="col-md-6">
-            <label for="km_exit" class="form-label">Km Salida (opcional)</label>
+          <div class="form-group col-12 col-md-6">
+            <label for="km_exit">Km Salida (opcional)</label>
             <input type="number" id="km_exit" name="km_exit" class="form-control" min="0">
           </div>
         </div>
 
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="brand_name" class="form-label">Marca</label>
+        <div class="form-row">
+          <div class="form-group col-12 col-md-6">
+            <label for="brand_name">Marca</label>
             <input type="text" id="brand_name" name="brand_name" class="form-control" required>
           </div>
-          <div class="col-md-6">
-            <label for="model_name" class="form-label">Modelo</label>
+          <div class="form-group col-12 col-md-6">
+            <label for="model_name">Modelo</label>
             <input type="text" id="model_name" name="model_name" class="form-control" required>
           </div>
         </div>
 
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="service_id" class="form-label">Tipo de Estacionamiento</label>
-            <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
-              <option value="">—</option>
-              @foreach($parkingServices as $svc)
-                <option value="{{ $svc->id_service }}">{{ $svc->name }}</option>
-              @endforeach
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="service_id">Tipo de Estacionamiento</label>
+          <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
+            <option value="">—</option>
+            @foreach($parkingServices as $svc)
+              <option value="{{ $svc->id_service }}">{{ $svc->name }}</option>
+            @endforeach
+          </select>
         </div>
 
         <div class="form-check mb-4">
@@ -141,10 +143,20 @@
           <label for="wash_service" class="form-check-label">Incluye Servicio de Lavado</label>
         </div>
 
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <button type="reset" class="btn btn-secondary me-md-2"><i class="fas fa-eraser me-1"></i> Limpiar</button>
-          <button type="submit" class="btn btn-primary" id="submit-btn"><i class="fas fa-save me-1"></i> Guardar</button>
+        <!-- BOTONES -->
+        <div class="form-group row justify-content-end">
+          <div class="col-auto">
+            <button type="reset" class="btn btn-secondary">
+              <i class="fas fa-eraser mr-1"></i> Limpiar
+            </button>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+              <i class="fas fa-save mr-1"></i> Guardar
+            </button>
+          </div>
         </div>
+
       </form>
     </div>
   </div>
@@ -182,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function searchByPlate(plate) {
     if (!plate) return;
-    plateLoading.show();
+    plateLoading.addClass('active');
     plateChecked = false;
 
     $.ajax({
@@ -210,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       complete: function() {
-        plateLoading.hide();
+        plateLoading.removeClass('active');
       }
     });
   }
@@ -225,6 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
   phoneInput.on('input', function () {
     const phone = $(this).val().trim();
 
+    plateAlert.removeClass().text('');
+
     if (phone.length === 9) {
       $.ajax({
         url: '{{ route("estacionamiento.searchPhone") }}',
@@ -232,28 +246,27 @@ document.addEventListener('DOMContentLoaded', () => {
         data: { phone },
         success: function (res) {
           if (res.found) {
-            nameInput.val(res.name);
             showAlert('info', 'Este número ya está registrado a nombre de ' + res.name);
-            $('#submit-btn').prop('disabled', true);
+            submitBtn.prop('disabled', true);
           } else {
             nameInput.val('');
-            $('#submit-btn').prop('disabled', false);
+            submitBtn.prop('disabled', false);
           }
         },
         error: function () {
           showAlert('danger', 'Error al verificar el número. Intente de nuevo.');
-          $('#submit-btn').prop('disabled', true);
+          submitBtn.prop('disabled', true);
         }
       });
     } else {
-      $('#submit-btn').prop('disabled', true);
+      submitBtn.prop('disabled', true);
     }
   });
+
 
   $('#service_id').on('changed.bs.select', function () {
     const serviceId = $(this).val();
     if (!serviceId) return;
-
     $.ajax({
       url: contratoUrl,
       method: 'GET',
@@ -277,6 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!plateChecked) {
       e.preventDefault();
       alert('Debe verificar la patente antes de guardar.');
+    } else {
+      submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...');
     }
   });
 

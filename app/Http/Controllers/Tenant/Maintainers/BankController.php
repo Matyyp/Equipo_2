@@ -29,12 +29,6 @@ class BankController extends Controller
                     <a href="' . $editUrl . '" class="btn btn-sm btn-warning me-1">
                         <i class="fas fa-edit"></i> Editar
                     </a>
-                    <form action="' . $deleteUrl . '" method="POST" class="d-inline delete-form">
-                        ' . csrf_field() . method_field('DELETE') . '
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'¿Eliminar banco?\')">
-                            <i class="fas fa-trash-alt"></i> Eliminar
-                        </button>
-                    </form>
                 ';
             })
             ->rawColumns(['action'])

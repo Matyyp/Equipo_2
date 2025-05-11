@@ -63,6 +63,7 @@ class BelongsController extends Controller
                 'id_owner' => $id,
                 'name' => optional($owner->belongs_owner)->name,
                 'id_car' => optional($owner->belongs_car)->id_car,
+                'patent' => optional($owner->belongs_car)->patent,
                 'brand' => optional(optional($owner->belongs_car)->car_brand)->name_brand,
                 'model' => optional(optional($owner->belongs_car)->car_model)->name_model,
             ];
@@ -85,7 +86,7 @@ class BelongsController extends Controller
             return [
                 'id_owner' => $id,
                 'id_car'   => $car->id_car,
-                'placa'  => $car->patent,
+                'patent'  => $car->patent,
                 'brand'    => optional($car->car_brand)->name_brand,
                 'model'    => optional($car->car_model)->name_model,
             ];

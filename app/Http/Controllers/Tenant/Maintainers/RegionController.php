@@ -20,12 +20,6 @@ class RegionController extends Controller
                         <a href="' . route('region.edit', $region->id) . '" class="btn btn-sm btn-warning me-1" title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <form action="' . route('region.destroy', $region->id) . '" method="POST" class="d-inline delete-form">
-                            ' . csrf_field() . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </form>
                     ';
                 })
                 ->rawColumns(['action'])
