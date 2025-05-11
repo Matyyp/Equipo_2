@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body class="bg-white text-gray-800">
+<body class="bg-white text-gray-800 antialiased bg-white overflow-x-hidden">
 
     @include('components.navbar')
 
