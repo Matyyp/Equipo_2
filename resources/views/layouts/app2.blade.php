@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Rent a Car Coyhaique</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -13,9 +13,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    {{-- Forzamos ancho 100% en Swiper para que nunca desborde --}}
+    <style>
+      .swiper, .swiper-wrapper, .swiper-slide {
+        width: 100% !important;
+      }
+    </style>
 </head>
 
-<body class="bg-white text-gray-800 antialiased bg-white overflow-x-hidden">
+<body class="antialiased text-gray-800 overflow-x-hidden">
 
     @include('components.navbar')
 
@@ -26,10 +33,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>
-        AOS.init({
-            duration: 800,
-            once: true
-        });
+        AOS.init({ duration: 800, once: true });
     </script>
 
     @stack('scripts')
@@ -39,19 +43,10 @@
         const swiper = new Swiper(".swiper", {
             loop: true,
             effect: "fade",
-            autoplay: {
-                delay: 5000,
-            },
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: true,
-            },
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            },
+            autoplay: { delay: 5000 },
+            pagination: { el: ".swiper-pagination", clickable: true },
+            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
         });
     </script>
-
 </body>
 </html>
