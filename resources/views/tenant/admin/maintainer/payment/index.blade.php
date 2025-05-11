@@ -20,21 +20,23 @@
             </h5>
         </div>
         <div class="card-body">
-            <table id="payment-table" class="table table-striped table-bordered w-100">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Fecha</th>
-                        <th>Monto</th>
-                        <th>Tipo Pago</th>
-                        <th>Servicio</th>
-                        <th>Precio Servicio</th>
-                        <th>Patente</th>
-                        <th>Dueño</th>
-                        <th>Acciones</th> {{-- Nueva columna --}}
-                    </tr>
-                </thead>
-            </table>
+            <div class="table-responsive">
+                <table id="payment-table" class="table table-striped table-bordered w-100">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Tipo Pago</th>
+                            <th>Servicio</th>
+                            <th>Precio Servicio</th>
+                            <th>Patente</th>
+                            <th>Dueño</th>
+                            <th>Acciones</th> 
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
 </div>
