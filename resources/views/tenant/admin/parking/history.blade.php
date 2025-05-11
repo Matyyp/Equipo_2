@@ -41,7 +41,7 @@
               <th>Días</th>
               <th>Precio</th>
               <th>Total</th>
-              <th>Acciones</th> {{-- 👈 nueva columna --}}
+              <th>Acciones</th>
             </tr>
           </thead>
         </table>
@@ -99,9 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     ],
     order: [[5, 'desc']],
-    language: {
-      url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-    }
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      }
   });
 });
 </script>

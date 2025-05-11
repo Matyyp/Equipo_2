@@ -51,7 +51,7 @@
           <tbody>
             @php
               $tipos = [
-                'rent' => 'Arriendo',
+                'rent' => 'Renta',
                 'parking_daily' => 'Estacionamiento Diario',
                 'parking_annual' => 'Estacionamiento Mensual'
               ];

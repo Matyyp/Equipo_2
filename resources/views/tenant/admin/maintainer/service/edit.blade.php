@@ -44,7 +44,7 @@
                 <option value="parking_daily" {{ $service->type_service == 'parking_daily' ? 'selected' : '' }}>Estacionamiento Diario</option>
                 <option value="parking_annual" {{ $service->type_service == 'parking_annual' ? 'selected' : '' }}>Estacionamiento Anual</option>
                 <option value="car_wash" {{ $service->type_service == 'car_wash' ? 'selected' : '' }}>Lavado de Autos</option>
-                <option value="rent" {{ $service->type_service == 'rent' ? 'selected' : '' }}>Arriendo</option>
+                <option value="rent" {{ $service->type_service == 'rent' ? 'selected' : '' }}>Renta</option>
             </select>
             </div>
             <input type="hidden" name="type_service" value="{{ $service->type_service }}">
