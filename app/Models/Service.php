@@ -25,7 +25,10 @@ class Service extends Model
     {
         return $this->belongsTo(BranchOffice::class, 'id_branch_office', 'id_branch');
     }
-
+    public function branchOffice()
+    {
+        return $this->belongsTo(BranchOffice::class, 'id_branch_office');
+    }
     public function service_make()
     {
         return $this->hasMany(Make::class, 'id_service', 'id_service');

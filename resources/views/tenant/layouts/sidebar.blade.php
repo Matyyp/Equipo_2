@@ -13,8 +13,8 @@
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}"
                        class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-chart-line"></i>
-                        <p>Dashboard</p>
+                        <i class="nav-icon fas fa-solid fa-house"></i>
+                        <p>Home</p>
                     </a>
                 </li>
 

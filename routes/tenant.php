@@ -49,7 +49,7 @@ Route::middleware([
         return view('welcome');
     });
     //aca agregar todos los roles que necesiten entran al panel de admin
-    Route::middleware(['auth', 'role:Admin|Empleado'])->group(function () {
+    Route::middleware(['auth', 'role:Admin|Trabajador'])->group(function () {
         Route::get('/dashboard', function () {
             return view('tenant.admin.dashboard');
         })->name('dashboard');
@@ -123,7 +123,8 @@ Route::middleware([
 
         // Luego tu resource:
         Route::resource('estacionamiento', App\Http\Controllers\Tenant\Parking\ParkingController::class);
-        
+        Route::get('/payment/{id}/voucher', [PaymentRecordController::class, 'downloadPdf'])->name('payment.record');
+
     });
 
     // CRUD Usuarios

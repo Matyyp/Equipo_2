@@ -40,5 +40,9 @@ class BranchOffice extends Model
     {
         return $this->hasMany(Contract::class, 'id_branch_office', 'id_branch');
     }
+    public function business()
+    {
+        return $this->belongsTo(Business::class, 'id_business');
+    }
 
 }

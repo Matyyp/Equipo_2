@@ -8,6 +8,9 @@ use App\Models\ParkingRegister;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Stancl\Tenancy\Facades\Tenancy;
+
 class PaymentRecordController extends Controller
 {
     /**
@@ -101,4 +104,45 @@ class PaymentRecordController extends Controller
     {
         //
     }
+
+public function downloadPdf($id)
+{
+    $record = PaymentRecord::with([
+        'voucher',
+        'service.branchOffice.business',
+        'parkingRegister'
+    ])->findOrFail($id);
+
+    $isParking = in_array($record->service->type_service, [
+        'parking_daily',
+        'parking_annual',
+    ]);
+
+    // Obtener el nombre del logo y dominio del tenant
+    $logoFile = optional($record->service->branchOffice->business)->logo;
+    $tenant = tenancy()->tenant;
+    $domain = \Stancl\Tenancy\Database\Models\Domain::where('tenant_id', $tenant->id)->first();
+    $tenantDomain = $domain?->domain; 
+
+
+    $logoPath = null;
+    if ($logoFile && $tenantDomain) {
+        $fullPath = public_path("storage/tenants/{$tenantDomain}/imagenes/{$logoFile}");
+        if (file_exists($fullPath)) {
+            $logoPath = 'file://' . $fullPath;
+        }
+    }
+
+
+    $pdf = Pdf::loadView('pdf.payment_record', [
+        'record'     => $record,
+        'isParking'  => $isParking,
+        'logoPath'   => $logoPath,
+    ]);
+
+    return $pdf->download('boleta_pago.pdf');
+}
+
+
+
 }
