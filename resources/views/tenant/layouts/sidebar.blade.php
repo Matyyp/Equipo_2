@@ -19,6 +19,7 @@
                 </li>
 
                 {{-- Estacionamiento --}}
+                @can('estacionamiento.access')
                 <li class="nav-item has-treeview {{ request()->is('estacionamiento*') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->is('estacionamiento*') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-square-parking"></i>
@@ -39,6 +40,7 @@
                         </li>
                     </ul>
                 </li>
+                @endcan
 
                 {{-- Reservas --}}
                 <li class="nav-item has-treeview {{ request()->is('reservas*') ? 'menu-open' : '' }}">
