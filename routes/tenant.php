@@ -25,8 +25,8 @@ use App\Http\Controllers\Tenant\Maintainers\TypeAccountController;
 use App\Http\Controllers\Tenant\Parking\ParkingController;
 use App\Http\Controllers\Tenant\Maintainers\PaymentRecordController;
 use App\Http\Controllers\Tenant\Maintainers\BankDetailController;
-
-
+use App\Http\Controllers\Tenant\Dashboard\DashboardController;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,10 +49,14 @@ Route::middleware([
         return view('welcome');
     });
     //aca agregar todos los roles que necesiten entran al panel de admin
-    Route::middleware(['auth', 'role:Admin|Empleado'])->group(function () {
+    Route::middleware(['auth', 'role:Admin|Trabajador'])->group(function () {
         Route::get('/dashboard', function () {
             return view('tenant.admin.dashboard');
         })->name('dashboard');
+        // Dashboard principal vía controlador
+        Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
+
+        Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
     
     Route::middleware('auth')->group(function () {
@@ -83,7 +87,8 @@ Route::middleware([
         Route::resource('servicios', ServiceController::class);
         Route::get('contratos/create/{branch}/{type}', [ContractController::class, 'create'])->name('contratos.create');
         Route::resource('contratos', ContractController::class);
-        Route::resource('payment', PaymentRecordController::class);
+        Route::resource('pagos', PaymentRecordController::class)->names('payment');
+
 
 
         Route::get('region/data', [RegionController::class, 'index'])->name('region.data');

@@ -61,7 +61,7 @@
     <div class="content-wrapper">
         <div class="content-header">
             <div class="container-fluid">
-                <h1 class="m-0">@yield('page_title', 'Dashboard')</h1>
+                <h1 class="m-0">@yield('page_title')</h1>
             </div>
         </div>
 

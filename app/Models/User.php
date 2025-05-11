@@ -53,6 +53,7 @@ class User extends Authenticatable
         'cell_phone',
         'url_photo_user',
         'user_type',
+        'id_branch_office',
     ];
 
     /**

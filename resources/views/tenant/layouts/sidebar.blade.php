@@ -13,8 +13,8 @@
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}"
                        class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-chart-line"></i>
-                        <p>Dashboard</p>
+                        <i class="nav-icon fas fa-solid fa-house"></i>
+                        <p>Home</p>
                     </a>
                 </li>
 
@@ -61,6 +61,13 @@
                                class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}">
                                 <i class="fas fa-store nav-icon"></i>
                                 <p>Pagos</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('analiticas') }}"
+                               class="nav-link {{ request()->routeIs('analiticas') ? 'active' : '' }}">
+                                <i class="fas fa-chart-simple nav-icon"></i>
+                                <p>Analiticas</p>
                             </a>
                         </li>
                     </ul>
