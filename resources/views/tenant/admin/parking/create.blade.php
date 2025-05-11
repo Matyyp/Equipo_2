@@ -36,7 +36,12 @@
 
       @if($parkingServices->isEmpty())
         <div class="alert alert-warning">
-          No hay servicios de estacionamiento disponibles. Por favor, active alguno antes de registrar vehículos.
+          No hay servicios de estacionamiento disponibles. 
+          Por favor, activa uno antes de registrar vehículos.
+          <br>
+          <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-light mt-2">
+            <i class="fas fa-store"></i> Ir a sucursal
+          </a>
         </div>
         <script>
           document.addEventListener('DOMContentLoaded', () => {
@@ -45,7 +50,11 @@
         </script>
       @elseif(!$hasContract)
         <div class="alert alert-warning">
-          No hay contratos activos asociados a los servicios disponibles. Por favor, cree uno antes de registrar vehículos.
+          No hay contratos activos asociados a los servicios disponibles. 
+          Por favor, cree uno antes de registrar vehículos.
+          <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-light mt-2">
+            <i class="fas fa-store"></i> Ir a sucursal
+          </a>
         </div>
         <script>
           document.addEventListener('DOMContentLoaded', () => {
@@ -225,8 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if (res.found) {
             nameInput.val(res.name);
             showAlert('info', 'Este número ya está registrado a nombre de ' + res.name);
-
-            // Desactivar botón guardar
             $('#submit-btn').prop('disabled', true);
           } else {
             nameInput.val('');
@@ -239,11 +246,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     } else {
-      // Si aún no hay 9 dígitos, desactivar el botón como precaución
       $('#submit-btn').prop('disabled', true);
     }
   });
-
 
   $('#service_id').on('changed.bs.select', function () {
     const serviceId = $(this).val();

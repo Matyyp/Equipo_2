@@ -95,6 +95,10 @@ Route::middleware([
         Route::get('cuentas_bancarias/data', [BankDetailController::class, 'data'])->name('cuentas_bancarias.data');
         Route::resource('cuentas_bancarias', BankDetailController::class);
 
+    });
+
+    Route::middleware(['auth', 'permission:estacionamiento.access'])->group(function () {
+
         Route::get('estacionamiento/check-contrato', [ParkingController::class, 'checkContrato'])->name('estacionamiento.checkContrato');
         Route::get('estacionamiento/data', [ParkingController::class, 'data'])
         ->name('estacionamiento.data');
@@ -110,12 +114,8 @@ Route::middleware([
         ->name('contrato.print');
 
         Route::resource('estacionamiento', ParkingController::class);
-        // Ruta para procesar el Check-Out
         Route::post('/estacionamiento/{parking}/checkout', [ParkingController::class, 'checkout'])->name('estacionamiento.checkout');
-
-
-        // Luego tu resource:
-        Route::resource('estacionamiento', App\Http\Controllers\Tenant\Parking\ParkingController::class);
+        Route::resource('estacionamiento', ParkingController::class);
         Route::get('/payment/{id}/voucher', [PaymentRecordController::class, 'downloadPdf'])->name('payment.record');
 
     });

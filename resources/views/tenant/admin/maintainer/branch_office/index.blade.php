@@ -7,9 +7,16 @@
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Sucursales Registradas</h3>
-        <a href="{{ route('sucursales.create') }}" class="btn btn-success btn-sm float-right">
-            <i class="fas fa-plus"></i> Nueva Sucursal
-        </a>
+        @if ($verificacion)
+            <a href="{{ route('sucursales.create') }}" class="btn btn-success btn-sm float-right">
+                <i class="fas fa-plus"></i> Nueva Sucursal
+            </a>
+        @else
+            <div class="alert alert-warning mb-0 float-right">
+                <i class="fas fa-exclamation-triangle"></i> Debe completar los datos de la empresa antes de crear una sucursal.
+                <a href="{{ route('empresa.index') }}" class="btn btn-sm btn-outline-light">Ingresar datos empresa</a>
+            </div>
+        @endif
     </div>
 
     <div class="card-body p-0">

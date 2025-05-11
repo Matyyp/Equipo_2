@@ -138,7 +138,7 @@ class ContractController extends Controller
         ])
         ->where('id_branch_office', $id_branch)
         ->get();
-    
+
         $contracts = $contracts->map(function ($dato) {
             return [
                 'id_contract'         => $dato->id_contract,
@@ -147,18 +147,22 @@ class ContractController extends Controller
                 'id_parking_annual'   => $dato->contract_contract_parking?->contract_parking_contract_annual?->id_contract,
             ];
         });
-    
+
         $hasRent   = $contracts->contains('id_rent', '!=', null);
         $hasDaily  = $contracts->contains('id_parking_daily', '!=', null);
         $hasAnnual = $contracts->contains('id_parking_annual', '!=', null);
-    
         $allContractsCreated = $hasRent && $hasDaily && $hasAnnual;
-    
+
+        $hasContactInfo = ContactInformation::exists();
+        $hasRules = Rule::exists();
+
         return view('tenant.admin.maintainer.contract.index', compact(
             'contracts',
             'allContractsCreated',
-            'id_branch' // <- así se pasa correctamente
-        ))->with('branchId', $id_branch); // <- esta línea asegura que $branchId esté disponible en el Blade
+            'hasContactInfo',
+            'hasRules',
+            'id_branch'
+        ))->with('branchId', $id_branch);
     }
     
     /**

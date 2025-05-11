@@ -10,17 +10,48 @@
 
 @section('content')
 <div class="container mt-5">
-  <div class="card">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div>
-        <i class="fas fa-history"></i> Listado de Estacionados
+<div class="card">
+  <div class="card-header bg-secondary text-white">
+    <div class="row w-100 align-items-center">
+      <!-- Título -->
+      <div class="col-md-6 d-flex align-items-center">
+        <i class="fas fa-history me-2"></i>
+        <span class="h6 mb-0">Listado de Estacionados</span>
       </div>
-      <div>
-        <button onclick="location.href='/estacionamiento/create'" class="btn btn-sm btn-light text-info">
-        <i class="fas fa-car"></i>Ingresar vehiculo
-        </button>
+
+      <!-- Botones -->
+      <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        @php
+          $bloqueado = !$empresaExiste || !$sucursalExiste;
+        @endphp
+
+        @if(!$empresaExiste)
+          <div class="alert alert-warning d-inline-flex align-items-center gap-2 mb-2 p-2">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Debes registrar los <strong>datos de la empresa</strong>.</span>
+            <a href="{{ route('empresa.index') }}" class="btn btn-sm btn-outline-light">Ingresar datos empresa</a>
+          </div>
+        @elseif(!$sucursalExiste)
+          <div class="alert alert-warning d-inline-block mb-2 p-2">
+            <i class="fas fa-exclamation-triangle"></i> Debes crear una <strong>sucursal</strong>.
+            <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-outline-light ml-2">Crear sucursal</a>
+          </div>
+        @endif
+
+        @if($bloqueado)
+          <button class="btn btn-sm btn-light text-info mt-2" disabled title="Debes completar los datos requeridos">
+            <i class="fas fa-car"></i> Ingresar vehículo
+          </button>
+        @else
+          <a href="{{ route('estacionamiento.create') }}" class="btn btn-sm btn-light text-info mt-2">
+            <i class="fas fa-car"></i> Ingresar vehículo
+          </a>
+        @endif
       </div>
     </div>
+  </div>
+
+
     <div class="card-body">
       <div class="table-responsive">
         <table id="parking-table" class="table table-striped table-bordered nowrap w-100">

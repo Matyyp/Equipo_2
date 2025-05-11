@@ -69,15 +69,9 @@
             </select>
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label">Negocio</label>
-            <select name="id_business" class="selectpicker form-control" data-live-search="true" required>
-              <option value="">Seleccione negocio</option>
-              @foreach ($business as $b)
-                <option value="{{ $b->id_business }}">{{ $b->name_business }}</option>
-              @endforeach
-            </select>
-          </div>
+          <input type="hidden" name="id_business" value="{{ $business->id_business }}">
+
+
         </div>
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">

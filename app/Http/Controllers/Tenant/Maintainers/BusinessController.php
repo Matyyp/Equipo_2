@@ -14,8 +14,8 @@ class BusinessController extends Controller
      */
     public function index()
     {
-        $data = Business::all();
-        return view('tenant.admin.maintainer.business.index', compact('data'));
+        $business = Business::first();
+        return view('tenant.admin.maintainer.business.index', compact('business'));
     }
 
     /**

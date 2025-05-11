@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use App\Models\PaymentRecord;
 use App\Models\Payment;
 use App\Models\Voucher;
+use App\Models\Business;
 
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -37,41 +38,44 @@ class ParkingController extends Controller
      * Display a listing of the resource.
      */
 
-     public function index(Request $request)
-     {
-         if ($request->ajax()) {
-             $data = ParkingRegister::all()
-                 ->filter(function ($reg) {
-                     $park = Park::find($reg->id_park);
-                     return $park && $park->status === 'parked';
-                 })
-                 ->map(function ($reg) {
-                     $park = Park::find($reg->id_park);
-                     $car = $park?->park_car;
-                     $owner = $car?->car_belongs->first()?->belongs_owner;
-                     $brand = $car?->car_brand?->name_brand;
-                     $model = $car?->car_model?->name_model;
-                     $service = Service::find($park?->id_service);
-     
-                     return [
-                         'owner_name'    => $owner?->name ?? '-',
-                         'patent'        => $car?->patent ?? '-',
-                         'brand_model'   => trim(($brand ?? '') . ' ' . ($model ?? '')),
-                         'start_date'    => $reg->start_date ? \Carbon\Carbon::parse($reg->start_date)->format('d-m-Y') : '[NULO]',
-                         'end_date'      => $reg->end_date ? \Carbon\Carbon::parse($reg->end_date)->format('d-m-Y') : '[NULO]',
-                         'days'          => $reg->days,
-                         'service_price' => number_format($service?->price_net ?? 0, 0, ',', '.'),
-                         'total_value' => $reg->total_value,
-                         'total_formatted' => number_format($reg->total_value, 0, ',', '.'),
-                         'id_parking_register' => $reg->getKey(),
-                     ];
-                 });
-     
-             return DataTables::of(collect($data))->toJson();
-         }
-     
-         return view('tenant.admin.parking.index');
-     }
+public function index(Request $request)
+{
+    if ($request->ajax()) {
+        $data = ParkingRegister::all()
+            ->filter(function ($reg) {
+                $park = Park::find($reg->id_park);
+                return $park && $park->status === 'parked';
+            })
+            ->map(function ($reg) {
+                $park = Park::find($reg->id_park);
+                $car = $park?->park_car;
+                $owner = $car?->car_belongs->first()?->belongs_owner;
+                $brand = $car?->car_brand?->name_brand;
+                $model = $car?->car_model?->name_model;
+                $service = Service::find($park?->id_service);
+
+                return [
+                    'owner_name'    => $owner?->name ?? '-',
+                    'patent'        => $car?->patent ?? '-',
+                    'brand_model'   => trim(($brand ?? '') . ' ' . ($model ?? '')),
+                    'start_date'    => $reg->start_date ? \Carbon\Carbon::parse($reg->start_date)->format('d-m-Y') : '[NULO]',
+                    'end_date'      => $reg->end_date ? \Carbon\Carbon::parse($reg->end_date)->format('d-m-Y') : '[NULO]',
+                    'days'          => $reg->days,
+                    'service_price' => number_format($service?->price_net ?? 0, 0, ',', '.'),
+                    'total_value'   => $reg->total_value,
+                    'total_formatted' => number_format($reg->total_value, 0, ',', '.'),
+                    'id_parking_register' => $reg->getKey(),
+                ];
+            });
+
+        return DataTables::of(collect($data))->toJson();
+    }
+
+    $empresaExiste = Business::exists();
+    $sucursalExiste = BranchOffice::exists();
+
+    return view('tenant.admin.parking.index', compact('empresaExiste', 'sucursalExiste'));
+}
      
 
      public function search(Request $request)

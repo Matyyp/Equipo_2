@@ -15,6 +15,7 @@ class BranchOfficeController extends Controller
      */
     public function index()
     {
+        $verificacion = Business::exists();
         $office = BranchOffice::with([
             'branch_office_location.location_region',
             'branch_office_business'
@@ -37,7 +38,8 @@ class BranchOfficeController extends Controller
         });
         
         return view('tenant.admin.maintainer.branch_office.index', [
-            'data' => $office
+            'data' => $office,
+            'verificacion' => $verificacion
         ]);
         
     }
@@ -50,7 +52,7 @@ class BranchOfficeController extends Controller
     {
         $locacion = Location::all();
         $region = Region::all();
-        $business = Business::all();
+        $business = Business::first();
 
         return view('tenant.admin.maintainer.branch_office.create', compact('locacion', 'business', 'region'));
     }
