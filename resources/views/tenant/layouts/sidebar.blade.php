@@ -63,6 +63,13 @@
                                 <p>Pagos</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('analiticas') }}"
+                               class="nav-link {{ request()->routeIs('analiticas') ? 'active' : '' }}">
+                                <i class="fas fa-chart-simple nav-icon"></i>
+                                <p>Analiticas</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
