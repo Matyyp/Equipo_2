@@ -220,6 +220,18 @@
   L.marker([-45.90998, -71.698627]).addTo(map)
     .bindPopup('Rent a Car - Mackenna 768').openPopup();
 </script>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+</script>
 @endpush
 
 @endsection

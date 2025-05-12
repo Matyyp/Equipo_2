@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Providers;
-
+use Stancl\Tenancy\Events\TenancyBootstrapped;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -12,6 +13,9 @@ use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
+use App\Models\Business;
+use Illuminate\Support\Facades\Schema;
+
 
 class TenancyServiceProvider extends ServiceProvider
 {
@@ -104,7 +108,35 @@ class TenancyServiceProvider extends ServiceProvider
 
         $this->makeTenancyMiddlewareHighestPriority();
 
-        
+        $this->app['events']->listen(TenancyBootstrapped::class, function () {
+            // toma el View Finder y añade tu carpeta al inicio
+            View::getFacadeRoot()      // devuelve el Factory
+                ->getFinder()          // devuelve el FileViewFinder
+                ->prependLocation(     // aquí sí existe
+                    resource_path('views/tenant')
+                );
+        });
+
+        $this->app['events']->listen(TenancyBootstrapped::class, function () {
+            $logoUrl         = null;
+            $companyName     = null;
+
+            // Si la tabla ni siquiera está migrada, salimos
+            if (Schema::hasTable('businesses')) {
+                $business = Business::first();
+
+                if ($business) {
+                    $host    = request()->getHost();
+                    $logoUrl = $business->logo
+                        ? asset("storage/tenants/{$host}/imagenes/{$business->logo}")
+                        : null;
+                    $companyName = $business->name_business;
+                }
+            }
+
+            View::share('tenantLogo', $logoUrl);
+            View::share('tenantCompanyName', $companyName);
+        });
     }
 
     protected function bootEvents()

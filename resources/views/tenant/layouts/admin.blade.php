@@ -79,7 +79,10 @@
     </div>
 
     <footer class="main-footer text-sm">
-        <strong>&copy; {{ now()->year }} — Tu Empresa</strong>
+        <strong>
+            &copy; {{ now()->year }} — 
+            {{ $tenantCompanyName ?? config('app.name') }}
+        </strong>
     </footer>
 </div>
 

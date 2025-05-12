@@ -20,7 +20,6 @@
     <div class="col-6 col-md-3 mb-4">
         <div class="card shadow-sm h-100 text-center text-secondary">
             <div class="card-body d-flex flex-column justify-content-center">
-                <h5 class="card-title">Reservas</h5>
                 <span class="badge bg-secondary">En proceso</span>
             </div>
         </div>
@@ -30,7 +29,6 @@
     <div class="col-6 col-md-3 mb-4">
         <div class="card shadow-sm h-100 text-center text-secondary">
             <div class="card-body d-flex flex-column justify-content-center">
-                <h5 class="card-title">Por definir</h5>
                 <span class="badge bg-secondary">En proceso</span>
             </div>
         </div>

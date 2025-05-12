@@ -1,7 +1,19 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     {{-- Brand --}}
-    <a href="{{ route('dashboard') }}" class="brand-link">
-        <span class="brand-text font-weight-light">Rent a Car</span>
+    <a href="{{ route('dashboard') }}"
+       class="brand-link d-flex justify-content-center align-items-center">
+        @if (! empty($tenantLogo))
+            <img
+                src="{{ $tenantLogo }}"
+                alt="{{ $tenantCompanyName ?? config('app.name') }} logo"
+                class="brand-image" 
+                style="display:block; margin:0 auto; max-height:50px; width:auto;"
+            />
+        @else
+            <span class="brand-text font-weight-light">
+                {{ $tenantCompanyName ?? config('app.name') }}
+            </span>
+        @endif
     </a>
 
     {{-- Sidebar --}}
@@ -43,6 +55,7 @@
                 @endcan
 
                 {{-- Reservas --}}
+                @can('reservas.access')
                 <li class="nav-item has-treeview {{ request()->is('reservas*') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->is('reservas*') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-calendar-days"></i>
@@ -50,8 +63,10 @@
                     </a>
                     <ul class="nav nav-treeview"></ul>
                 </li>
+                @endcan
 
                 {{-- Ventas --}}
+                @can('ventas.access')
                 <li class="nav-item has-treeview {{ request()->is('ventas*') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->is('ventas*') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-wallet"></i>
@@ -74,8 +89,9 @@
                         </li>
                     </ul>
                 </li>
-
+                @endcan
                 {{-- Mantenciones --}}
+                @can('mantenimiento.access')
                 <li class="nav-item has-treeview {{ request()->is('mantenimiento*') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->is('mantenimiento*') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-screwdriver-wrench"></i>
@@ -83,6 +99,7 @@
                     </a>
                     <ul class="nav nav-treeview"></ul>
                 </li>
+                @endcan
 
                 {{-- Administración --}}
                 @canany(['users.index','roles.index'])
