@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Tenant\Maintainers;
 
 use App\Models\Register;
 use Illuminate\Http\Request;

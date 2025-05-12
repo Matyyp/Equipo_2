@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Tenant\Maintainers;
 use App\Models\Enter;
 use Illuminate\Http\Request;
 
