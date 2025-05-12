@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Providers;
-
+use Stancl\Tenancy\Events\TenancyBootstrapped;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -12,6 +13,8 @@ use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
+use App\Models\Business;
+
 
 class TenancyServiceProvider extends ServiceProvider
 {
@@ -103,6 +106,29 @@ class TenancyServiceProvider extends ServiceProvider
         $this->mapRoutes();
 
         $this->makeTenancyMiddlewareHighestPriority();
+
+        $this->app['events']->listen(TenancyBootstrapped::class, function () {
+            // toma el View Finder y añade tu carpeta al inicio
+            View::getFacadeRoot()      // devuelve el Factory
+                ->getFinder()          // devuelve el FileViewFinder
+                ->prependLocation(     // aquí sí existe
+                    resource_path('views/tenant')
+                );
+        });
+
+        $this->app['events']->listen(TenancyBootstrapped::class, function () {
+            // Asume que solo hay un registro Business activo por tenant
+            $business = Business::first();
+
+            $logoUrl = null;
+            if ($business && $business->logo) {
+                $host = request()->getHost();
+                $logoUrl = asset("storage/tenants/{$host}/imagenes/{$business->logo}");
+            }
+
+            // Esto hace que todas las vistas blade vean $tenantLogo
+            View::share('tenantLogo', $logoUrl);
+        });
 
         
     }
