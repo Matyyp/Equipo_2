@@ -74,7 +74,7 @@
 </section>
 
 <!-- Quiénes Somos -->
-<section class="py-16 bg-white">
+<section id='quienes-somos' class="py-16 bg-white">
   <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-10">
     <div data-aos="fade-right" class="flex flex-col">
       <div class="flex gap-2 mb-4">
@@ -164,7 +164,7 @@
 </section>
 
 <!-- Mapa + Contacto -->
-<section class="py-16 bg-gray-100">
+<section id='contacto' class="py-16 bg-gray-100">
   <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center text-center md:text-left">
     <div data-aos="fade-right">
       <div id="map" class="w-full h-[300px] md:h-[400px] rounded-xl shadow-lg border-4 border-orange-500"></div>

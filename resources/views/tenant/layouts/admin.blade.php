@@ -41,18 +41,12 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <li class="dropdown-item">
-                        <a href="{{ route('profile.edit') }}" class="d-block">
-                            <i class="fas fa-user-cog mr-2"></i> {{ __('Profile') }}
-                        </a>
-                    </li>
-                    <li class="dropdown-divider"></li>
-                    <li class="dropdown-item">
                         <form method="POST" action="{{ route('logout') }}" id="logout-form">
                             @csrf
                             <a href="{{ route('logout') }}"
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                                class="d-block text-danger">
-                                <i class="fas fa-sign-out-alt mr-2"></i> {{ __('Log Out') }}
+                                <i class="fas fa-sign-out-alt mr-2"></i> {{ __('Cerrar sesión') }}
                             </a>
                         </form>
                     </li>
