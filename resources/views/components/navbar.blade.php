@@ -61,36 +61,104 @@ Balmaceda</span>
             </button>
         </div>
 
-        <ul id="menu" class="hidden md:flex gap-8 items-center absolute md:static top-16 left-0 w-full md:w-auto bg-gray-900 md:bg-transparent flex-col md:flex-row z-40 md:z-auto">
-            <li class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                <button class="hover:text-orange-400 px-4 py-2">Servicios</button>
-                <ul x-show="open" x-transition class="absolute left-0 mt-2 bg-white text-black shadow-lg rounded-md overflow-hidden z-50 w-40">
-                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-200">Arriendo Vehículos</a></li>
-                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-200">Arriendo Estacionamiento</a></li>
-                    <li><a href="#" class="block px-4 py-2 hover:bg-gray-200">Lavado de autos</a></li>
-                </ul>
+        <ul
+            id="menu"
+            class="hidden md:flex absolute md:static
+                top-full md:top-auto left-0 w-full md:w-auto
+                bg-gray-900 md:bg-transparent
+                flex-col md:flex-row gap-0 md:gap-8
+                z-40 transition-all duration-200"
+        >
+            {{-- Servicios deshabilitado --}}
+            <li class="w-full md:w-auto">
+                <button
+                    disabled
+                    class="block w-full text-left px-4 py-2
+                        text-gray-500 cursor-not-allowed
+                        bg-gray-800 md:bg-transparent
+                        rounded-none md:rounded"
+                    title="Próximamente"
+                >
+                    Servicios
+                </button>
             </li>
-            <li><a href="#" class="hover:text-orange-400 px-4 py-2">Quiénes somos</a></li>
-            <li><a href="#" class="hover:text-orange-400 px-4 py-2">Contáctanos</a></li>
-           
 
-            {{-- Opciones responsive para guest/auth --}}
-            
+            {{-- Quiénes somos --}}
+            <li class="w-full md:w-auto">
+                <a
+                    href="#quienes-somos"
+                    class="block w-full text-left px-4 py-2
+                        hover:text-orange-400"
+                >
+                    Quiénes somos
+                </a>
+            </li>
+
+            {{-- Contáctanos --}}
+            <li class="w-full md:w-auto">
+                <a
+                    href="#contacto"
+                    class="block w-full text-left px-4 py-2
+                        hover:text-orange-400"
+                >
+                    Contáctanos
+                </a>
+            </li>
+
+            {{-- Opciones responsive para guest --}}
             @guest
-                <li class="md:hidden flex gap-2 mt-2 px-4">
-                    <a href="{{ route('register') }}" class="bg-white text-black px-4 py-1 rounded hover:bg-orange-400">Únetenos</a>
-                    <a href="{{ route('login') }}" class="bg-orange-500 px-4 py-1 rounded hover:bg-orange-600">Iniciar sesión</a>
+                <li class="w-full md:hidden">
+                    <a
+                        href="{{ route('register') }}"
+                        class="block w-full px-4 py-2
+                            bg-white text-black rounded
+                            hover:bg-orange-400"
+                    >
+                        Únetenos
+                    </a>
+                </li>
+                <li class="w-full md:hidden">
+                    <a
+                        href="{{ route('login') }}"
+                        class="block w-full px-4 py-2
+                            bg-orange-500 rounded
+                            hover:bg-orange-600 text-center mt-4"
+                    >
+                        Iniciar sesión
+                    </a>
                 </li>
             @else
-                <li class="md:hidden flex gap-2 mt-2 px-4">
-                    <span class="px-4 py-1">{{ Auth::user()->name }}</span>
+                {{-- Admin Panel en móvil --}}
+                @can('admin.panel.access')
+                <li class="w-full md:hidden">
+                    <a
+                        href="{{ route('dashboard') }}"
+                        class="block w-full px-4 py-2
+                            bg-gray-700 rounded
+                            hover:bg-gray-600 text-center"
+                    >
+                        Admin Panel
+                    </a>
+                </li>
+                @endcan
+
+                {{-- Cerrar sesión en móvil --}}
+                <li class="w-full md:hidden">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="bg-red-600 px-4 py-1 rounded hover:bg-red-700">Cerrar sesión</button>
+                        <button
+                            type="submit"
+                            class="block w-full text-center px-4 py-2
+                                bg-red-600 rounded
+                                hover:bg-red-700 mt-4"
+                        >
+                            Cerrar sesión
+                        </button>
                     </form>
                 </li>
             @endguest
         </ul>
+
 
         <div class="hidden md:flex gap-3 items-center">
             {{-- Para pantallas md+ --}}  
@@ -107,7 +175,7 @@ Balmaceda</span>
                         </svg>
                     </button>
                     <ul x-show="open" x-transition class="absolute right-0 mt-2 bg-white text-black shadow-lg rounded-md overflow-hidden z-50 w-40">
-                        @role('Admin')
+                        @can('admin.panel.access')
                             <li>
                                 <button
                                     type="button"
@@ -116,7 +184,7 @@ Balmaceda</span>
                                     Admin Panel
                                 </button>
                             </li>
-                        @endrole
+                        @endcan
                         <li>
                             <form method="POST" action="{{ route('logout') }}" class="block">
                                 @csrf

@@ -14,6 +14,7 @@ use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
 use App\Models\Business;
+use Illuminate\Support\Facades\Schema;
 
 
 class TenancyServiceProvider extends ServiceProvider
@@ -117,20 +118,25 @@ class TenancyServiceProvider extends ServiceProvider
         });
 
         $this->app['events']->listen(TenancyBootstrapped::class, function () {
-            // Asume que solo hay un registro Business activo por tenant
-            $business = Business::first();
+            $logoUrl         = null;
+            $companyName     = null;
 
-            $logoUrl = null;
-            if ($business && $business->logo) {
-                $host = request()->getHost();
-                $logoUrl = asset("storage/tenants/{$host}/imagenes/{$business->logo}");
+            // Si la tabla ni siquiera está migrada, salimos
+            if (Schema::hasTable('businesses')) {
+                $business = Business::first();
+
+                if ($business) {
+                    $host    = request()->getHost();
+                    $logoUrl = $business->logo
+                        ? asset("storage/tenants/{$host}/imagenes/{$business->logo}")
+                        : null;
+                    $companyName = $business->name_business;
+                }
             }
 
-            // Esto hace que todas las vistas blade vean $tenantLogo
             View::share('tenantLogo', $logoUrl);
+            View::share('tenantCompanyName', $companyName);
         });
-
-        
     }
 
     protected function bootEvents()

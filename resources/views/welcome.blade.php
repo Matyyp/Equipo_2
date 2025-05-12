@@ -79,7 +79,7 @@
 
 
 <!-- Quiénes Somos -->
-<section class="py-16 px-4 bg-white overflow-x-hidden">
+<section id="quienes-somos" class="py-16 px-4 bg-white overflow-x-hidden">
     <div class="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
 
         <!-- Videos -->
@@ -192,7 +192,7 @@
 
 
 <!-- Mapa + Contacto -->
-<section class="bg-gray-100 py-16 px-4 overflow-x-hidden">
+<section id="contacto" class="bg-gray-100 py-16 px-4 overflow-x-hidden">
     <div class="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center text-center md:text-left">
         <!-- Mapa -->
         <div data-aos="fade-right">
@@ -267,6 +267,18 @@
     L.marker([-45.909980, -71.698627]).addTo(map)
      .bindPopup('Rent a Car - Mackenna 768, Balmaceda')
      .openPopup();
+</script>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
 </script>
 @endpush
 

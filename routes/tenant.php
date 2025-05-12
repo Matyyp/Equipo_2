@@ -49,14 +49,14 @@ Route::middleware([
         return view('welcome');
     });
     //aca agregar todos los roles que necesiten entran al panel de admin
-    Route::middleware(['auth', 'role:Admin|Trabajador'])->group(function () {
+    Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
         Route::get('/dashboard', function () {
             return view('tenant.admin.dashboard');
         })->name('dashboard');
         // Dashboard principal vía controlador
-        Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
+        //Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
 
-        Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
+        //Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
     
     Route::middleware('auth')->group(function () {
@@ -87,7 +87,7 @@ Route::middleware([
         Route::resource('servicios', ServiceController::class);
         Route::get('contratos/create/{branch}/{type}', [ContractController::class, 'create'])->name('contratos.create');
         Route::resource('contratos', ContractController::class);
-        Route::resource('pagos', PaymentRecordController::class)->names('payment');
+        //Route::resource('pagos', PaymentRecordController::class)->names('payment');
 
 
 
@@ -101,7 +101,7 @@ Route::middleware([
         Route::resource('cuentas_bancarias', BankDetailController::class);
 
     });
-
+    // Modulo estacionamiento
     Route::middleware(['auth', 'permission:estacionamiento.access'])->group(function () {
 
         Route::get('estacionamiento/check-contrato', [ParkingController::class, 'checkContrato'])->name('estacionamiento.checkContrato');
@@ -123,6 +123,12 @@ Route::middleware([
         Route::resource('estacionamiento', ParkingController::class);
         Route::get('/payment/{id}/voucher', [PaymentRecordController::class, 'downloadPdf'])->name('payment.record');
 
+    });
+    // Modulo ventas
+    Route::middleware(['auth', 'permission:ventas.access'])->group(function () {
+        Route::resource('pagos', PaymentRecordController::class)->names('payment');
+        Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
+        Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
 
     // CRUD Usuarios
