@@ -34,14 +34,12 @@ class OwnerController extends Controller
         $request->validate([
             'type_owner'    => 'required|in:cliente,empresa',
             'name'          => 'required|string|max:100',
-            'last_name'     => 'required|string|max:100',
             'number_phone'  => 'required|string|max:20',
         ]);
     
         Owner::create([
             'type_owner'    => $request->type_owner,
             'name'          => $request->name,
-            'last_name'     => $request->last_name,
             'number_phone'  => $request->number_phone,
         ]);
 
@@ -73,7 +71,6 @@ class OwnerController extends Controller
         $request->validate([
             'type_owner'    => 'required|in:cliente,empresa',
             'name'          => 'required|string|max:100',
-            'last_name'     => 'required|string|max:100',
             'number_phone'  => 'required|string|max:20',
         ]);
 
@@ -81,7 +78,6 @@ class OwnerController extends Controller
         ->update([
             'type_owner'    => $request->type_owner,
             'name'          => $request->name,
-            'last_name'     => $request->last_name,
             'number_phone'  => $request->number_phone,
         ]);
 

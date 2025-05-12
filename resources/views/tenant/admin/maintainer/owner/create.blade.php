@@ -42,11 +42,6 @@
           <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
         </div>
 
-        <div class="form-group mb-3">
-          <label for="last_name">Apellido</label>
-          <input type="text" name="last_name" id="last_name" class="form-control" value="{{ old('last_name') }}" required>
-        </div>
-
         <div class="form-group mb-4">
           <label for="number_phone">Número de Teléfono</label>
           <input type="text" name="number_phone" id="number_phone" class="form-control" value="{{ old('number_phone') }}" required>

@@ -453,19 +453,21 @@ public function index(Request $request)
     public function history(Request $request)
     {
         if ($request->ajax()) {
-            $parks = Park::with([
-                'park_car.car_brand',
-                'park_car.car_model',
-                'park_car.car_belongs.belongs_owner',
-                'park_parking.parking_service',
-                'park_parking.parking_register' => function ($q) {
-                    $q->with([
-                        'register_parking_register' => function ($r) {
-                            $r->where('status', 'paid');
-                        }
-                    ]);
-                },
-            ])->get();
+            $parks = Park::where('status', 'not_parked')
+                ->with([
+                    'park_car.car_brand',
+                    'park_car.car_model',
+                    'park_car.car_belongs.belongs_owner',
+                    'park_parking.parking_service',
+                    'park_parking.parking_register' => function ($q) {
+                        $q->with([
+                            'register_parking_register' => function ($r) {
+                                $r->where('status', 'paid'); 
+                            }
+                        ]);
+                    },
+                ])
+                ->get();
                    
     
             $rows = $parks->map(function ($park) {
