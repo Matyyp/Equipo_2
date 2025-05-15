@@ -44,7 +44,7 @@ class SetupTenantJob implements ShouldQueue
             'email'    => $this->email,
             'password' => Hash::make($temporaryPassword),
         ]);
-        $user->assignRole('admin');  // ahora sí existe
+        $user->assignRole('SuperAdmin');  // ahora sí existe
 
         // 4) Forzar dominio de tenant para que el reset link apunte bien
         $domain = $this->tenant->domains->first()->domain;
