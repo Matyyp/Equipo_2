@@ -12,7 +12,7 @@
             </h5>
 
             @if ($business)
-            <a href="{{ route('empresa.edit', $business->id_business) }}" class="btn btn-sm btn-success">
+            <a href="{{ route('empresa.edit', $business->id_business) }}"class="btn btn-sm btn-outline-info me-1">
                 <i class="fas fa-edit"></i> Editar Perfil
             </a>
             @else

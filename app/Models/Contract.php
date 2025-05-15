@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Scopes\BranchOfficeScope;
 
 
 class Contract extends Model
@@ -17,6 +18,10 @@ class Contract extends Model
 
     protected $primaryKey = 'id_contract';
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new BranchOfficeScope);
+    }
 
     public function contract_presents()
     {

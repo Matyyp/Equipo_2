@@ -130,7 +130,7 @@
                                     </a>
                                 </li>
                                 @endcan
-                                @role('Admin')
+                                @role('SuperAdmin')
                                 <li class="nav-item">
                                     <a href="{{ route('roles.index') }}" class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
                                         <i class="fas fa-user-shield nav-icon"></i><p>Roles</p>

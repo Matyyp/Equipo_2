@@ -30,7 +30,7 @@ class RolePermissionSeeder extends Seeder
         /** ----------------------------------------------------------------
          * Roles
          * ----------------------------------------------------------------*/
-        $admin    = Role::firstOrCreate(['name' => 'Admin']);
+        $admin    = Role::firstOrCreate(['name' => 'SuperAdmin']);
         $user    = Role::firstOrCreate(['name' => 'User']);
         /** ----------------------------------------------------------------
          * Asignación de permisos

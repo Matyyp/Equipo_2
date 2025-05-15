@@ -37,6 +37,10 @@ class PaymentRecordController extends Controller
             $car     = $park?->park_car;
             $owner   = $car?->car_belongs->first()?->belongs_owner;
             $service = $park?->service;
+
+            if (!$service) {
+                return null;
+            }
     
             return [
                 'id_payment'   => $payment->id_payment,
@@ -49,7 +53,7 @@ class PaymentRecordController extends Controller
                 'owner_name'   => $owner?->name ?? 'N/D',
                 'total_value'  => $parking?->total_value ?? 'N/D',
             ];
-        });
+        })->filter()->values();
     
         return response()->json(['data' => $mapped]);
     }

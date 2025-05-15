@@ -20,7 +20,7 @@
         <div>
           <i class="fas fa-user-shield me-2"></i>Roles
         </div>
-        @role('Admin')
+        @role('SuperAdmin')
           <a href="{{ route('roles.create') }}" class="btn btn-sm btn-success">
             <i class="fas fa-plus"></i> Nuevo
           </a>

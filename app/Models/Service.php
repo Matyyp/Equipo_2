@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Models\PaymentRegister;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Scopes\BranchOfficeScope;
 
 
 class Service extends Model
@@ -20,6 +21,14 @@ class Service extends Model
         'id_branch_office',
         'status'
     ];
+
+
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new BranchOfficeScope);
+    }
+
 
     public function service_branch_office()
     {

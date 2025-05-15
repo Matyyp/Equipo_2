@@ -8,14 +8,17 @@
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
       <div class="d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">
-          <i class="fas fa-gavel me-2"></i>Reglas Registradas
-        </span>
+        <div class="d-flex align-items-center">
+          <i class="fas fa-gavel" style="margin-right: 8px;"></i>
+          <h5 class="mb-0 fw-semibold">Reglas Registradas</h5>
+        </div>
         <a href="{{ route('reglas.create') }}" class="btn btn-sm btn-success">
           <i class="fas fa-plus-circle me-1"></i> Nueva Regla
         </a>
       </div>
     </div>
+
+
 
     <div class="card-body">
       @if ($Rule->count())
@@ -50,9 +53,11 @@
                     @endswitch
                   </td>
                   <td class="text-center">
-                    <a href="{{ route('reglas.edit', $rule->id_rule) }}" class="btn btn-warning btn-sm">
-                      <i class="fas fa-edit"></i> Editar
+                    <a href="/reglas/{{ $rule->id_rule }}/edit" class="btn btn-sm btn-outline-info me-1" title="Editar">
+                        <i class="fas fa-edit"></i>
                     </a>
+
+
                   </td>
                 </tr>
               @endforeach

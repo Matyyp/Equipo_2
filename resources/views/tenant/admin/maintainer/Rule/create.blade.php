@@ -11,7 +11,7 @@
 <div class="container px-3 px-md-5 mt-4">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-gavel me-2"></i>
+      <span style="margin-right: 10px;"><i class="fas fa-gavel"></i></span>
       <h5 class="mb-0">Registrar Nueva Regla</h5>
     </div>
 

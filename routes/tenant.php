@@ -108,6 +108,8 @@ Route::middleware([
         Route::get('estacionamiento/check-contrato', [ParkingController::class, 'checkContrato'])->name('estacionamiento.checkContrato');
         Route::get('estacionamiento/data', [ParkingController::class, 'data'])
         ->name('estacionamiento.data');
+        Route::get('estacionamiento/servicios-por-sucursal', [ParkingController::class, 'getServicesByBranch'])
+        ->name('estacionamiento.getServicesByBranch');
         Route::get('estacionamiento/search', [ParkingController::class, 'search'])
         ->name('estacionamiento.search');
         Route::get('estacionamiento/search-phone', [ParkingController::class, 'searchPhone'])
@@ -154,7 +156,7 @@ Route::middleware([
         Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
-    Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
         Route::get('roles/data', [RoleController::class, 'getData'])
             ->name('roles.data');
 

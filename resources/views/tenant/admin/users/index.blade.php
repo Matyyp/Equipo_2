@@ -21,8 +21,10 @@
           <i class="fas fa-users me-2"></i>Usuarios
         </div>
         @can('users.create')
-          <a href="{{ route('users.create') }}" class="btn btn-sm btn-success">
-            <i class="fas fa-user-plus"></i> Nuevo
+          <a href="{{ route('users.create') }}" 
+            style="background-color: #F97316; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;"
+          >
+              <i class="fas fa-plus"></i> Nuevo
           </a>
         @endcan
       </div>
@@ -35,6 +37,7 @@
             <th>Nombre</th>
             <th>Email</th>
             <th>Rol</th>
+            <th>Sucursal</th>
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
@@ -60,6 +63,7 @@
         { data: 'name',  name: 'name' },
         { data: 'email', name: 'email' },
         { data: 'role',  name: 'roles.name', orderable: false, searchable: false },
+        { data: 'sucursal', name: 'sucursal' },
         {
           data: 'action',
           name: 'action',

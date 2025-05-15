@@ -31,6 +31,9 @@
         <table id="history-table" class="table table-bordered table-striped table-hover table-sm w-100 nowrap">
           <thead class="thead-light">
             <tr>
+              @role('SuperAdmin')
+                <th>Sucursal</th>
+              @endrole
               <th>Nombre</th>
               <th>Teléfono</th>
               <th>Patente</th>
@@ -72,13 +75,16 @@ document.addEventListener('DOMContentLoaded', () => {
     serverSide: false,
     ajax: '{{ route("estacionamiento.history") }}',
     columns: [
+      @role('SuperAdmin')
+        { data: 'branch_name', title: 'Sucursal' },
+      @endrole
       { data: 'owner_name' },
       { data: 'owner_phone' },
       { data: 'patent' },
       { data: 'brand' },
       { data: 'model' },
-      { data: 'start_date', render: formatDate },
-      { data: 'end_date', render: formatDate },
+      { data: 'start_date'},
+      { data: 'end_date'},
       { data: 'days' },
       { data: 'price', render: formatCLP },
       { data: 'total_value', render: formatCLP },

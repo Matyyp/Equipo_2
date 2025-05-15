@@ -56,6 +56,9 @@
         <table id="parking-table" class="table table-striped table-bordered nowrap w-100">
           <thead>
             <tr>
+              @role('SuperAdmin')
+                <th>Sucursal</th>
+              @endrole
               <th>Nombre</th>
               <th>Patente</th>
               <th>Auto</th>
@@ -135,6 +138,9 @@
         }
       },
       columns: [
+        @role('SuperAdmin')
+          { data: 'branch_name', title: 'Sucursal' },
+        @endrole
         { data: 'owner_name' },
         { data: 'patent' },
         { data: 'brand_model' },
