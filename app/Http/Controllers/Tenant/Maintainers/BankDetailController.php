@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BankDetail;
 use App\Models\Bank;
+use App\Models\Business;
 use App\Models\TypeAccount;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -13,8 +14,11 @@ class BankDetailController extends Controller
 {
     public function index()
     {
-        return view('tenant.admin.maintainer.bank_detail.index');
+        $businessExists = Business::exists();
+
+        return view('tenant.admin.maintainer.bank_detail.index', compact('businessExists'));
     }
+
 
    public function data()
     {
@@ -48,14 +52,27 @@ class BankDetailController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'           => 'required|string|max:100',
-            'rut'            => 'required|string|max:20',
-            'account_number' => 'required|string|max:50',
-            'id_bank'        => 'required|exists:banks,id_bank',
-            'id_type_account'=> 'required|exists:type_accounts,id_type_account',
+            'name'            => 'required|string|max:100',
+            'rut'             => 'required|string|max:12',
+            'account_number'  => 'required|string|max:20',
+            'id_bank'         => 'required|exists:banks,id_bank',
+            'id_type_account' => 'required|exists:type_accounts,id_type_account',
         ]);
 
-        BankDetail::create($request->all());
+
+        $business = Business::first(); 
+
+        if (!$business) {
+            return redirect()->back()->with('error', 'No se encontró una empresa registrada.')->withInput();
+        }
+        BankDetail::create([
+            'name'            => $request->name,
+            'rut'             => $request->rut,
+            'account_number'  => $request->account_number,
+            'id_bank'         => $request->id_bank,
+            'id_type_account' => $request->id_type_account,
+            'id_business'     => $business->id_business,
+        ]);
 
         return redirect()->route('cuentas_bancarias.index')->with('success', 'Cuenta registrada correctamente.');
     }

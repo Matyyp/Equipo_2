@@ -80,3 +80,8 @@
   });
   </script>
 @endpush
+@push('scripts')
+<script>
+  console.log("logout form exists:", document.getElementById('logout-form') !== null);
+</script>
+@endpush

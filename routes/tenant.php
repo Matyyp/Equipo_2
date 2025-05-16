@@ -26,6 +26,7 @@ use App\Http\Controllers\Tenant\Parking\ParkingController;
 use App\Http\Controllers\Tenant\Maintainers\PaymentRecordController;
 use App\Http\Controllers\Tenant\Maintainers\BankDetailController;
 use App\Http\Controllers\Tenant\Dashboard\DashboardController;
+use App\Http\Controllers\Tenant\Maintainers\WorkerController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
@@ -83,14 +84,13 @@ Route::middleware([
 
         Route::resource('autos', CarController::class);
         Route::resource('asociado', BelongsController::class);
+        Route::get('/verificar-sucursal', [BranchOfficeController::class, 'verificarSucursalExistente'])->name('sucursal.verificar');
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
         Route::patch('/servicios/{id}/disable', [ServiceController::class, 'disable'])->name('servicios.disable');
         Route::get('contratos/create/{branch}/{type}', [ContractController::class, 'create'])->name('contratos.create');
         Route::resource('contratos', ContractController::class);
         //Route::resource('pagos', PaymentRecordController::class)->names('payment');
-
-
 
         Route::get('region/data', [RegionController::class, 'index'])->name('region.data');
         Route::resource('region', RegionController::class);
@@ -100,6 +100,7 @@ Route::middleware([
         Route::resource('tipo_cuenta', TypeAccountController::class);
         Route::get('cuentas_bancarias/data', [BankDetailController::class, 'data'])->name('cuentas_bancarias.data');
         Route::resource('cuentas_bancarias', BankDetailController::class);
+        Route::resource('trabajadores', WorkerController::class);
 
     });
     // Modulo estacionamiento

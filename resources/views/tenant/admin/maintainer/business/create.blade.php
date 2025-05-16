@@ -38,16 +38,6 @@
           @enderror
         </div>
 
-        <div class="form-group mb-3">
-          <label for="electronic_transfer" class="form-label">Datos de Transferencia</label>
-          <textarea name="electronic_transfer" id="electronic_transfer" rows="3"
-                    class="form-control @error('electronic_transfer') is-invalid @enderror"
-                    required>{{ old('electronic_transfer') }}</textarea>
-          @error('electronic_transfer')
-            <div class="invalid-feedback">{{ $message }}</div>
-          @enderror
-        </div>
-
         <div class="form-group mb-4">
           <label for="logo" class="form-label">Logo</label>
           <input type="file" name="logo" id="logo" accept="image/*"

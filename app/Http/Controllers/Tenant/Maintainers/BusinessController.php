@@ -14,7 +14,7 @@ class BusinessController extends Controller
      */
     public function index()
     {
-        $business = Business::first();
+        $business = Business::with('business_bank.bank_detail_bank', 'business_bank.bank_detail_type_account')->first();
         return view('tenant.admin.maintainer.business.index', compact('business'));
     }
 
@@ -33,7 +33,6 @@ class BusinessController extends Controller
     {
         $request->validate([
             'name_business' => 'required|string|max:255',
-            'electronic_transfer' => 'required|string|max:255',
             'logo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -51,7 +50,6 @@ class BusinessController extends Controller
         business::create([
             'name_business' => $request->name_business,
             'logo' => $filename, 
-            'electronic_transfer' => $request->electronic_transfer, 
         ]);
 
         return redirect()->route('empresa.index');
@@ -82,13 +80,11 @@ class BusinessController extends Controller
         $request->validate([
             'name_business' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'electronic_transfer' => 'required|string|max:255',
         ]);
     
         $business = Business::findOrFail($id);
         $data = [
             'name_business' => $request->name_business,
-            'electronic_transfer' => $request->electronic_transfer,
         ];
     
         if ($request->hasFile('logo')) {

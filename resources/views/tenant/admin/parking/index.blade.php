@@ -6,21 +6,24 @@
 @push('styles')
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css" />
+  <style>
+    /* 🔧 Solución al conflicto de superposición del overlay */
+    #sidebar-overlay {
+        pointer-events: none !important;
+        background: transparent !important;
+    }
+  </style>
 @endpush
 
 @section('content')
 <div class="container mt-5">
-<div class="card">
+  <div class="card">
     <div class="card-header bg-secondary text-white">
       <div class="d-flex justify-content-between align-items-center flex-wrap w-100">
-
-        <!-- Título -->
         <div class="d-flex align-items-center mb-2 mb-md-0">
           <i class="fas fa-history me-2"></i>
           <span class="fw-semibold h6 mb-0">Listado de Estacionados</span>
         </div>
-
-        <!-- Botones y alertas -->
         <div class="text-end">
           @php
             $bloqueado = !$empresaExiste || !$sucursalExiste;
@@ -46,10 +49,6 @@
         </div>
       </div>
     </div>
-
-
-
-
 
     <div class="card-body">
       <div class="table-responsive">
@@ -117,7 +116,6 @@
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
@@ -170,7 +168,7 @@
                 data-id="${row.id_parking_register}"
                 data-total="${row.total_value}"
               >
-                <i class="fas fa-sign-out-alt"></i>
+                <i class="fas fa-door-open"></i>
               </button>
             `;
           }
@@ -182,7 +180,6 @@
       }
     });
 
-    // Abrir modal y setear valores
     $('#parking-table').on('click', '.btn-checkout', function() {
       const id = $(this).data('id');
       const total = $(this).data('total');
@@ -193,6 +190,31 @@
         new Intl.NumberFormat('es-CL').format(total)
       );
       $('#checkoutModal').modal('show');
+    });
+  });
+</script>
+@endpush
+@push('scripts')
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Oculta completamente el overlay si existe
+    const overlay = document.getElementById('sidebar-overlay');
+    if (overlay) {
+      overlay.style.display = 'none';
+      overlay.remove(); // Elimina si es seguro
+    }
+
+    // Asegura que el menú dropdown funcione
+    $('.user-menu > a').on('click', function (e) {
+      e.preventDefault();
+      $(this).siblings('.dropdown-menu').toggle();
+    });
+
+    // Opcional: cerrar el dropdown si se hace clic afuera
+    $(document).on('click', function (e) {
+      if (!$(e.target).closest('.user-menu').length) {
+        $('.user-menu .dropdown-menu').hide();
+      }
     });
   });
 </script>

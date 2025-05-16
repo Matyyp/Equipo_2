@@ -17,31 +17,28 @@
     </div>
 
     <div class="card-body">
-      <form action="{{ route('users.update', $user->id) }}" method="POST">
+      <form action="{{ route('trabajadores.update', $user->id) }}" method="POST">
         @csrf
         @method('PUT')
 
         <div class="form-group mb-3">
           <label for="name" class="form-label">Nombre</label>
-          <input type="text" name="name" id="name"
-                 class="form-control @error('name') is-invalid @enderror"
-                 value="{{ old('name', $user->name) }}" required>
+          <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
+            value="{{ old('name', $user->name) }}" required>
           @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         <div class="form-group mb-3">
           <label for="email" class="form-label">Email</label>
-          <input type="email" name="email" id="email"
-                 class="form-control @error('email') is-invalid @enderror"
-                 value="{{ old('email', $user->email) }}" required>
+          <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
+            value="{{ old('email', $user->email) }}" required>
           @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         <div class="form-group mb-4">
           <label for="role" class="form-label">Rol</label>
-          <select name="role" id="role"
-                  class="form-select selectpicker @error('role') is-invalid @enderror"
-                  data-live-search="true" required>
+          <select name="role" id="role" class="form-select selectpicker @error('role') is-invalid @enderror"
+            data-live-search="true" required>
             <option value="" disabled>-- Selecciona un rol --</option>
             @foreach(\Spatie\Permission\Models\Role::pluck('name') as $roleName)
               <option value="{{ $roleName }}"
@@ -54,25 +51,15 @@
         </div>
 
         <div class="form-group mb-4">
-          <label for="id_branch_office" class="form-label">Sucursal</label>
-          <select name="id_branch_office" id="id_branch_office"
-                  class="form-select selectpicker @error('id_branch_office') is-invalid @enderror"
-                  data-live-search="true" required>
-            <option value="" disabled>-- Selecciona una sucursal --</option>
-            @foreach($branchs as $branch)
-              <option value="{{ $branch->id_branch }}"
-                {{ old('id_branch_office', $user->id_branch_office) == $branch->id_branch ? 'selected' : '' }}>
-                {{ $branch->name_branch_offices }}
-              </option>
-            @endforeach
-          </select>
-          @error('id_branch_office') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+          <label class="form-label">Sucursal</label>
+          <input type="text" class="form-control" value="{{ $user->branch_office->name_branch_offices ?? 'Sin sucursal' }}" disabled>
+          <input type="hidden" name="id_branch_office" value="{{ $user->id_branch_office }}">
         </div>
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('users.index') }}" class="btn btn-secondary">
-              <i class="fas fa-arrow-left me-1"></i> Volver
+            <a href="{{ route('trabajadores.show', $user->id_branch_office) }}" class="btn btn-secondary mr-2">
+              <i class="fas fa-arrow-left mr-1"></i> Volver
             </a>
           </div>
           <div class="col-auto">

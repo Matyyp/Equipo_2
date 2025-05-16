@@ -95,7 +95,7 @@
 
     <!-- Botón de volver -->
     <div class="card-footer d-flex justify-content-end">
-      <a href="{{ route('sucursales.index') }}" class="btn btn-secondary ">
+      <a href="{{ route('sucursales.show', $branchId) }}" class="btn btn-secondary ">
         <i class="fas fa-arrow-left me-1"></i> Volver a Sucursales
       </a>
     </div>

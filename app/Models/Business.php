@@ -14,7 +14,6 @@ class Business extends Model
     protected $fillable = [
         'name_business',
         'logo',
-        'electronic_transfer'
     ];
 
     protected $primaryKey = 'id_business';
@@ -22,5 +21,10 @@ class Business extends Model
     public function business_branch_office()
     {
         return $this->hasMany(BranchOffice::class, 'id_business', 'id_business');
+    }
+
+    public function business_bank()
+    {
+        return $this->hasMany(BankDetail::class, 'id_business', 'id_business');
     }
 }

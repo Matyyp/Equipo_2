@@ -25,13 +25,29 @@ class UserController extends Controller
         $query = User::with(['roles', 'branch_office'])->select('users.*');
 
         // Si no es admin, limitar por sucursal
-        if (!$authUser->hasRole('Admin')) {
+        if (!$authUser->hasRole('SuperAdmin')) {
             $query->where('id_branch_office', $authUser->id_branch_office);
         }
 
         return DataTables::eloquent($query)
             ->addColumn('role', fn(User $user) => $user->getRoleNames()->implode(', '))
-            ->addColumn('sucursal', fn(User $user) => $user->branch_office->name_branch_offices ?? '<span class="text-muted">Todas las sucursales</span>')
+            ->addColumn('sucursal', function (User $user) {
+                if ($user->hasRole('SuperAdmin')) {
+                    $haySucursales = BranchOffice::exists(); // verifica si hay al menos una
+
+                    if ($haySucursales && $user->id_branch_office == null) {
+                        return '<span class="text-info">Todas las sucursales</span>';
+                    }
+
+                    return '<span class="text-muted">Sin sucursal registrada</span>';
+                }
+
+                if (is_null($user->id_branch_office)) {
+                    return '<span class="text-muted">Sin sucursal, Cliente</span>';
+                }
+
+                return $user->branch_office->name_branch_offices ?? '<span class="text-warning">Sucursal no encontrada</span>';
+            })
             ->addColumn('action', function(User $user) {
                 $protectedUserIds = [1];
 
@@ -104,7 +120,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('tenant.admin.users.edit', compact('user'));
+        $user->load('branch_office'); 
+        $branchs = BranchOffice::all();
+
+        return view('tenant.admin.users.edit', compact('user', 'branchs'));
     }
 
     public function update(Request $request, User $user)
@@ -119,7 +138,7 @@ class UserController extends Controller
         $user->update([
             'name'  => $data['name'],
             'email' => $data['email'],
-            'id_branch_office' => $data['branch_office_id'],
+            'id_branch_office' => $data['id_branch_office'],
         ]);
 
         $user->syncRoles([$data['role']]);

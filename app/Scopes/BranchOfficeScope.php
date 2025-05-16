@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -16,16 +17,20 @@ class BranchOfficeScope implements Scope
 
         $user = Auth::user();
 
-        // Si el usuario es admin, no aplicar ningún filtro
-        if ($user->hasRole('SuperAdmin')) {
-            return;
+        // Siempre filtrar por status si el modelo es BranchOffice
+        if ($model instanceof \App\Models\BranchOffice) {
+            $builder->where($model->getTable() . '.status', 'active');
         }
 
-        // Obtener el nombre de la columna que debe usarse para filtrar
-        $column = property_exists($model, 'branchOfficeColumn')
-            ? $model->branchOfficeColumn
-            : 'id_branch_office'; // default
+        // Si el usuario no es SuperAdmin, filtrar por sucursal
+        if (!$user->hasRole('SuperAdmin')) {
+            $column = property_exists($model, 'branchOfficeColumn')
+                ? $model->branchOfficeColumn
+                : 'id_branch_office';
 
-        $builder->where($model->getTable() . '.' . $column, $user->id_branch_office);
+            $builder->where($model->getTable() . '.' . $column, $user->id_branch_office);
+        }
     }
+
 }
+
