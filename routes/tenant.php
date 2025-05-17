@@ -47,7 +47,7 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
     Route::get('/', function () {
-        return view('welcome');
+        return view('tenant.landings.welcome');
     });
     //aca agregar todos los roles que necesiten entran al panel de admin
     Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
