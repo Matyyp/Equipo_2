@@ -28,6 +28,7 @@ use App\Http\Controllers\Tenant\Maintainers\BankDetailController;
 use App\Http\Controllers\Tenant\Dashboard\DashboardController;
 use App\Http\Controllers\Tenant\Maintainers\WorkerController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\RentalCarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,6 +135,8 @@ Route::middleware([
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
+    
+    Route::resource('rental-cars', RentalCarController::class);
 
     // CRUD Usuarios
     Route::middleware(['auth', 'permission:users.index'])->group(function () {
