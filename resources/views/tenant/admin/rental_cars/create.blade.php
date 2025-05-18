@@ -86,11 +86,15 @@
             name="images[]"
             id="images"
             class="form-control @error('images.*') is-invalid @enderror"
+            accept="image/*"
             multiple
           >
           @error('images.*')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
+
+          {{-- Contenedor para previsualización --}}
+          <div id="image-preview" class="mt-3 d-flex flex-wrap"></div>
         </div>
 
         <div class="d-flex justify-content-end">
@@ -102,3 +106,23 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+  document.getElementById('images').addEventListener('change', function(event) {
+    const preview = document.getElementById('image-preview');
+    preview.innerHTML = ''; // limpiar previas
+    Array.from(event.target.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.classList.add('img-thumbnail', 'me-2', 'mb-2');
+        img.style.width = '100px';
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+</script>
+@endpush

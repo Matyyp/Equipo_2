@@ -13,17 +13,16 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <div class="card">
     <div class="card-header bg-secondary text-white">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <i class="fas fa-users me-2"></i>Usuarios
+          <i class="fas fa-users mr-2"></i>Usuarios
         </div>
         @can('users.create')
           <a href="{{ route('users.create') }}" 
-            style="background-color: #F97316; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;"
-          >
+            style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
               <i class="fas fa-plus"></i> Nuevo
           </a>
         @endcan

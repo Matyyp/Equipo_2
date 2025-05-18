@@ -42,9 +42,10 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <li class="dropdown-item">
-                        <a href="#" class="d-block text-danger"
+                        <a href="#"
+                           class="d-block text-danger"
                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="fas fa-sign-out-alt mr-2"></i> {{ __('Cerrar sesión') }}
+                            <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
                         </a>
                     </li>
                 </ul>
@@ -57,13 +58,7 @@
 
     {{-- Contenido --}}
     <div class="content-wrapper">
-        <div class="content-header">
-            <div class="container-fluid">
-                <h1 class="m-0">@yield('page_title')</h1>
-            </div>
-        </div>
-
-        <section class="content">
+        <section class="content py-4">
             <div class="container-fluid">
                 @yield('content')
             </div>
@@ -72,10 +67,7 @@
 
     {{-- Footer --}}
     <footer class="main-footer text-sm">
-        <strong>
-            &copy; {{ now()->year }} —
-            {{ $tenantCompanyName ?? config('app.name') }}
-        </strong>
+        <strong>&copy; {{ now()->year }} — {{ $tenantCompanyName ?? config('app.name') }}</strong>
     </footer>
 </div>
 

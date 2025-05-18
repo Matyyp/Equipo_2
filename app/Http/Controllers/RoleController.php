@@ -22,12 +22,12 @@ class RoleController extends Controller
             ->addColumn('action', function(Role $r) {
                 $html = '';
                 if (auth()->user()->hasRole('SuperAdmin')) {
-                    $html .= '<a href="'.route('roles.edit',$r).'" class="btn btn-sm btn-outline-info me-1">'
-                        . '<i class="fas fa-edit"></i></a>';
+                    $html .= '<a href="'.route('roles.edit',$r).'" class="btn btn-outline-secondary btn-sm text-dark me-1">'
+                        . '<i class="fas fa-pen"></i></a>';
                     $html .= '<form action="'.route('roles.destroy',$r).'" method="POST" style="display:inline">'
                         . csrf_field().method_field('DELETE')
                         . '<button onclick="return confirm(\'¿Eliminar rol '.$r->name.'?\')" '
-                        . 'class="btn btn-sm btn-danger">'
+                        . 'class="btn btn-outline-secondary btn-sm text-dark ml-1">'
                         . '<i class="fas fa-trash"></i></button></form>';
                 }
                 return $html;

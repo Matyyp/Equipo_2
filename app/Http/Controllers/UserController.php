@@ -60,9 +60,8 @@ class UserController extends Controller
                 if (auth()->user()->can('users.edit')) {
                     $buttons .= '
                         <a href="' . route('users.edit', $user) . '" 
-                        class="btn btn-sm btn-outline-info mx-1" 
-                        title="Editar">
-                            <i class="fas fa-edit"></i>
+                        class="btn btn-outline-secondary btn-sm text-dark me-1" title="Editar">
+                            <i class="fas fa-pen"></i>
                         </a>
                     ';
                 }
@@ -75,8 +74,7 @@ class UserController extends Controller
                             style="display:inline">
                             ' . csrf_field() . method_field('DELETE') . '
                             <button type="submit" 
-                                    class="btn btn-sm btn-outline-danger mx-1" 
-                                    title="Eliminar">
+                                class="btn btn-outline-secondary btn-sm text-dark" title="Eliminar">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>

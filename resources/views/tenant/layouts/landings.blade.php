@@ -95,18 +95,45 @@
                     flex-col md:flex-row gap-0 md:gap-8
                     z-40 transition-all duration-200"
             >
-                {{-- Servicios deshabilitado --}}
-                <li class="w-full md:w-auto">
+                {{-- Servicios con Alpine --}}
+                <li
+                    x-data="{ open: false }"
+                    @click.away="open = false"
+                    class="w-full md:w-auto relative"
+                >
                     <button
-                        disabled
-                        class="block w-full text-left px-4 py-2
-                            text-gray-500 cursor-not-allowed
+                    @click.prevent="open = !open"
+                    class="flex items-center w-full text-left px-4 py-2
+                            text-white hover:text-orange-400
                             bg-gray-800 md:bg-transparent
-                            rounded-none md:rounded"
-                        title="Próximamente"
+                            rounded-none md:rounded focus:outline-none"
                     >
-                        Servicios
+                    Servicios
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19 9l-7 7-7-7" />
+                    </svg>
                     </button>
+
+                    {{-- Dropdown --}}
+                    <ul
+                    x-show="open"
+                    x-cloak
+                    x-transition
+                    class="absolute mt-1 left-0 bg-gray-900 md:min-w-[180px]
+                            shadow-lg rounded overflow-hidden z-50"
+                    >
+                    <li>
+                        <a
+                        href="{{ route('landings.available') }}"
+                        class="block px-4 py-2 text-gray-200 hover:bg-gray-800 hover:text-white"
+                        >
+                        Arrienda tu auto
+                        </a>
+                    </li>
+                    
+                    </ul>
                 </li>
 
                 {{-- Quiénes somos --}}
@@ -277,15 +304,7 @@
     @stack('scripts')
     <script src="https://unpkg.com/lucide@latest"></script>  
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        const swiper = new Swiper(".swiper", {
-            loop: true,
-            effect: "fade",
-            autoplay: { delay: 5000 },
-            pagination: { el: ".swiper-pagination", clickable: true },
-            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-        });
-    </script>
+    
     <script>
     document.getElementById('menu-toggle').addEventListener('click', function () {
         const menu = document.getElementById('menu');

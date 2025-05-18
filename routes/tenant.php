@@ -29,6 +29,7 @@ use App\Http\Controllers\Tenant\Dashboard\DashboardController;
 use App\Http\Controllers\Tenant\Maintainers\WorkerController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\RentalCarController;
+use App\Http\Controllers\LandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,10 +48,16 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
+    // Rutas de la landing page
     Route::get('/', function () {
         return view('tenant.landings.welcome');
     });
-    //aca agregar todos los roles que necesiten entran al panel de admin
+    Route::get('/available‐cars', [LandingController::class, 'availableCars'])
+     ->name('landings.available');
+
+    Route::get('landings/available/cars', [LandingController::class, 'availableCarsPartial'])
+     ->name('landings.available.partial');
+
     Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
         Route::get('/dashboard', function () {
             return view('tenant.admin.dashboard');
@@ -136,7 +143,14 @@ Route::middleware([
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
     
-    Route::resource('rental-cars', RentalCarController::class);
+    // Modulo de reservas
+    Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
+        Route::get('rental-cars/data', [RentalCarController::class, 'data'])
+        ->name('rental-cars.data');
+        Route::resource('rental-cars', RentalCarController::class);
+    });
+    
+
 
     // CRUD Usuarios
     Route::middleware(['auth', 'permission:users.index'])->group(function () {
