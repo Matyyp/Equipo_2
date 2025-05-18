@@ -14,7 +14,7 @@ class PaymentRecord extends Model
 
     protected $table = 'payment_records';
 
-    protected $primaryKey = 'id_payment'; // si realmente es la PK
+    protected $primaryKey = 'id_payment'; 
     
 
     protected $fillable = [

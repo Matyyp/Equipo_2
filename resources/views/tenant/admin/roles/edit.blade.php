@@ -6,11 +6,10 @@
 @section('content')
 <div class="container-fluid">
   <div class="card shadow-sm">
-
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
+      <div>
         <i class="fas fa-user-cog me-2"></i> Permisos del Rol: <strong>{{ $role->name }}</strong>
-      </h5>
+      </div>
     </div>
 
     <div class="card-body">

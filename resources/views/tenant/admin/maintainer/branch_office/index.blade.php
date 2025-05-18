@@ -4,65 +4,63 @@
 @section('page_title', 'Listado de Sucursales')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid mt-4">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">
-          <i class="fas fa-store-alt me-2"></i>Sucursales Registradas
-        </span>
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <div><i class="fas fa-store-alt mr-2"></i>Sucursales Registradas</div>
 
         @if ($verificacion)
-          <a href="{{ route('sucursales.create') }}" class="btn btn-sm btn-success">
-            <i class="fas fa-plus-circle me-1"></i> Nueva Sucursal
+          <a href="{{ route('sucursales.create') }}"
+            style="background-color: transparent; border: 1px solid white; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+            <i class="fas fa-plus"></i> Nuevo
           </a>
         @else
-          <div class="alert alert-warning mb-0 p-2 d-flex align-items-center">
-            <i class="fas fa-exclamation-triangle me-2"></i> 
-            Debe completar los datos de la empresa.
-            <a href="{{ route('empresa.index') }}" class="btn btn-sm btn-success ms-2">Ingresar datos empresa</a>
+          <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            <span class="mr-2">Debe completar los datos de la empresa.</span>
+            <a href="{{ route('empresa.index') }}" class="btn btn-sm btn-success">Ingresar datos empresa</a>
           </div>
         @endif
       </div>
     </div>
 
+
     <div class="card-body">
-      @if ($data->count())
-        <div class="table-responsive">
-          <table id="branches-table" class="table table-striped table-bordered w-100">
-            <thead class="thead-light">
+      <div class="table-responsive">
+        <table id="branches-table" class="table table-striped table-bordered w-100">
+          <thead class="thead-light">
+            <tr>
+              <th>Sucursal</th>
+              <th>Información</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse ($data as $branch)
               <tr>
-                <th>Sucursal</th>
-                <th>Horario</th>
-                <th>Calle</th>
-                <th>Región</th>
-                <th>Comuna</th>
-                <th>Negocio</th>
-                <th class="text-center">Acciones</th>
+                <td>{{ $branch['name_branch_offices'] }}</td>
+                <td>
+                  <div><strong>Horario:</strong> {{ $branch['schedule'] }}</div>
+                  <div><strong>Dirección:</strong> {{ $branch['street'] }}</div>
+                  <div><strong>Región:</strong> {{ $branch['region'] }}</div>
+                  <div><strong>Comuna:</strong> {{ $branch['commune'] }}</div>
+                  <div><strong>Negocio:</strong> {{ $branch['business'] }}</div>
+                </td>
+                <td class="text-center">
+                  <a href="{{ route('sucursales.show', $branch['id']) }}"
+                    class="btn btn-sm btn-outline-secondary" title="Configuración">
+                    <i class="fas fa-cog"></i>
+                  </a>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @foreach ($data as $branch)
-                <tr>
-                  <td>{{ $branch['name_branch_offices'] }}</td>
-                  <td>{{ $branch['schedule'] }}</td>
-                  <td>{{ $branch['street'] }}</td>
-                  <td>{{ $branch['region'] }}</td>
-                  <td>{{ $branch['commune'] }}</td>
-                  <td>{{ $branch['business'] }}</td>
-                  <td class="text-center">
-                    <a href="{{ route('sucursales.show', $branch['id']) }}" class="btn btn-secondary btn-sm">
-                      <i class="fas fa-cog"></i> Configuración
-                    </a>
-                  </td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-      @else
-        <div class="alert alert-info">No hay sucursales registradas.</div>
-      @endif
+            @empty
+              {{-- Deja vacío para que DataTables maneje el mensaje --}}
+            @endforelse
+          </tbody>
+
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -86,7 +84,6 @@
       }
     });
 
-    // Confirmación para eliminar
     document.querySelectorAll('.delete-form').forEach(form => {
       form.addEventListener('submit', function(e) {
         e.preventDefault();

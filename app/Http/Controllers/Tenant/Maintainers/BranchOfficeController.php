@@ -69,7 +69,7 @@ class BranchOfficeController extends Controller
             'name_branch_offices' => 'required|string|max:250',
             'id_location'         => 'required|exists:locations,id_location',
             'id_business'         => 'required|exists:businesses,id_business',
-            'phone'               => 'required|string|max:50',
+            'phone'               => ['required', 'regex:/^\+569\d{8}$/'],
             'email'               => 'required|email|max:100',
         ]);
 
@@ -151,6 +151,8 @@ class BranchOfficeController extends Controller
         $request->validate([
             'schedule'    => 'required|string|max:100',
             'street'      => 'required|string|max:150',
+            'phone'               => ['required', 'regex:/^\+569\d{8}$/'],
+            'email'               => 'required|email|max:100',
             'name_branch_offices'      => 'required|string|max:150',
             'id_location' => 'required|exists:locations,id_location',
             'id_business' => 'required|exists:businesses,id_business',

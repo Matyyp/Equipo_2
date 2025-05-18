@@ -4,17 +4,14 @@
 @section('page_title', 'Listado de Ubicaciones')
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid mt-5">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white">
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">
-          <i class="fas fa-map-marker-alt me-2"></i>Ubicaciones registradas
-        </span>
-        <a href="{{ route('locacion.create') }}" class="btn btn-sm btn-success">
-          <i class="fas fa-plus"></i> Ingresar Ubicación
-        </a>
-      </div>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-map-marker-alt mr-2"></i>Ubicaciones registradas</div>
+      <a href="{{ route('locacion.create') }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+        <i class="fas fa-plus"></i> Nuevo
+      </a>
     </div>
 
     <div class="card-body">
@@ -33,7 +30,6 @@
     </div>
   </div>
 </div>
-
 @endsection
 
 @push('scripts')
@@ -56,11 +52,17 @@ $(document).ready(function() {
         columns: [
             { data: 'region', name: 'region' },
             { data: 'commune', name: 'commune' },
-            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
+            {
+              data: 'action',
+              name: 'action',
+              orderable: false,
+              searchable: false,
+              className: 'text-center'
+            }
         ],
-      language: {
-        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-      }
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        }
     });
 
     // Confirmación para eliminar

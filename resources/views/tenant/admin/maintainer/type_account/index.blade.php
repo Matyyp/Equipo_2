@@ -8,21 +8,20 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
-  <div class="card">
-    <div class="card-header bg-secondary text-white">
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">
-          <i class="fas fa-wallet me-2"></i>Tipos de Cuenta
-        </span>
-        <a href="{{ route('tipo_cuenta.create') }}" class="btn btn-sm btn-success">
-          <i class="fas fa-plus-circle me-1"></i> Nuevo
-        </a>
-      </div>
+<div class="container-fluid mt-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-wallet mr-2"></i>Tipos de cuentas</div>
+      <a href="{{ route('tipo_cuenta.create') }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+        <i class="fas fa-plus"></i> Nuevo
+      </a>
     </div>
+
+
     <div class="card-body">
       <table id="type-accounts-table" class="table table-striped table-bordered w-100">
-        <thead>
+        <thead class="thead-light">
           <tr>
             <th>Nombre del Tipo</th>
             <th class="text-center">Acciones</th>
@@ -57,7 +56,8 @@
       order: [[0, 'asc']],
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-      }
+      },
+      responsive: true
     });
   });
 </script>

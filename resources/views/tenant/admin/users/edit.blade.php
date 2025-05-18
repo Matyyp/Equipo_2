@@ -11,9 +11,7 @@
 <div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
-        <i class="fas fa-user-edit me-2"></i> Editar Usuario
-      </h5>
+      <div><i class="fas fa-user-edit mr-2"></i> Editar Usuario</div>
     </div>
 
     <div class="card-body">

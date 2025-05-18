@@ -6,9 +6,8 @@
 @section('content')
 <div class="container px-3 px-md-5 mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-user-edit me-2"></i>
-      <h5 class="mb-0">Editar Propietario</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-edit mr-2"></i> Editar Propietario</div>
     </div>
 
     <div class="card-body">
@@ -56,8 +55,8 @@
             </a>
         </div>
         <div class="col-auto">
-            <button type="submit" class="btn btn-success" id="submit-btn">
-            <i class="fas fa-plus mr-1"></i> Asociar Vehículos Seleccionados
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+              <i class="fas fa-save me-1"></i> Actualizar
             </button>
         </div>
         </div>

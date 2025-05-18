@@ -29,10 +29,16 @@
 @section('content')
 <div class="container px-3 px-md-5 mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-car me-2"></i>
-      <h5 class="mb-0">Ingreso de Vehículo al Estacionamiento</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div>
+        <i class="fas fa-car mr-2"></i> Ingreso de Vehículo al Estacionamiento
+      </div>
+      <a href="{{ route('estacionamiento.index') }}"
+          style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+          <i class="fas fa-arrow-left mr-1"></i> Volver al listado
+      </a>
     </div>
+
     <div class="card-body">
       @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -70,39 +76,46 @@
       <form action="{{ route('estacionamiento.store') }}" method="POST" autocomplete="off" id="form-register">
         @csrf
 
-        <div class="form-group col-3">
-          <label for="plate">Patente</label>
-          <div class="input-group">
-            <input type="text" id="plate" name="plate" class="form-control" placeholder="Ej: AB123C" minlength="6" maxlength="6" pattern="[A-Z0-9]{6}" required>
-            <div class="input-group-append">
-              <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <div class="form-row">
+          <div class="form-group col-12 col-md-6">
+            <label for="plate">Patente</label>
+            <div class="input-group">
+              <input type="text" id="plate" name="plate" 
+                    class="form-control" 
+                    placeholder="Ej: AB123C" 
+                    minlength="6" maxlength="6" 
+                    pattern="[A-Z0-9]{6}" 
+                    required>
+              <span class="input-group-text">
+                <i class="fas fa-search"></i>
+              </span>
             </div>
-          </div>
-          <div id="plateAlert" class="mt-2"></div>
-          <div id="plateLoading" class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
+            <div id="plateAlert" class="mt-2"></div>
+            <div id="plateLoading" class="loading-spinner">
+              <i class="fas fa-spinner fa-spin"></i>
+            </div>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="name">Nombre</label>
-            <input type="text" id="name" name="name" class="form-control" required>
+            <input type="text" id="name" name="name" class="form-control" title="Debe ingresar el nombre del cliente" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="phone">Teléfono</label>
-            <input type="number" id="phone" name="phone" class="form-control" min="100000000" max="999999999" required>
+            <input type="text" id="phone" name="phone" class="form-control" pattern="^[0-9]{9}$" maxlength="9" inputmode="numeric" title="Debe ingresar exactamente 9 dígitos" required>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="start_date">Fecha de Inicio</label>
-            <input type="date" id="start_date" name="start_date" class="form-control" required>
+            <input type="date" id="start_date" name="start_date" class="form-control" title="Ingrese una fecha" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="end_date">Fecha de Término</label>
-            <input type="date" id="end_date" name="end_date" class="form-control" required>
+            <input type="date" id="end_date" name="end_date" class="form-control" title="Ingrese una fecha" required>
           </div>
         </div>
 
@@ -120,11 +133,11 @@
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="brand_name">Marca</label>
-            <input type="text" id="brand_name" name="brand_name" class="form-control" required>
+            <input type="text" id="brand_name" name="brand_name" class="form-control" title="Ingrese la Marca del vehículo" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="model_name">Modelo</label>
-            <input type="text" id="model_name" name="model_name" class="form-control" required>
+            <input type="text" id="model_name" name="model_name" class="form-control" title="Ingrese la Modelo del vehículo" required>
           </div>
         </div>
 
@@ -254,6 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
     debounceTimer = setTimeout(() => searchByPlate(plate), 500);
   });
 
+  let nameAutofilled = false;
+
   phoneInput.on('input', function () {
     const phone = $(this).val().trim();
     plateAlert.removeClass().text('');
@@ -264,23 +279,45 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'GET',
         data: { phone },
         success: function (res) {
+          console.log('Respuesta:', res);
+
           if (res.found) {
-            showAlert('info', 'Este número ya está registrado a nombre de ' + res.name);
-            submitBtn.prop('disabled', true);
+            nameInput
+              .val(res.name || '')
+              .prop('readonly', true)
+              .addClass('from-autofill');
+            nameAutofilled = true;
           } else {
-            nameInput.val('');
-            submitBtn.prop('disabled', false);
+            // SOLO se borra si venía de autofill
+            if (nameInput.hasClass('from-autofill')) {
+              nameInput.val('');
+            }
+
+            nameInput
+              .prop('readonly', false)
+              .removeClass('from-autofill');
+
+            nameAutofilled = false;
           }
+
+          submitBtn.prop('disabled', false);
         },
-        error: function () {
-          showAlert('danger', 'Error al verificar el número. Intente de nuevo.');
-          submitBtn.prop('disabled', true);
+        error: function (err) {
+          console.error('ERROR AJAX:', err);
+          submitBtn.prop('disabled', false);
         }
       });
     } else {
       submitBtn.prop('disabled', true);
     }
   });
+
+  // Si el usuario escribe manualmente el nombre, ya no es autofill
+  nameInput.on('input', function () {
+    nameInput.removeClass('from-autofill');
+    nameAutofilled = false;
+  });
+
 
   $('#service_id').on('changed.bs.select', function () {
     const serviceId = $(this).val();

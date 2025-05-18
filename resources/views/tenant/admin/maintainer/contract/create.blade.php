@@ -7,7 +7,7 @@
 <div class="container mt-4">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
-      <i class="fas fa-file-contract me-2"></i>Crear Contrato
+      <i class="fas fa-file-contract mr-2"></i>Crear Contrato
     </div>
 
     <div class="card-body">
@@ -42,26 +42,31 @@
         <input type="hidden" name="branch_id" value="{{ $branchId }}">
         <input type="hidden" name="contract_type" value="{{ $type }}">
 
-        @if($type === 'parking_annual')
-        <div class="form-group mb-3">
-          <label for="important_note">Nota Importante</label>
-          <input type="text" name="important_note" id="important_note" class="form-control" value="{{ old('important_note') }}">
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="expiration_date">Fecha de Expiración</label>
-          <input type="date" name="expiration_date" id="expiration_date" class="form-control" value="{{ old('expiration_date') }}">
-        </div>
-        @endif
-
         <div class="form-group mb-4">
           <label class="form-label">Datos de Contacto</label>
-          @foreach($contactInformation as $contact)
-            <div class="form-check">
-              <input type="checkbox" name="contact_information[]" value="{{ $contact->id_contact_information }}" class="form-check-input">
-              <label class="form-check-label">{{ $contact->type_contact }}: {{ $contact->data_contact }}</label>
-            </div>
-          @endforeach
+            @foreach($contactInformation as $contact)
+              <div class="form-check">
+                <input type="checkbox"
+                      name="contact_information[]"
+                      value="{{ $contact->id_contact_information }}"
+                      class="form-check-input"
+                      data-type="{{ $contact->type_contact }}">
+                <label class="form-check-label">
+                  {{
+                    match($contact->type_contact) {
+                      'email' => 'Correo Electrónico',
+                      'phone' => 'Teléfono Fijo',
+                      'mobile' => 'Teléfono Celular',
+                      'whatsapp' => 'WhatsApp',
+                      'website' => 'Sitio Web',
+                      'social' => 'Red Social',
+                      default => ucfirst($contact->type_contact)
+                    }
+                  }}: {{ $contact->data_contact }}
+                </label>
+              </div>
+            @endforeach
+
         </div>
 
         <div class="form-group mb-4">
@@ -97,3 +102,32 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form');
+    const contactCheckboxes = document.querySelectorAll('input[name="contact_information[]"]');
+
+    form.addEventListener('submit', function(e) {
+      const grouped = {};
+
+      contactCheckboxes.forEach(cb => {
+        if (cb.checked) {
+          const type = cb.dataset.type;
+          grouped[type] = grouped[type] ? grouped[type] + 1 : 1;
+        }
+      });
+
+      for (const [type, count] of Object.entries(grouped)) {
+        if (count > 3) {
+          e.preventDefault();
+          alert(`Solo puedes seleccionar hasta 3 contactos del tipo: ${type}`);
+          return;
+        }
+      }
+    });
+  });
+</script>
+@endpush
+

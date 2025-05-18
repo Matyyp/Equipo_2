@@ -6,9 +6,8 @@
 @section('content')
 <div class="container px-3 px-md-5 mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <span style="margin-right: 10px;"><i class="fas fa-gavel"></i></span>
-      <h5 class="mb-0">Editar Regla del Sistema</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-gavel mr-2"></i>Editar Regla del Sistema</div>
     </div>
 
     <div class="card-body">

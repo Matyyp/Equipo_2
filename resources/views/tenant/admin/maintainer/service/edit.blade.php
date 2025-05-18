@@ -7,7 +7,7 @@
 <div class="container mt-4">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
-      <i class="fas fa-pen me-2"></i>Editar Servicio
+      <i class="fas fa-pen mr-2"></i>Editar Servicio
     </div>
     <div class="card-body">
       {{-- Validación de errores --}}

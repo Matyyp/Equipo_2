@@ -19,13 +19,12 @@
 @endpush
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div>
-        <i class="fas fa-history"></i> Historial de Ingresos
-      </div>
+      <div><i class="fas fa-history mr-2"></i> Historial de Ingresos</div>
     </div>
+    
     <div class="card-body">
       <div class="table-responsive">
         <table id="history-table" class="table table-bordered table-striped table-hover table-sm w-100 nowrap">
@@ -89,12 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
       { data: 'price', render: formatCLP },
       { data: 'total_value', render: formatCLP },
       {
-        data: 'id_parking_register', // 👈 asegúrate de que este campo venga del backend
+        data: 'id_parking_register', 
         orderable: false,
         searchable: false,
         render: function(id) {
           return `
-            <a href="/contrato/${id}/print" target="_blank" class="btn btn-sm btn-outline-primary me-1" title="Contrato">
+            <a href="/contrato/${id}/print" target="_blank" class="btn btn-sm btn-outline-secondary me-1" title="Contrato">
               <i class="fas fa-file-contract"></i>
             </a>
             <a href="/ticket/${id}/print" class="btn btn-sm btn-outline-secondary" title="Ticket">

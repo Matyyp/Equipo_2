@@ -16,39 +16,45 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <div class="card">
-    <div class="card-header bg-secondary text-white">
-      <div class="d-flex justify-content-between align-items-center flex-wrap w-100">
-        <div class="d-flex align-items-center mb-2 mb-md-0">
-          <i class="fas fa-history me-2"></i>
-          <span class="fw-semibold h6 mb-0">Listado de Estacionados</span>
-        </div>
-        <div class="text-end">
-          @php
-            $bloqueado = !$empresaExiste || !$sucursalExiste;
-          @endphp
+      <div class="card-header bg-secondary text-white">
+        <div class="d-flex justify-content-between align-items-center flex-wrap w-100">
+          <div class="d-flex align-items-center mb-2 mb-md-0">
+            <i class="fas fa-history mr-2"></i>Listado de Estacionados
+          </div>
+          <div class="text-end">
+            @php
+              $bloqueado = !$empresaExiste || !$sucursalExiste;
+            @endphp
 
-          @if(!$empresaExiste)
-            <div class="alert alert-warning d-inline-flex align-items-center gap-2 p-2 mb-2">
-              <i class="fas fa-exclamation-triangle me-1"></i>
-              <span>Debes registrar los <strong>datos de la empresa</strong>.</span>
-              <a href="{{ route('empresa.index') }}" class="btn btn-sm btn-success ms-2">Ingresar datos empresa</a>
-            </div>
-          @elseif(!$sucursalExiste)
-            <div class="alert alert-warning d-inline-flex align-items-center gap-2 p-2 mb-2">
-              <i class="fas fa-exclamation-triangle me-1"></i>
-              <span>Debes crear una <strong>sucursal</strong>.</span>
-              <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-success ms-2">Crear sucursal</a>
-            </div>
-          @else
-            <a href="{{ route('estacionamiento.create') }}" class="btn btn-sm btn-success">
-              <i class="fas fa-car"></i> Ingresar vehículo
-            </a>
-          @endif
+            @if(!$empresaExiste)
+              <div class="alert alert-warning d-inline-flex align-items-center gap-2 p-2 mb-2 mb-md-0">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                <span class="small">Debes registrar los <strong>datos de la empresa</strong>.</span>
+                <a href="{{ route('empresa.index') }}"
+                  style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+                  <i class="fas fa-building ml-1"></i> Ingresar datos empresa
+                </a>
+              </div>
+            @elseif(!$sucursalExiste)
+              <div class="alert alert-warning d-inline-flex align-items-center gap-2 p-2 mb-2 mb-md-0">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                <span class="small">Debes crear una <strong>sucursal</strong>.</span>
+                <a href="{{ route('sucursales.index') }}"
+                  style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+                  <i class="fas fa-store"></i> Crear sucursal
+                </a>
+              </div>
+            @else
+              <a href="{{ route('estacionamiento.create') }}"
+                style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+                <i class="fas fa-plus mr-1"></i> Ingresar vehículo
+              </a>
+            @endif
+          </div>
         </div>
       </div>
-    </div>
 
     <div class="card-body">
       <div class="table-responsive">
@@ -153,17 +159,17 @@
           searchable: false,
           render: function(row) {
             return `
-              <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-sm btn-outline-primary me-1" title="Contrato">
+              <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-sm btn-outline-secondary me-1" title="Contrato">
                 <i class="fas fa-file-contract"></i>
               </a>
               <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-secondary me-1" title="Ticket">
                 <i class="fas fa-ticket-alt"></i>
               </a>
-              <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-info me-1" title="Editar">
+              <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-secondary me-1" title="Editar">
                 <i class="fas fa-edit"></i>
               </a>
               <button 
-                class="btn btn-sm btn-outline-success btn-checkout" 
+                class="btn btn-sm btn-outline-secondary btn-checkout" 
                 title="Check-Out"
                 data-id="${row.id_parking_register}"
                 data-total="${row.total_value}"

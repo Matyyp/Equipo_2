@@ -7,20 +7,18 @@
 <div class="container px-3 px-md-5 mt-4">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
-        <i class="fas fa-car me-2"></i> Asociar Vehículos al Propietario
-      </h5>
+      <div><i class="fas fa-car mr-2"></i>Asociar Vehículos al Propietario {{ $name }}</div>
     </div>
 
-    <div class="card-body">
-      {{-- Campo de búsqueda --}}
-      <div class="form-group mb-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por patente...">
-      </div>
+    <form action="{{ route('asociado.store') }}" method="POST" id="formAsociarVehiculos">
+      @csrf
+      <input type="hidden" name="id_owner" value="{{ $id }}">
 
-      <form action="{{ route('asociado.store') }}" method="POST" id="formAsociarVehiculos">
-        @csrf
-        <input type="hidden" name="id_owner" value="{{ $id }}">
+      <div class="card-body">
+        {{-- Campo de búsqueda --}}
+        <div class="form-group mb-3">
+          <input type="text" id="searchInput" class="form-control" placeholder="Buscar por patente...">
+        </div>
 
         <div class="table-responsive">
           <table class="table table-bordered table-hover" id="vehiculosTable">
@@ -50,20 +48,19 @@
             </tbody>
           </table>
         </div>
-
-        <!-- BOTONES -->
-        <div class="d-flex justify-content-end gap-2 mt-4 flex-wrap">
-          <a href="{{ route('dueños.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-1"></i> Volver
+      </div>
+        <div class="card-footer d-flex justify-content-end flex-wrap">
+          <a href="{{ route('dueños.index') }}" class="btn btn-outline-secondary mr-2">
+            <i class="fas fa-arrow-left mr-1"></i> Volver
           </a>
-          
-          <button type="submit" class="btn btn-success" id="submit-btn">
-            <i class="fas fa-plus me-1"></i> Asociar Vehículos Seleccionados
+
+          <button type="submit" id="submit-btn" class="btn btn-outline-success mr-2">
+            <i class="fas fa-plus mr-1"></i> Asociar Vehículos Seleccionados
           </button>
         </div>
-      </form>
-    </div>
+    </form>
   </div>
+
 </div>
 @endsection
 

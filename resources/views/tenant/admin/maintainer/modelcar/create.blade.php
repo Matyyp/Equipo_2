@@ -6,9 +6,8 @@
 @section('content')
 <div class="container px-3 px-md-5 mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-car-side me-2"></i>
-      <h5 class="mb-0">Registrar Nuevo Modelo</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-car-side mr-2"></i> Registrar Nuevo Modelo</div>
     </div>
 
     <div class="card-body">

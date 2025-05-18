@@ -10,9 +10,12 @@
 @section('content')
 <div class="container mt-5">
   <div class="card">
-    <div class="card-header bg-secondary text-dark">
-      <i class="fas fa-edit me-2"></i>Editar Ingreso
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div>
+        <i class="fas fa-edit mr-2"></i>Editar Ingreso
+      </div>
     </div>
+
     <div class="card-body">
       <form action="{{ route('estacionamiento.update', $parking->id_parking_register) }}" method="POST" id="edit-form">
         @csrf

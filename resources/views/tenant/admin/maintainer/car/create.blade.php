@@ -10,10 +10,10 @@
 @section('content')
 <div class="container px-3 px-md-5 mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-car me-2"></i>
-      <h5 class="mb-0">Registrar Auto</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-car mr-2"></i> Registrar un Auto</div>
     </div>
+
 
     <div class="card-body">
       {{-- Validación de errores --}}
@@ -34,7 +34,12 @@
         {{-- Patente --}}
         <div class="form-group mb-3">
           <label for="patent">Patente</label>
-          <input type="text" name="patent" class="form-control" value="{{ old('patent') }}" required>
+          <input type="text" name="patent" class="form-control" value="{{ old('patent') }}"
+                    class="form-control" 
+                    placeholder="Ej: AB123C" 
+                    minlength="6" maxlength="6" 
+                    pattern="[A-Z0-9]{6}" 
+                    required>
         </div>
 
         {{-- Marca --}}

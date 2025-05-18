@@ -4,12 +4,10 @@
 @section('page_title', 'Listado de Servicios')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white">
-      <h5 class="mb-0">
-        <i class="fas fa-concierge-bell me-2"></i>Servicios en la sucursal {{ $sucursal }} ubicada en {{ $direccion }}
-      </h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-concierge-bell mr-2"></i>Servicios en la sucursal {{ $sucursal }} ubicada en {{ $direccion }}</div>
     </div>
 
     <div class="card-body">
@@ -35,15 +33,18 @@
                 <td>{{ $nombre }}</td>
                 <td class="text-center">
                   @if ($isAvailable)
-                    <a href="{{ route('servicios.edit', $service->id_service) }}" class="btn btn-warning btn-sm me-1">
-                      <i class="fas fa-edit me-1"></i> Editar
+                    <a href="{{ route('servicios.edit', $service->id_service) }}"
+                       class="btn btn-sm btn-outline-warning mr-1" title="Editar">
+                      <i class="fas fa-edit"></i>
                     </a>
-                    <button onclick="desactivarServicio({{ $service->id_service }}, '{{ $service->name }}')" class="btn btn-danger btn-sm">
-                      <i class="fas fa-ban me-1"></i> Desactivar
+                    <button onclick="desactivarServicio({{ $service->id_service }}, '{{ $service->name }}')"
+                            class="btn btn-sm btn-outline-danger" title="Desactivar">
+                      <i class="fas fa-ban"></i>
                     </button>
                   @else
-                    <button class="btn btn-success btn-sm" onclick="activarServicio('{{ $key }}', '{{ $nombre }}')">
-                      <i class="fas fa-plus me-1"></i> Activar
+                    <button onclick="activarServicio('{{ $key }}', '{{ $nombre }}')"
+                            class="btn btn-sm btn-outline-success" title="Activar">
+                      <i class="fas fa-plus"></i> Activar
                     </button>
                   @endif
                 </td>
@@ -55,8 +56,9 @@
     </div>
 
     <div class="card-footer d-flex justify-content-end">
-      <a href="{{ route('sucursales.show', $sucursalId) }}" class="btn btn-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Volver a Sucursales
+      <a href="{{ route('sucursales.show', $sucursalId) }}"
+         style="background-color: transparent; border: 1px solid #6c757d; color: #6c757d; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+        <i class="fas fa-arrow-left mr-1"></i> Volver a Sucursales
       </a>
     </div>
   </div>
@@ -70,7 +72,7 @@
     Swal.fire({
       title: 'Activar ' + nombre,
       input: 'number',
-      inputLabel: 'Ingrese el precio neto',
+      inputLabel: 'Ingrese el precio del servicio',
       inputAttributes: { min: 0 },
       inputValidator: (value) => {
         if (!value || value <= 0) return 'Debe ingresar un precio válido';

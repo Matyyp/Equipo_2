@@ -4,21 +4,19 @@
 @section('page_title', 'Listado de Propietarios')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white">
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">
-          <i class="fas fa-user-tie me-2"></i>Propietarios Registrados
-        </span>
-        <a href="{{ route('dueños.create') }}" class="btn btn-sm btn-success">
-          <i class="fas fa-user-plus me-1"></i> Nuevo Propietario
-        </a>
-      </div>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-user-tie mr-2"></i>Propietario registrados</div>
+      <a href="{{ route('dueños.create') }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+        <i class="fas fa-plus"></i> Nuevo
+      </a>
     </div>
 
-    <div class="card-body">
-      @if ($owner->count())
+
+
+      <div class="card-body">
         <div class="table-responsive">
           <table id="owners-table" class="table table-striped table-bordered w-100">
             <thead class="thead-light">
@@ -30,28 +28,29 @@
               </tr>
             </thead>
             <tbody>
-              @foreach ($owner as $item)
+              @forelse ($owner as $item)
                 <tr>
                   <td>{{ $item->type_owner }}</td>
                   <td>{{ $item->name }}</td>
                   <td>{{ $item->number_phone }}</td>
                   <td class="text-center">
-                    <a href="{{ route('dueños.edit', $item->id_owner) }}" class="btn btn-sm btn-outline-info me-1">
-                      <i class="fas fa-edit"></i> Editar
+                    <a href="{{ route('dueños.edit', $item->id_owner) }}"
+                      class="btn btn-sm btn-outline-secondary" title="Editar">
+                      <i class="fas fa-edit"></i>
                     </a>
-                    <a href="{{ route('asociado.show', $item->id_owner) }}" class="btn btn-primary btn-sm mb-1">
-                      <i class="fas fa-car"></i> Ver Autos
+                    <a href="{{ route('asociado.show', $item->id_owner) }}"
+                      class="btn btn-sm btn-outline-secondary" title="Ver Autos">
+                      <i class="fas fa-car"></i>
                     </a>
                   </td>
                 </tr>
-              @endforeach
+              @empty
+                {{-- Se puede dejar vacío o incluir un mensaje opcional dentro de la tabla --}}
+              @endforelse
             </tbody>
           </table>
         </div>
-      @else
-        <div class="alert alert-info">No hay propietarios registrados.</div>
-      @endif
-    </div>
+      </div>
   </div>
 </div>
 @endsection
@@ -69,10 +68,9 @@
 <script>
   $(document).ready(function () {
     $('#owners-table').DataTable({
-    language: {
-      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-    }
-
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      }
     });
 
     document.querySelectorAll('.delete-form').forEach(form => {

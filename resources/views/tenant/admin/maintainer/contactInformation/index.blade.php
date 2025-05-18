@@ -4,17 +4,14 @@
 @section('page_title', 'Listado de Información de Contacto')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid mt-4">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white">
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">
-          <i class="fas fa-address-book me-2"></i> Contactos Registrados
-        </span>
-        <a href="{{ route('informacion_contacto.create', $branch->id_branch) }}" class="btn btn-sm btn-success">
-          <i class="fas fa-plus-circle me-1"></i> Agregar Contacto
-        </a>
-      </div>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-address-book mr-2"></i>Contactos Registrados</div>
+      <a href="{{ route('informacion_contacto.create', $branch->id_branch) }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+        <i class="fas fa-plus"></i> Nuevo
+      </a>
     </div>
 
     <div class="card-body">
@@ -44,8 +41,9 @@
                   <td>{{ $labels[$item->type_contact] ?? ucfirst($item->type_contact) }}</td>
                   <td>{{ $item->data_contact }}</td>
                   <td class="text-center">
-                    <a href="{{ route('informacion_contacto.edit', $item->id_contact_information) }}" class="btn btn-sm btn-outline-info me-1">
-                      <i class="fas fa-edit"></i> Editar
+                    <a href="{{ route('informacion_contacto.edit', $item->id_contact_information) }}"
+                       class="btn btn-sm btn-outline-secondary" title="Editar">
+                      <i class="fas fa-edit"></i>
                     </a>
                   </td>
                 </tr>
@@ -59,11 +57,11 @@
     </div>
 
     <div class="card-footer d-flex justify-content-end">
-    <a href="{{ route('sucursales.show', $branch->id_branch) }}" class="btn btn-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Volver a Sucursales
-    </a>
+      <a href="{{ route('sucursales.show', $branch->id_branch) }}"
+         style="background-color: transparent; border: 1px solid #6c757d; color: #6c757d; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+        <i class="fas fa-arrow-left mr-1"></i> Volver a Sucursales
+      </a>
     </div>
-
   </div>
 </div>
 @endsection
@@ -75,7 +73,7 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
-<!-- SweetAlert2 (optional, if you plan to include delete confirmation) -->
+<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -88,7 +86,6 @@
       autoWidth: false
     });
 
-    // Future proofing: if you add delete functionality
     document.querySelectorAll('.delete-form').forEach(form => {
       form.addEventListener('submit', function (e) {
         e.preventDefault();

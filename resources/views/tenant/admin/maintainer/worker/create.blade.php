@@ -17,13 +17,12 @@
 <div class="container px-3 px-md-5 mt-4">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">
-      <i class="fas fa-user-plus me-2"></i> Crear Nuevo Usuario 
-      @if(isset($sucursal))
-        <span class="text-light">en la <strong>{{ $sucursal->name_branch_offices }}</strong></span>
-      @endif
-    </h5>
-
+      <div>
+        <i class="fas fa-user-plus mr-2"></i> Crear Nuevo Usuario 
+        @if(isset($sucursal))
+          <span class="text-light">en la <strong>{{ $sucursal->name_branch_offices }}</strong></span>
+        @endif
+      </div>
     </div>
 
     <div class="card-body">
