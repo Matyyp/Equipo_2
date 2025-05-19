@@ -34,6 +34,8 @@
             <th>Modelo</th>
             <th>Año</th>
             <th>Estado</th>
+            <th>Sucursal</th>
+            <th>Precio</th>
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
@@ -67,6 +69,14 @@
           orderable: false,
           searchable: false,
           className: 'text-center'
+        },
+        {
+          data: 'sucursal',
+          name: 'sucursal',
+        },
+        {
+          data: 'price',
+          name: 'price_per_day',
         },
         {
           data: 'acciones',
