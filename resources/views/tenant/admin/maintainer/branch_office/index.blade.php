@@ -63,6 +63,10 @@
                     <a href="{{ url('informacion_contacto/' . $branch['id']) }}" class="btn btn-secondary btn-sm mb-1">
                       <i class="fas fa-address-book"></i> Informacion de Contacto
                     </a>
+                    <a href="{{ route('lavados.show', $branch['id']) }}" class="btn btn-info btn-sm mb-1">
+                      <i class="fas fa-soap"></i> Lavado de auto
+                    </a>
+
                   </td>
                 </tr>
               @endforeach

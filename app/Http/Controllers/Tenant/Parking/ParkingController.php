@@ -53,6 +53,7 @@ public function index(Request $request)
                 $brand = $car?->car_brand?->name_brand;
                 $model = $car?->car_model?->name_model;
                 $service = Service::find($park?->id_service);
+                
 
                 return [
                     'owner_name'    => $owner?->name ?? '-',
@@ -61,6 +62,7 @@ public function index(Request $request)
                     'start_date'    => $reg->start_date ? \Carbon\Carbon::parse($reg->start_date)->format('d-m-Y') : '[NULO]',
                     'end_date'      => $reg->end_date ? \Carbon\Carbon::parse($reg->end_date)->format('d-m-Y') : '[NULO]',
                     'days'          => $reg->days,
+                    'washed' => $reg->id_service !== null,
                     'service_price' => number_format($service?->price_net ?? 0, 0, ',', '.'),
                     'total_value'   => $reg->total_value,
                     'total_formatted' => number_format($reg->total_value, 0, ',', '.'),
@@ -254,6 +256,7 @@ public function index(Request $request)
             'brand_name'   => 'required|string|max:100',
             'model_name'   => 'required|string|max:100',
             'service_id'   => 'required|exists:services,id_service',
+            'wash_type'    => 'nullable|exists:services,id_service',
         ]);
     
         $brandName = Str::title(trim($data['brand_name']));
@@ -301,8 +304,10 @@ public function index(Request $request)
             'km_exit'      => $data['km_exit'] ?? null,
             'days'         => $days,
             'total_value'  => $total,
-            'id_park'      => $park->id,
-            'status'       => 'unpaid'
+            'id_park'      => $park->id,    
+            'status'       => 'unpaid',
+            'washed'       => '0',
+            'id_service'   => $request->input('wash_type'),
         ]);
     
         Register::create([
@@ -367,139 +372,137 @@ public function index(Request $request)
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-    {
-        $data = $request->validate([
-            'plate'        => 'required|string|max:8',
-            'name'         => 'required|string|max:255',
-            'phone'        => 'required|string|max:9',
-            'start_date'   => 'required|date',
-            'end_date'     => 'required|date|after_or_equal:start_date',
-            'arrival_km'   => 'nullable|integer|min:0',
-            'km_exit'      => 'nullable|integer|min:0',
-            'brand_name'   => 'required|string|max:255',
-            'model_name'   => 'required|string|max:255',
-            'wash_service' => 'nullable|boolean'
+{
+    $data = $request->validate([
+        'plate'        => 'required|string|max:8',
+        'name'         => 'required|string|max:255',
+        'phone'        => 'required|string|max:9',
+        'start_date'   => 'required|date',
+        'end_date'     => 'required|date|after_or_equal:start_date',
+        'arrival_km'   => 'nullable|integer|min:0',
+        'km_exit'      => 'nullable|integer|min:0',
+        'brand_name'   => 'required|string|max:255',
+        'model_name'   => 'required|string|max:255',
+        'wash_type'    => 'nullable|exists:services,id_service', // 👈 validación del select
+    ]);
+
+    DB::transaction(function () use ($data, $id, $request) {
+        $parking = ParkingRegister::with([
+            'parking_register_register.register_parking.parking_park.park_car',
+            'parking_register_register.register_parking.parking_service'
+        ])->findOrFail($id);
+
+        $link = $parking->parking_register_register->first();
+        $park = $link->register_parking;
+        $pivot = $park->parking_park->first();
+        $car = $pivot->park_car;
+
+        // Actualizar dueño
+        $owner = $car->car_belongs->first()->belongs_owner;
+        $owner->update([
+            'name' => $data['name'],
+            'number_phone' => $data['phone']
         ]);
-    
-        DB::transaction(function () use ($data, $id) {
-            $parking = ParkingRegister::with([
-                'parking_register_register.register_parking.parking_park.park_car',
-                'parking_register_register.register_parking.parking_service'
-            ])->findOrFail($id);
-    
-            $link = $parking->parking_register_register->first();
-            $park = $link->register_parking;
-            $pivot = $park->parking_park->first();
-            $car = $pivot->park_car;
-    
-            $owner = $car->car_belongs->first()->belongs_owner;
-            $owner->update([
-                'name' => $data['name'],
-                'number_phone' => $data['phone']
-            ]);
-    
-            // Marca
-            $brand = Brand::where('name_brand', 'like', "%{$data['brand_name']}%")->first();
-            if ($brand) {
-                $brandCarsCount = Car::where('id_brand', $car->id_brand)->count();
-                if ($brandCarsCount <= 1 && $car->id_brand != $brand->id_brand) {
-                    Brand::where('id_brand', $car->id_brand)->delete();
-                }
-                $car->id_brand = $brand->id_brand;
-            } else {
-                $newBrand = Brand::create(['name_brand' => Str::title($data['brand_name'])]);
-                $car->id_brand = $newBrand->id_brand;
+
+        // Marca
+        $brand = Brand::where('name_brand', 'like', "%{$data['brand_name']}%")->first();
+        if ($brand) {
+            $brandCarsCount = Car::where('id_brand', $car->id_brand)->count();
+            if ($brandCarsCount <= 1 && $car->id_brand != $brand->id_brand) {
+                Brand::where('id_brand', $car->id_brand)->delete();
             }
-    
-            // Modelo
-            $model = ModelCar::where('name_model', 'like', "%{$data['model_name']}%")->first();
-            if ($model) {
-                $modelCarsCount = Car::where('id_model', $car->id_model)->count();
-                if ($modelCarsCount <= 1 && $car->id_model != $model->id_model) {
-                    ModelCar::where('id_model', $car->id_model)->delete();
-                }
-                $car->id_model = $model->id_model;
-            } else {
-                $newModel = ModelCar::create(['name_model' => Str::title($data['model_name'])]);
-                $car->id_model = $newModel->id_model;
+            $car->id_brand = $brand->id_brand;
+        } else {
+            $newBrand = Brand::create(['name_brand' => Str::title($data['brand_name'])]);
+            $car->id_brand = $newBrand->id_brand;
+        }
+
+        // Modelo
+        $model = ModelCar::where('name_model', 'like', "%{$data['model_name']}%")->first();
+        if ($model) {
+            $modelCarsCount = Car::where('id_model', $car->id_model)->count();
+            if ($modelCarsCount <= 1 && $car->id_model != $model->id_model) {
+                ModelCar::where('id_model', $car->id_model)->delete();
             }
-    
-            $car->save();
-    
-            // Cálculo de días y total
-            $startDate = Carbon::parse($data['start_date']);
-            $endDate   = Carbon::parse($data['end_date']);
-            $days      = $startDate->diffInDays($endDate) + 1;
-    
-            // Accede al servicio a través del camino indirecto
-            $service = optional($link->register_parking?->parking_service);
-            $priceNet = $service?->price_net ?? 0;
-            $total    = $days * $priceNet;
-    
-            // Actualiza ParkingRegister
-            $parking->update([
-                'start_date'   => $startDate,
-                'end_date'     => $endDate,
-                'arrival_km'   => $data['arrival_km'] ?? null,
-                'km_exit'      => $data['km_exit'] ?? null,
-                'days'         => $days,
-                'total_value'  => $total,
-            ]);
-        });
-    
-        return redirect()->route('estacionamiento.index')->with('success', 'Registro actualizado correctamente.');
-    }
+            $car->id_model = $model->id_model;
+        } else {
+            $newModel = ModelCar::create(['name_model' => Str::title($data['model_name'])]);
+            $car->id_model = $newModel->id_model;
+        }
+
+        $car->save();
+
+        // Calcular días y total
+        $startDate = Carbon::parse($data['start_date']);
+        $endDate   = Carbon::parse($data['end_date']);
+        $days      = $startDate->diffInDays($endDate) + 1;
+
+        // Precio del servicio base
+        $service = optional($link->register_parking?->parking_service);
+        $priceNet = $service?->price_net ?? 0;
+        $total    = $days * $priceNet;
+
+        // Actualizar parking_register
+        $parking->update([
+            'start_date'   => $startDate,
+            'end_date'     => $endDate,
+            'arrival_km'   => $data['arrival_km'] ?? null,
+            'km_exit'      => $data['km_exit'] ?? null,
+            'days'         => $days,
+            'total_value'  => $total,
+            'washed'       => $request->has('wash_service'), // 👈 checkbox
+            'id_service'   => $request->input('wash_type'),  // 👈 tipo de lavado seleccionado
+        ]);
+    });
+
+    return redirect()->route('estacionamiento.index')->with('success', 'Registro actualizado correctamente.');
+}
+
 
     public function history(Request $request)
-    {
-        if ($request->ajax()) {
-            $parks = Park::where('status', 'not_parked')
-                ->with([
-                    'park_car.car_brand',
-                    'park_car.car_model',
-                    'park_car.car_belongs.belongs_owner',
-                    'park_parking.parking_service',
-                    'park_parking.parking_register' => function ($q) {
-                        $q->with([
-                            'register_parking_register' => function ($r) {
-                                $r->where('status', 'paid'); 
-                            }
-                        ]);
-                    },
-                ])
-                ->get();
-                   
-    
-            $rows = $parks->map(function ($park) {
-                $car     = $park->park_car;
-                $owner   = optional(optional($car)->car_belongs->first())->belongs_owner;
-                $pivot   = $park->park_parking;
-                $service = optional($pivot)->parking_service;
-    
-                // Obtener el primer parking_register (si existe)
-                $register = collect(optional($pivot)->parking_register)->first();
-                $reg      = $register?->register_parking_register;
-    
-                return [
-                    'owner_name'          => $owner?->name ?? '-',
-                    'owner_phone'         => $owner?->number_phone ?? '-',
-                    'patent'              => $car?->patent ?? '-',
-                    'brand'               => $car?->car_brand?->name_brand ?? '-',
-                    'model'               => $car?->car_model?->name_model ?? '-',
-                    'start_date'          => $reg?->start_date,
-                    'end_date'            => $reg?->end_date,
-                    'days'                => $reg?->days,
-                    'price'               => $service?->price_net,
-                    'total_value'         => $reg?->total_value,
-                    'id_parking_register' => $register?->id_parking_register, // necesario para el botón
-                ];
-            })->filter()->values();
-    
-            return response()->json(['data' => $rows]);
-        }
-    
-        return view('tenant.admin.parking.history');
+{
+    if ($request->ajax()) {
+        $registros = ParkingRegister::with([
+                'park.park_car.car_brand',
+                'park.park_car.car_model',
+                'park.park_car.car_belongs.belongs_owner',
+                'park.service'
+            ])
+            ->where('status', 'paid')
+            ->whereHas('park', fn ($q) => $q->where('status', 'not_parked'))
+            ->get();
+
+        $rows = $registros->map(function ($reg) {
+            $park   = $reg->park;
+            $car    = $park?->park_car;
+            $owner  = $car?->car_belongs->first()?->belongs_owner;
+            $brand  = $car?->car_brand?->name_brand;
+            $model  = $car?->car_model?->name_model;
+            $service = $park?->service;
+
+            return [
+                'owner_name'          => $owner?->name ?? '-',
+                'owner_phone'         => $owner?->number_phone ?? '-',
+                'patent'              => $car?->patent ?? '-',
+                'brand'               => $brand ?? '-',
+                'model'               => $model ?? '-',
+                'start_date'          => $reg->start_date,
+                'end_date'            => $reg->end_date,
+                'days'                => $reg->days,
+                'washed' => $reg?->id_service !== null,
+                'price'               => $service?->price_net,
+                'total_value'         => $reg->total_value,
+                'id_parking_register' => $reg->id_parking_register,
+            ];
+        });
+
+        return response()->json(['data' => $rows]);
     }
+
+    return view('tenant.admin.parking.history');
+}
+
+
     
 
     public function print($parkingId)

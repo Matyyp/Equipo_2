@@ -19,7 +19,9 @@ class ParkingRegister extends Model
         'end_date',
         'days',
         'id_park',
-        'status'
+        'status',
+        'id_service',
+        'washed'
     ];
 
     protected $primaryKey = 'id_parking_register';
@@ -27,6 +29,10 @@ class ParkingRegister extends Model
     public function parking_register_register()
     {
         return $this->belongsTo(Register::class, 'id_parking_register', 'id_parking_register');
+    }
+    public function parking_register_car_wash()
+    {
+        return $this->belongsTo(CarWash::class, 'id_service', 'id_service');
     }
 
     public function parking_register_generates()

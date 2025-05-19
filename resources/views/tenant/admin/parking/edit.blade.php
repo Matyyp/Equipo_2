@@ -20,13 +20,13 @@
 
         <input type="hidden" id="original_phone" value="{{ $owner->number_phone }}">
 
-        {{-- Patente (solo lectura) --}}
+        {{-- Patente --}}
         <div class="mb-3">
           <label for="plate" class="form-label">Patente</label>
           <input type="text" id="plate" name="plate" class="form-control" value="{{ old('plate', $car->patent) }}" readonly>
         </div>
 
-        {{-- Nombre / Teléfono --}}
+        {{-- Nombre y Teléfono --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="name" class="form-label">Nombre</label>
@@ -54,7 +54,7 @@
           </div>
         </div>
 
-        {{-- Kilometraje --}}
+        {{-- Km --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="arrival_km" class="form-label">Km Entrada</label>
@@ -66,13 +66,13 @@
           </div>
         </div>
 
-        {{-- Tipo de Estacionamiento (solo lectura) --}}
+        {{-- Tipo de Estacionamiento --}}
         <div class="mb-3">
           <label for="service_id" class="form-label">Tipo de Estacionamiento</label>
           <input type="text" class="form-control" value="{{ $service->name }}" readonly>
         </div>
 
-        {{-- Marca / Modelo --}}
+        {{-- Marca y Modelo --}}
         <div class="row mb-4">
           <div class="col-md-6">
             <label for="brand_name" class="form-label">Marca</label>
@@ -85,9 +85,16 @@
         </div>
 
         {{-- Lavado --}}
-        <div class="form-check mb-4">
-          <input type="checkbox" id="wash_service" name="wash_service" class="form-check-input" @checked(old('wash_service', $parking->wash_service))>
+        <div class="form-check mb-3">
+          <input type="checkbox" id="wash_service" name="wash_service" class="form-check-input" {{ old('wash_service', $parking->washed) ? 'checked' : '' }}>
           <label for="wash_service" class="form-check-label">Incluye Lavado</label>
+        </div>
+
+        <div id="wash-type-group" class="form-group mb-4" style="display: none;">
+          <label for="wash_type">Tipo de Lavado</label>
+          <select name="wash_type" id="wash_type" class="form-control">
+            <option value="">Seleccione un tipo de lavado</option>
+          </select>
         </div>
 
         {{-- Botones --}}
@@ -109,32 +116,69 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const phoneUrl = '{{ route("estacionamiento.searchPhone") }}';
-    const phoneInput = document.getElementById('phone');
-    const originalPhone = document.getElementById('original_phone').value;
-    const form = document.getElementById('edit-form');
+document.addEventListener('DOMContentLoaded', () => {
+  const phoneUrl = '{{ route("estacionamiento.searchPhone") }}';
+  const phoneInput = document.getElementById('phone');
+  const originalPhone = document.getElementById('original_phone').value;
+  const form = document.getElementById('edit-form');
 
-    form.addEventListener('submit', async (e) => {
-      const newPhone = phoneInput.value.trim();
-      if (newPhone !== originalPhone) {
-        try {
-          const res = await fetch(`${phoneUrl}?phone=${newPhone}`);
-          const data = await res.json();
-          if (data.found) {
-            e.preventDefault();
-            Swal.fire({
-              icon: 'error',
-              title: 'Número en uso',
-              text: `El teléfono ya pertenece a ${data.name}.`
-            });
-          }
-        } catch (error) {
+  form.addEventListener('submit', async (e) => {
+    const newPhone = phoneInput.value.trim();
+    if (newPhone !== originalPhone) {
+      try {
+        const res = await fetch(`${phoneUrl}?phone=${newPhone}`);
+        const data = await res.json();
+        if (data.found) {
           e.preventDefault();
-          Swal.fire('Error', 'No se pudo verificar el número.', 'error');
+          Swal.fire({
+            icon: 'error',
+            title: 'Número en uso',
+            text: `El teléfono ya pertenece a ${data.name}.`
+          });
         }
+      } catch (error) {
+        e.preventDefault();
+        Swal.fire('Error', 'No se pudo verificar el número.', 'error');
       }
-    });
+    }
   });
+
+  // Lógica para lavado
+  const washCheckbox = document.getElementById('wash_service');
+  const washGroup = document.getElementById('wash-type-group');
+  const washSelect = document.getElementById('wash_type');
+  const selectedWashId = '{{ old('wash_type', $parking->id_service) }}';
+
+  const loadLavados = () => {
+    washSelect.innerHTML = '<option value="">Seleccione un tipo de lavado</option>';
+    fetch('{{ route("lavados.sucursal") }}')
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(lavado => {
+          const option = document.createElement('option');
+          option.value = lavado.id_service;
+          option.textContent = lavado.name;
+          if (selectedWashId == lavado.id_service) option.selected = true;
+          washSelect.appendChild(option);
+        });
+      });
+  };
+
+  washCheckbox.addEventListener('change', () => {
+    if (washCheckbox.checked) {
+      washGroup.style.display = 'block';
+      loadLavados();
+    } else {
+      washGroup.style.display = 'none';
+      washSelect.innerHTML = '';
+    }
+  });
+
+  // Mostrar al cargar si ya estaba checkeado
+  if (washCheckbox.checked) {
+    washGroup.style.display = 'block';
+    loadLavados();
+  }
+});
 </script>
 @endpush

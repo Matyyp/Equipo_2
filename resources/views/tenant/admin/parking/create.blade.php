@@ -142,6 +142,13 @@
           <input type="checkbox" id="wash_service" name="wash_service" class="form-check-input">
           <label for="wash_service" class="form-check-label">Incluye Servicio de Lavado</label>
         </div>
+        <div id="wash-type-group" class="form-group" style="display: none;">
+          <label for="wash_type">Tipo de Lavado</label>
+          <select name="wash_type" id="wash_type" class="form-control">
+            <option value="">Seleccione un tipo de lavado</option>
+          </select>
+        </div>
+
 
         <!-- BOTONES -->
         <div class="form-group row justify-content-end">
@@ -262,6 +269,29 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.prop('disabled', true);
     }
   });
+
+$('#wash_service').on('change', function () {
+  const checked = $(this).is(':checked');
+  const $group = $('#wash-type-group');
+  const $select = $('#wash_type');
+
+  if (checked) {
+    $group.show();
+    $.get('{{ route("lavados.sucursal") }}', function (data) {
+      $select.empty().append('<option value="">Seleccione un tipo de lavado</option>');
+      data.forEach(item => {
+        $select.append(`<option value="${item.id_service}">${item.name}</option>`);
+      });
+    }).fail(() => {
+      alert('Error al cargar tipos de lavado.');
+    });
+  } else {
+    $group.hide();
+    $select.empty();
+  }
+});
+
+
 
 
   $('#service_id').on('changed.bs.select', function () {
