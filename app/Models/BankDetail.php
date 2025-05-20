@@ -14,7 +14,8 @@ class BankDetail extends Model
         'rut',
         'id_bank',
         'id_type_account',
-        'account_number'
+        'account_number',
+        'id_business'
     ];
 
     protected $primaryKey = 'id_bank_details';

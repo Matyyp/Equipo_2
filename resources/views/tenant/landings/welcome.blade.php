@@ -1,4 +1,4 @@
-@extends('layouts.app2')
+@extends('tenant.layouts.landings')
 
 @section('content')
 

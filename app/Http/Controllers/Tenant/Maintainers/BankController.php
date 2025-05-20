@@ -26,8 +26,8 @@ class BankController extends Controller
                 $deleteUrl = route('banco.destroy', $bank->id_bank);
 
                 return '
-                    <a href="' . $editUrl . '" class="btn btn-sm btn-warning me-1">
-                        <i class="fas fa-edit"></i> Editar
+                    <a href="' . $editUrl . '" class="btn btn-sm btn-outline-info me-1" title="Editar">
+                        <i class="fas fa-edit"></i>
                     </a>
                 ';
             })

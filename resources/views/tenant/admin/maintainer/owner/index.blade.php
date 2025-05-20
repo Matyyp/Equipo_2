@@ -36,7 +36,7 @@
                   <td>{{ $item->name }}</td>
                   <td>{{ $item->number_phone }}</td>
                   <td class="text-center">
-                    <a href="{{ route('dueños.edit', $item->id_owner) }}" class="btn btn-warning btn-sm mb-1">
+                    <a href="{{ route('dueños.edit', $item->id_owner) }}" class="btn btn-sm btn-outline-info me-1">
                       <i class="fas fa-edit"></i> Editar
                     </a>
                     <a href="{{ route('asociado.show', $item->id_owner) }}" class="btn btn-primary btn-sm mb-1">

@@ -27,7 +27,10 @@ use App\Http\Controllers\Tenant\Maintainers\PaymentRecordController;
 use App\Http\Controllers\Tenant\Maintainers\BankDetailController;
 use App\Http\Controllers\Tenant\Dashboard\DashboardController;
 use App\Http\Controllers\Tenant\CarWash\CarWashController;
+use App\Http\Controllers\Tenant\Maintainers\WorkerController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\RentalCarController;
+use App\Http\Controllers\LandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,10 +49,16 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
+    // Rutas de la landing page
     Route::get('/', function () {
-        return view('welcome');
+        return view('tenant.landings.welcome');
     });
-    //aca agregar todos los roles que necesiten entran al panel de admin
+    Route::get('/available‐cars', [LandingController::class, 'availableCars'])
+     ->name('landings.available');
+
+    Route::get('landings/available/cars', [LandingController::class, 'availableCarsPartial'])
+     ->name('landings.available.partial');
+
     Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
         Route::get('/dashboard', function () {
             return view('tenant.admin.dashboard');
@@ -84,14 +93,13 @@ Route::middleware([
 
         Route::resource('autos', CarController::class);
         Route::resource('asociado', BelongsController::class);
+        Route::get('/verificar-sucursal', [BranchOfficeController::class, 'verificarSucursalExistente'])->name('sucursal.verificar');
         Route::resource('sucursales', BranchOfficeController::class);
         Route::resource('servicios', ServiceController::class);
         Route::patch('/servicios/{id}/disable', [ServiceController::class, 'disable'])->name('servicios.disable');
         Route::get('contratos/create/{branch}/{type}', [ContractController::class, 'create'])->name('contratos.create');
         Route::resource('contratos', ContractController::class);
         //Route::resource('pagos', PaymentRecordController::class)->names('payment');
-
-
 
         Route::get('region/data', [RegionController::class, 'index'])->name('region.data');
         Route::resource('region', RegionController::class);
@@ -101,6 +109,7 @@ Route::middleware([
         Route::resource('tipo_cuenta', TypeAccountController::class);
         Route::get('cuentas_bancarias/data', [BankDetailController::class, 'data'])->name('cuentas_bancarias.data');
         Route::resource('cuentas_bancarias', BankDetailController::class);
+        Route::resource('trabajadores', WorkerController::class);
 
     });
     // Modulo estacionamiento
@@ -109,6 +118,8 @@ Route::middleware([
         Route::get('estacionamiento/check-contrato', [ParkingController::class, 'checkContrato'])->name('estacionamiento.checkContrato');
         Route::get('estacionamiento/data', [ParkingController::class, 'data'])
         ->name('estacionamiento.data');
+        Route::get('estacionamiento/servicios-por-sucursal', [ParkingController::class, 'getServicesByBranch'])
+        ->name('estacionamiento.getServicesByBranch');
         Route::get('estacionamiento/search', [ParkingController::class, 'search'])
         ->name('estacionamiento.search');
         Route::get('estacionamiento/search-phone', [ParkingController::class, 'searchPhone'])
@@ -144,6 +155,15 @@ Route::middleware([
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
+    
+    // Modulo de reservas
+    Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
+        Route::get('rental-cars/data', [RentalCarController::class, 'data'])
+        ->name('rental-cars.data');
+        Route::resource('rental-cars', RentalCarController::class);
+    });
+    
+
 
     // CRUD Usuarios
     Route::middleware(['auth', 'permission:users.index'])->group(function () {
@@ -167,7 +187,7 @@ Route::middleware([
         Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
-    Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::middleware(['auth', 'role:SuperAdmin'])->group(function () {
         Route::get('roles/data', [RoleController::class, 'getData'])
             ->name('roles.data');
 

@@ -69,7 +69,15 @@
                         <i class="nav-icon fa-solid fa-calendar-days"></i>
                         <p>Reservas<i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview"></ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('rental-cars.index') }}"
+                            class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}">
+                                <i class="fas fa-car nav-icon"></i>
+                                <p>Autos de Arriendo</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 @endcan
 
@@ -138,7 +146,7 @@
                                     </a>
                                 </li>
                                 @endcan
-                                @role('Admin')
+                                @role('SuperAdmin')
                                 <li class="nav-item">
                                     <a href="{{ route('roles.index') }}" class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
                                         <i class="fas fa-user-shield nav-icon"></i><p>Roles</p>

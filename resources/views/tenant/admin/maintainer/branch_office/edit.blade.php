@@ -89,7 +89,7 @@
 
         <div class="form-group row justify-content-end mt-4">
             <div class="col-auto">
-              <a href="{{ route('sucursales.index') }}" class="btn btn-secondary mr-2">
+              <a href="{{ route('sucursales.show', $branch->id_branch) }}" class="btn btn-secondary mr-2">
                 <i class="fas fa-arrow-left mr-1"></i> Volver
               </a>
             </div>

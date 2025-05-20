@@ -44,7 +44,7 @@
                   <td>{{ $labels[$item->type_contact] ?? ucfirst($item->type_contact) }}</td>
                   <td>{{ $item->data_contact }}</td>
                   <td class="text-center">
-                    <a href="{{ route('informacion_contacto.edit', $item->id_contact_information) }}" class="btn btn-warning btn-sm">
+                    <a href="{{ route('informacion_contacto.edit', $item->id_contact_information) }}" class="btn btn-sm btn-outline-info me-1">
                       <i class="fas fa-edit"></i> Editar
                     </a>
                   </td>
@@ -59,7 +59,7 @@
     </div>
 
     <div class="card-footer d-flex justify-content-end">
-    <a href="{{ route('sucursales.index') }}" class="btn btn-secondary">
+    <a href="{{ route('sucursales.show', $branch->id_branch) }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left me-1"></i> Volver a Sucursales
     </a>
     </div>

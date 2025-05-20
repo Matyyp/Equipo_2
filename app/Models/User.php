@@ -37,6 +37,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Review::class, 'id_user');
     }
+    
+    public function branch_office()
+    {
+        return $this->belongsTo(BranchOffice::class, 'id_branch_office');
+    }
 
 
     /**

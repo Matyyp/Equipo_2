@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_location');
             $table->foreign('id_business')->references('id_business')->on('businesses')->onDelete('cascade');
             $table->foreign('id_location')->references('id_location')->on('locations')->onDelete('cascade');
+            $table->enum('status', ['active', 'Inactive']);
             $table->timestamps();
 
         });

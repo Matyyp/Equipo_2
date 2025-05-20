@@ -13,15 +13,15 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <div class="card">
     <div class="card-header bg-secondary text-white">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <i class="fas fa-user-shield me-2"></i>Roles
+          <i class="fas fa-user-shield mr-2"></i>Roles
         </div>
-        @role('Admin')
-          <a href="{{ route('roles.create') }}" class="btn btn-sm btn-success">
+        @role('SuperAdmin')
+          <a href="{{ route('roles.create') }}" style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
             <i class="fas fa-plus"></i> Nuevo
           </a>
         @endrole

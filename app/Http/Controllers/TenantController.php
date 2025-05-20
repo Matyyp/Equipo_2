@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Http\Controllers\Controller;
+use App\Jobs\SetupTenantJob;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 
@@ -10,47 +9,62 @@ class TenantController extends Controller
 {
     public function index()
     {
-        return view('central.index', ['tenants' => Tenant::all()]);
+        $tenants = Tenant::all();
+        return view('central.tenants.index', compact('tenants'));
     }
 
     public function create()
     {
-        return view('central.create');
+        return view('central.tenants.create');
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'id' => 'required|unique:tenants',
+        $data = $request->validate([
+            'id'     => 'required|alpha_dash|unique:tenants,id',
             'domain' => 'required|unique:domains,domain',
+            'email'  => 'required|email',
         ]);
 
-        $tenant = Tenant::create(['id' => $request->id]);
-        $tenant->domains()->create(['domain' => $request->domain]);
+        $tenant = Tenant::create(['id' => $data['id']]);
+        $tenant->domains()->create(['domain' => $data['domain']]);
 
-        return redirect()->route('tenants.index')->with('success', 'Tenant creado correctamente.');
+        // Preparamos la respuesta
+        $response = redirect()
+            ->route('tenants.index')
+            ->with('success','Cliente creado. Correo enviado al cliente.');
+
+        SetupTenantJob::dispatchAfterResponse($tenant, $data['email']);
+
+        return $response;
     }
 
     public function edit(Tenant $tenant)
     {
-        return view('central.edit', compact('tenant'));
+        return view('central.tenants.edit', compact('tenant'));
     }
 
     public function update(Request $request, Tenant $tenant)
     {
         $request->validate([
-            'domain' => 'required|unique:domains,domain,' . $tenant->id . ',tenant_id',
+            'domain' => 'required|unique:domains,domain,' . $tenant->domains->first()->id . ',id',
         ]);
 
-        $tenant->domains()->update(['domain' => $request->domain]);
+        $tenant->domains()->update([
+            'domain' => $request->domain,
+        ]);
 
-        return redirect()->route('tenants.index')->with('success', 'Tenant actualizado.');
+        return redirect()
+            ->route('central.tenants.index')
+            ->with('success', 'Cliente actualizado correctamente.');
     }
 
     public function destroy(Tenant $tenant)
     {
         $tenant->delete();
 
-        return redirect()->route('tenants.index')->with('success', 'Tenant eliminado.');
+        return redirect()
+            ->route('tenants.index')
+            ->with('success', 'Cliente eliminado correctamente.');
     }
 }

@@ -15,9 +15,17 @@
         <span class="fw-semibold">
           <i class="fas fa-piggy-bank me-2"></i>Cuentas Bancarias
         </span>
-        <a href="{{ route('cuentas_bancarias.create') }}" class="btn btn-sm btn-success">
-          <i class="fas fa-plus-circle me-1"></i> Nueva Cuenta
-        </a>
+        @if ($businessExists)
+          <a href="{{ route('cuentas_bancarias.create') }}" class="btn btn-sm btn-success">
+            <i class="fas fa-plus-circle me-1"></i> Nueva Cuenta
+          </a>
+        @else
+          <div class="alert alert-warning mb-0">
+            <i class="fas fa-info-circle me-1"></i>
+            Debes registrar una empresa antes de agregar cuentas bancarias.
+          </div>
+        @endif
+
       </div>
     </div>
 
@@ -43,30 +51,27 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  $('#bank-details-table').DataTable({
-    processing: true,
-    serverSide: true,
-    ajax: '{{ route("cuentas_bancarias.data") }}',
-    columns: [
-      { data: 'name',           name: 'name' },
-      { data: 'rut',            name: 'rut' },
-      { data: 'account_number', name: 'account_number' },
-      { data: 'bank',           name: 'bank' },
-      { data: 'type',           name: 'type' },
-      {
-        data: 'action',
-        name: 'action',
-        orderable: false,
-        searchable: false,
-        className: 'text-center'
-      }
-    ],
+@if ($businessExists)
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#bank-details-table').DataTable({
+      processing: true,
+      serverSide: true,
+      ajax: '{{ route("cuentas_bancarias.data") }}',
+      columns: [
+        { data: 'name' },
+        { data: 'rut' },
+        { data: 'account_number' },
+        { data: 'bank' },
+        { data: 'type' },
+        { data: 'action', orderable: false, searchable: false, className: 'text-center' }
+      ],
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
       }
+    });
   });
-});
-</script>
+  </script>
+@endif
+
 @endpush

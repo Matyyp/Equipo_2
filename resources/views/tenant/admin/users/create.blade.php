@@ -8,7 +8,7 @@
 @endpush
 
 @section('content')
-<div class="container px-3 px-md-5 mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">
@@ -52,6 +52,18 @@
             @endforeach
           </select>
           @error('role') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+        </div>
+        <div class="form-group mb-4">
+            <label for="id_branch_office" class="form-label">Sucursal</label>
+            <select name="id_branch_office" id="id_branch_office" class="form-select selectpicker @error('id_branch_office') is-invalid @enderror" data-live-search="true" required>
+              <option value="" disabled {{ old('id_branch_office') ? '' : 'selected' }}>-- Selecciona una sucursal --</option>
+              @foreach($branchs as $branch)
+                <option value="{{ $branch->id_branch }}" {{ old('id_branch_office') == $branch->id_branch ? 'selected' : '' }}>
+                  {{ $branch->name_branch_offices }}
+                </option>
+              @endforeach
+            </select>
+            @error('id_branch_office') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
         </div>
 
         <div class="form-group row justify-content-end">

@@ -20,6 +20,7 @@
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
 
+    {{-- Navbar --}}
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
         <ul class="navbar-nav">
             <li class="nav-item">
@@ -41,14 +42,11 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <li class="dropdown-item">
-                        <form method="POST" action="{{ route('logout') }}" id="logout-form">
-                            @csrf
-                            <a href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                               class="d-block text-danger">
-                                <i class="fas fa-sign-out-alt mr-2"></i> {{ __('Cerrar sesión') }}
-                            </a>
-                        </form>
+                        <a href="#"
+                           class="d-block text-danger"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+                        </a>
                     </li>
                 </ul>
             </li>
@@ -58,27 +56,25 @@
     {{-- Sidebar --}}
     @include('tenant.layouts.sidebar')
 
+    {{-- Contenido --}}
     <div class="content-wrapper">
-        <div class="content-header">
-            <div class="container-fluid">
-                <h1 class="m-0">@yield('page_title')</h1>
-            </div>
-        </div>
-
-        <section class="content">
+        <section class="content py-4">
             <div class="container-fluid">
                 @yield('content')
             </div>
         </section>
     </div>
 
+    {{-- Footer --}}
     <footer class="main-footer text-sm">
-        <strong>
-            &copy; {{ now()->year }} — 
-            {{ $tenantCompanyName ?? config('app.name') }}
-        </strong>
+        <strong>&copy; {{ now()->year }} — {{ $tenantCompanyName ?? config('app.name') }}</strong>
     </footer>
 </div>
+
+{{-- Logout Form --}}
+<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
 
 {{-- JS --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

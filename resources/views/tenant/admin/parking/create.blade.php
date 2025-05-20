@@ -128,13 +128,31 @@
           </div>
         </div>
 
+        @role('SuperAdmin')
+        <div class="form-group">
+          <label for="branch_office_id">Sucursal</label>
+          <select id="branch_office_id" name="branch_office_id" class="selectpicker form-control" data-live-search="true" required>
+            <option value="">—</option>
+            @foreach($branches as $branch)
+              <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
+            @endforeach
+          </select>
+        </div>
+        @endrole
+
         <div class="form-group">
           <label for="service_id">Tipo de Estacionamiento</label>
           <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
             <option value="">—</option>
-            @foreach($parkingServices as $svc)
-              <option value="{{ $svc->id_service }}">{{ $svc->name }}</option>
-            @endforeach
+            @unless(auth()->user()->hasRole('SuperAdmin'))
+              @foreach($parkingServices as $svc)
+                @role('SuperAdmin')
+                  $('#service_id').prop('disabled', true).selectpicker('refresh');
+                @endrole
+
+                <option value="{{ $svc->id_service }}">{{ $svc->name }}</option>
+              @endforeach
+            @endunless
           </select>
         </div>
 
@@ -150,7 +168,6 @@
         </div>
 
 
-        <!-- BOTONES -->
         <div class="form-group row justify-content-end">
           <div class="col-auto">
             <button type="reset" class="btn btn-secondary">
@@ -163,7 +180,6 @@
             </button>
           </div>
         </div>
-
       </form>
     </div>
   </div>
@@ -175,6 +191,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   $('.selectpicker').selectpicker();
+  @role('SuperAdmin')
+    $('#service_id').prop('disabled', true).selectpicker('refresh');
+  @endrole
+
 
   const plateInput = $('#plate');
   const phoneInput = $('#phone');
@@ -243,7 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   phoneInput.on('input', function () {
     const phone = $(this).val().trim();
-
     plateAlert.removeClass().text('');
 
     if (phone.length === 9) {
@@ -315,6 +334,43 @@ $('#wash_service').on('change', function () {
       }
     });
   });
+
+  @role('SuperAdmin')
+  $('#branch_office_id').on('changed.bs.select', function () {
+    const branchId = $(this).val();
+    const serviceSelect = $('#service_id');
+
+    if (!branchId) {
+      serviceSelect.prop('disabled', true).selectpicker('refresh');
+      return;
+    } else {
+      serviceSelect.prop('disabled', false).selectpicker('refresh');
+    }
+
+    serviceSelect.empty().append('<option value="">Cargando...</option>').selectpicker('refresh');
+
+    $.ajax({
+      url: '{{ route("estacionamiento.getServicesByBranch") }}',
+      method: 'GET',
+      data: { branch_id: branchId },
+      success: function (res) {
+        serviceSelect.empty().append('<option value="">—</option>');
+        if (res.length === 0) {
+          serviceSelect.append('<option disabled>No hay servicios disponibles</option>');
+        } else {
+          res.forEach(service => {
+            serviceSelect.append(`<option value="${service.id_service}">${service.name}</option>`);
+          });
+        }
+        serviceSelect.selectpicker('refresh');
+      },
+      error: function () {
+        alert('No se pudieron cargar los servicios para la sucursal seleccionada.');
+      }
+    });
+  });
+  @endrole
+
 
   $('#form-register').on('submit', function(e) {
     if (!plateChecked) {

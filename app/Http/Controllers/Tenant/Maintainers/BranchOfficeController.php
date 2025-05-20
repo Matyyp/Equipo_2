@@ -8,6 +8,7 @@ use App\Models\BranchOffice;
 use App\Models\Location;
 use App\Models\Business;
 use App\Models\Region;
+use App\Models\ContactInformation;
 class BranchOfficeController extends Controller
 {
     /**
@@ -63,30 +64,52 @@ class BranchOfficeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'schedule'    => 'required|string|max:100',
-            'street'      => 'required|string|max:150',
-            'name_branch_offices'      => 'required|string|max:250',
-            'id_location' => 'required|exists:locations,id_location',
-            'id_business' => 'required|exists:businesses,id_business',
+            'schedule'            => 'required|string|max:100',
+            'street'              => 'required|string|max:150',
+            'name_branch_offices' => 'required|string|max:250',
+            'id_location'         => 'required|exists:locations,id_location',
+            'id_business'         => 'required|exists:businesses,id_business',
+            'phone'               => 'required|string|max:50',
+            'email'               => 'required|email|max:100',
         ]);
 
-        BranchOffice::create([
-            'schedule'    => $request->schedule,
-            'street'      => $request->street,
+        // Crear sucursal
+        $branch = BranchOffice::create([
+            'schedule'            => $request->schedule,
+            'street'              => $request->street,
             'name_branch_offices' => $request->name_branch_offices,
-            'id_location' => $request->id_location,
-            'id_business' => $request->id_business,
+            'id_location'         => $request->id_location,
+            'id_business'         => $request->id_business,
         ]);
 
-        return redirect()->route('sucursales.index');
+        // Insertar datos de contacto si están presentes
+        if ($request->filled('phone')) {
+            ContactInformation::create([
+                'id_branch_office' => $branch->id_branch,
+                'type_contact'     => 'phone',
+                'data_contact'     => $request->phone,
+            ]);
+        }
+
+        if ($request->filled('email')) {
+            ContactInformation::create([
+                'id_branch_office' => $branch->id_branch,
+                'type_contact'     => 'email',
+                'data_contact'     => $request->email,
+            ]);
+        }
+
+        return redirect()->route('sucursales.index')->with('success', 'Sucursal creada correctamente.');
     }
+
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        //
+        $sucursal = BranchOffice::with('branch_office_location.location_region')->findOrFail($id);
+        return view('tenant.admin.maintainer.branch_office.show', compact('sucursal'));
     }
 
     /**
@@ -103,6 +126,20 @@ class BranchOfficeController extends Controller
 
         return view('tenant.admin.maintainer.branch_office.edit', compact('branch', 'locacion', 'business'));
     }
+
+    public function verificarSucursalExistente(Request $request)
+    {
+        $street = $request->street;
+        $locationId = $request->id_location;
+
+        $existe = BranchOffice::where('street', $street)
+            ->where('id_location', $locationId)
+            ->exists();
+
+        return response()->json(['existe' => $existe]);
+    }
+
+
 
 
 
@@ -135,10 +172,13 @@ class BranchOfficeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        BranchOffice::where('id_branch', $id)->delete();
-        return redirect()->route('sucursales.index');
+        $branch = BranchOffice::findOrFail($id);
+        $branch->status = 'Inactive';
+        $branch->save();
 
+        return redirect()->route('sucursales.index')->with('success', 'Sucursal desactivada correctamente.');
     }
+
 }

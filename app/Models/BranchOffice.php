@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Scopes\BranchOfficeScope;
 
 
 class BranchOffice extends Model
@@ -20,6 +21,15 @@ class BranchOffice extends Model
     ];
 
     protected $primaryKey = 'id_branch';
+
+    public $branchOfficeColumn = 'id_branch'; // IMPORTANTE: DEBE SER PUBLIC
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new BranchOfficeScope);
+    }
+
+    
 
     public function branch_office_business()
     {

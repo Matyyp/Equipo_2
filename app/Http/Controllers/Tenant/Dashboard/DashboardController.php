@@ -14,22 +14,32 @@ class DashboardController extends Controller
         return view('tenant.admin.sale.analytics');
     }
 
-    public function chartData(Request $request): JsonResponse
+public function chartData(Request $request): JsonResponse
 {
-    $filter = $request->get('filter', 'daily'); // default 'daily'
+    $filter = $request->get('filter', 'daily');
     $user = auth()->user();
 
+    if (!$user->id_branch_office) {
+        return response()->json([
+            'labels' => [],
+            'values' => [],
+            'parking' => [
+                'ocupados' => 0,
+                'disponibles' => 0,
+            ]
+        ]);
+    }
 
     // Base de la consulta
     $query = DB::table('parking_registers as pr')
         ->join('parks as p', 'pr.id_park', '=', 'p.id')
         ->join('services as s', 'p.id_service', '=', 's.id_service')
-        ->join('branch_offices as b','s.id_branch_office','=','b.id_branch')
-        ->where('b.id_branch',$user->id_branch_office)
+        ->join('branch_offices as b', 's.id_branch_office', '=', 'b.id_branch')
+        ->where('b.id_branch', $user->id_branch_office)
         ->where('s.type_service', 'parking_daily')
-        ->where('pr.status','paid');
+        ->where('pr.status', 'paid');
 
-
+    // Agrupación según filtro
     if ($filter === 'weekly') {
         $barData = $query
             ->selectRaw('YEAR(pr.start_date) as year, WEEK(pr.start_date, 3) as week, SUM(pr.total_value) as total')
@@ -50,15 +60,17 @@ class DashboardController extends Controller
         $values = $barData->pluck('total');
     }
 
-    // Estacionamientos activos
+    // Estacionamientos activos en sucursal del usuario
     $activeCount = DB::table('parks as p')
         ->join('services as s', 'p.id_service', '=', 's.id_service')
         ->where('s.type_service', 'parking_daily')
+        ->where('s.id_branch_office', $user->id_branch_office)
         ->where('p.status', 'parked')
         ->count();
 
-    $totalSpots = 50; // Puedes hacer esto dinámico si lo deseas
-    $availableCount = $totalSpots - $activeCount;
+    // 🔢 Total de cupos fijo por ahora
+    $totalSpots = 50;
+    $availableCount = max(0, $totalSpots - $activeCount);
 
     return response()->json([
         'labels' => $labels,
@@ -69,6 +81,8 @@ class DashboardController extends Controller
         ]
     ]);
 }
+
+
 
 
 }
