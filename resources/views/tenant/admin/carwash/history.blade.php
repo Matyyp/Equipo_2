@@ -29,6 +29,9 @@
         <table id="wash-history-table" class="table table-striped table-bordered nowrap w-100">
           <thead>
             <tr>
+              @role('SuperAdmin')
+                <th>Sucursal</th>
+              @endrole
               <th>Patente</th>
               <th>Tipo de Lavado</th>
               <th>¿Se Lavó?</th>
@@ -64,6 +67,9 @@
         dataSrc: 'data'
       },
       columns: [
+        @role('SuperAdmin')
+          { data: 'branch_name', title: 'Sucursal' },
+        @endrole
         { data: 'patent' },
         { data: 'wash_type' },
         {

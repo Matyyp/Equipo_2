@@ -187,25 +187,30 @@ class CarWashController extends Controller
 
     public function history(Request $request)
 {
+    
     $user = auth()->user();
-
     if ($request->ajax()) {
+        
         try {
+            
             $registros = \App\Models\ParkingRegister::whereNotNull('id_service')
-                ->with('park.park_car') // relaciones
+                ->with('park.park_car')
                 ->get()
-                ->map(function ($reg) {
+                ->map(function ($reg) use ($user) {
                     $car = $reg->park?->park_car;
                     $service = \App\Models\Service::find($reg->id_service);
-
+                    $branch = $service?->service_branch_office;
+                
                     return [
                         'id_parking_register' => $reg->id_parking_register,
-                        'patent'    => $car?->patent ?? 'N/D',
-                        'wash_type' => $service?->name ?? 'Desconocido',
-                        'washed'    => $reg->washed ? 'Sí' : 'No',
-                        'price_net' => $service?->price_net ?? 0,
+                        'patent'              => $car?->patent ?? 'N/D',
+                        'wash_type'           => $service?->name ?? 'Desconocido',
+                        'washed'              => $reg->washed ? 'Sí' : 'No',
+                        'price_net'           => $service?->price_net ?? 0,
+                        'branch_name'         => $user->hasRole('SuperAdmin') ? $branch?->name_branch_offices ?? 'N/D' : null,
                     ];
                 });
+
 
             return response()->json(['data' => $registros]);
         } catch (\Exception $e) {
@@ -215,6 +220,7 @@ class CarWashController extends Controller
             ], 500);
         }
     }
+
 
     $branches = $user->hasRole('SuperAdmin') ? \App\Models\BranchOffice::all() : [];
 

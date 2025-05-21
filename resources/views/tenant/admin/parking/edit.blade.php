@@ -95,7 +95,7 @@
         </div>
         @endrole
 
-        <div class="form-group">
+        <div class="form-group" id="service-group">
           <label for="service_id">Tipo de Estacionamiento</label>
           @role('SuperAdmin')
             <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
@@ -122,6 +122,7 @@
             <input type="text" id="model_name" name="model_name" class="form-control" value="{{ $models }}" required>
           </div>
         </div>
+
         {{-- Lavado --}}
         <div class="form-check mb-3">
           <input type="hidden" name="wash_service" value="0">
@@ -162,22 +163,109 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) Inicializar bootstrap-select
   $('.selectpicker').selectpicker();
 
-  const phoneUrl = '{{ route("estacionamiento.searchPhone") }}';
-  const phoneInput = document.getElementById('phone');
-  const originalPhone = document.getElementById('original_phone').value;
-  const form = document.getElementById('edit-form');
-  const phoneError = document.getElementById('phone-error');
-  const submitBtn = document.getElementById('submit-btn');
+  // 2) Para SuperAdmin: recargar / marcar servicios según sucursal Y valor previo
+  @role('SuperAdmin')
+    const branchSelect   = $('#branch_office_id');
+    const serviceSelect  = $('#service_id');
+    const initialService = '{{ $service->id_service }}'; // valor que ya estaba seleccionado
 
-  let phoneValid = true;
+    function loadServices(branchId, selectedId = null) {
+      if (!branchId) {
+        serviceSelect
+          .empty()
+          .append('<option value="">Seleccione un servicio</option>')
+          .prop('disabled', true)
+          .selectpicker('refresh');
+        return;
+      }
+      serviceSelect
+        .empty()
+        .append('<option value="">Cargando...</option>')
+        .prop('disabled', true)
+        .selectpicker('refresh');
+      $.ajax({
+        url: '{{ route("estacionamiento.getServicesByBranch") }}',
+        method: 'GET',
+        data: { branch_id: branchId },
+        success(res) {
+          serviceSelect.empty().append('<option value="">Seleccione un servicio</option>');
+          if (!res.length) {
+            serviceSelect.append('<option disabled>No hay servicios disponibles</option>');
+          } else {
+            res.forEach(svc => {
+              const sel = (svc.id_service == selectedId) ? 'selected' : '';
+              serviceSelect.append(
+                `<option value="${svc.id_service}" ${sel}>${svc.name}</option>`
+              );
+            });
+          }
+          serviceSelect.prop('disabled', false).selectpicker('refresh');
+        },
+        error() {
+          alert('No se pudieron cargar los servicios para la sucursal seleccionada.');
+        }
+      });
+    }
+
+    // Al cambiar la sucursal
+    branchSelect.on('changed.bs.select', () => {
+      loadServices(branchSelect.val(), null);
+    });
+
+    // Al cargar la página, si había una sucursal + servicio previo, recarga y marca
+    if (branchSelect.val()) {
+      loadServices(branchSelect.val(), initialService);
+    }
+  @endrole
+
+  // 3) Verificación de contrato al cambiar servicio
+  $('#service_id').on('changed.bs.select', function() {
+    const sid = $(this).val();
+    $('#contract-warning').remove();
+    if (!sid) {
+      $('#submit-btn').prop('disabled', false);
+      return;
+    }
+    $.ajax({
+      url: '{{ route("estacionamiento.checkContrato") }}',
+      method: 'GET',
+      data: { service_id: sid },
+      success(res) {
+        if (!res.contract_exists) {
+          $('#submit-btn').prop('disabled', true);
+          $('#service-group').after(
+            '<div id="contract-warning" class="text-danger mt-2">Este servicio no tiene contrato activo.</div>'
+          );
+        } else {
+          $('#submit-btn').prop('disabled', false);
+        }
+      },
+      error() {
+        alert('Error al verificar el contrato del servicio.');
+      }
+    });
+  });
+  // Dispara verificación inicial si ya hay servicio seleccionado
+  if ($('#service_id').val()) {
+    $('#service_id').trigger('changed.bs.select');
+  }
+
+  // 4) Validación de teléfono
+  const phoneUrl      = '{{ route("estacionamiento.searchPhone") }}';
+  const phoneInput    = document.getElementById('phone');
+  const originalPhone = document.getElementById('original_phone').value;
+  const form          = document.getElementById('edit-form');
+  const phoneError    = document.getElementById('phone-error');
+  let phoneValid      = true;
 
   phoneInput.addEventListener('input', function () {
-    const newPhone = phoneInput.value.trim();
+    const newPhone = this.value.trim();
     phoneError.textContent = '';
-    phoneInput.classList.remove('is-invalid');
+    this.classList.remove('is-invalid');
     phoneValid = true;
 
     if (newPhone.length === 9 && newPhone !== originalPhone) {
@@ -186,13 +274,13 @@
         .then(data => {
           if (data.found) {
             phoneError.textContent = `El teléfono ya pertenece a ${data.name}.`;
-            phoneInput.classList.add('is-invalid');
+            this.classList.add('is-invalid');
             phoneValid = false;
           }
         })
         .catch(() => {
           phoneError.textContent = 'No se pudo verificar el número.';
-          phoneInput.classList.add('is-invalid');
+          this.classList.add('is-invalid');
           phoneValid = false;
         });
     }
@@ -204,31 +292,27 @@
       phoneInput.focus();
     }
   });
-});
 
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
+  // 5) Carga dinámica de tipos de lavado
   const $checkbox = $('#wash_service');
-  const $group = $('#wash-type-group');
-  const $select = $('#wash_type');
-  let selectedBranchId = $('#branch_office_id').val(); // inicial
+  const $group    = $('#wash-type-group');
+  const $select   = $('#wash_type');
+  let selectedBranchId = $('#branch_office_id').val();
 
   function loadLavados(branchId, selectedId = null) {
     if (!branchId) return;
-
     $.ajax({
       url: '{{ route("lavados.sucursal") }}',
       method: 'GET',
       data: { id_branch_office: branchId },
-      success: function (data) {
+      success(data) {
         $select.empty().append('<option value="">Seleccione un tipo de lavado</option>');
         data.forEach(item => {
-          const selected = selectedId && item.id_service == selectedId ? 'selected' : '';
-          $select.append(`<option value="${item.id_service}" ${selected}>${item.name}</option>`);
+          const sel = selectedId == item.id_service ? 'selected' : '';
+          $select.append(`<option value="${item.id_service}" ${sel}>${item.name}</option>`);
         });
       },
-      error: function () {
+      error() {
         alert('Error al cargar tipos de lavado.');
       }
     });
@@ -244,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
         $(this).prop('checked', false);
         return;
       }
-
       $group.show();
       loadLavados(selectedBranchId);
     } else {
@@ -253,20 +336,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Si ya estaba marcado al cargar la página
   if ($checkbox.is(':checked')) {
     $group.show();
     loadLavados(selectedBranchId, '{{ $lavadoAsignado }}');
   }
 
-  // Al cambiar de sucursal (solo si checkbox está marcado)
   $('#branch_office_id').on('changed.bs.select', function () {
     selectedBranchId = $(this).val();
     if ($checkbox.is(':checked') && selectedBranchId) {
       loadLavados(selectedBranchId);
     }
   });
+
+  // 6) Control de fechas mínimas
+  const today = new Date().toISOString().slice(0, 10);
+  $('#start_date').attr('min', today);
+  $('#start_date').on('change', function() {
+    $('#end_date').attr('min', $(this).val());
+  });
 });
 </script>
-
 @endpush

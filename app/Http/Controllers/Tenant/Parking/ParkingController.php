@@ -505,15 +505,15 @@ public function create()
 
         // Asignar lavado si fue solicitado
         $washServiceId = null;
-$washServiceInput = $request->input('wash_service');
-$washTypeInput = $request->input('wash_type');
+        $washServiceInput = $request->input('wash_service');
+        $washTypeInput = $request->input('wash_type');
 
-if ($washServiceInput && $washTypeInput) {
-    $selectedWash = Service::find($washTypeInput);
-    if ($selectedWash && $selectedWash->type_service === 'car_wash') {
-        $washServiceId = $selectedWash->id_service;
-    }
-}
+        if ($washServiceInput && $washTypeInput) {
+            $selectedWash = Service::find($washTypeInput);
+            if ($selectedWash && $selectedWash->type_service === 'car_wash') {
+                $washServiceId = $selectedWash->id_service;
+            }
+        }
 
 
         $parking->update([
