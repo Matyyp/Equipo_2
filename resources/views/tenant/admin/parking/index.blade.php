@@ -159,17 +159,17 @@
           searchable: false,
           render: function(row) {
             return `
-              <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-sm btn-outline-secondary me-1" title="Contrato">
+              <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-outline-secondary btn-sm text-dark" title="Contrato">
                 <i class="fas fa-file-contract"></i>
               </a>
-              <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-secondary me-1" title="Ticket">
+              <a href="/ticket/${row.id_parking_register}/print" class="btn btn-outline-secondary btn-sm text-dark" title="Ticket">
                 <i class="fas fa-ticket-alt"></i>
               </a>
-              <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-secondary me-1" title="Editar">
-                <i class="fas fa-edit"></i>
+              <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                <i class="fas fa-pen"></i>
               </a>
               <button 
-                class="btn btn-sm btn-outline-secondary btn-checkout" 
+                class="btn btn-outline-secondary btn-sm text-dark btn-checkout" 
                 title="Check-Out"
                 data-id="${row.id_parking_register}"
                 data-total="${row.total_value}"

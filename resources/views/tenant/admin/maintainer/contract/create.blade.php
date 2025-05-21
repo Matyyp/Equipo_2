@@ -4,7 +4,7 @@
 @section('page_title', 'Nuevo Contrato')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
       <i class="fas fa-file-contract mr-2"></i>Crear Contrato

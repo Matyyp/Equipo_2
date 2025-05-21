@@ -9,7 +9,7 @@
 @endpush
 
 @section('content')
-<div class="container-fluid mt-5">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-map-marker-alt mr-2"></i>Regiones registradas</div>

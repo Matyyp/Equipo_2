@@ -4,7 +4,7 @@
 @section('page_title', 'Editar Información del Servicio')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
       <i class="fas fa-pen mr-2"></i>Editar Servicio

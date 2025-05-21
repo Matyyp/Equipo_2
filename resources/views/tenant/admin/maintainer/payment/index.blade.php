@@ -9,7 +9,7 @@
 @endpush
 
 @section('content')
-<div class="container-fluid mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex align-items-center">
       <h5 class="mb-0">
@@ -69,7 +69,7 @@ $(document).ready(function () {
                 render: function (row) {
                     return `
                       <a href="/payment/${row.id_payment}/voucher"
-                         class="btn btn-sm btn-outline-primary"
+                         class="btn btn-outline-secondary btn-sm text-dark"
                          title="Generar Voucher">
                         <i class="fas fa-file-invoice-dollar"></i>
                       </a>

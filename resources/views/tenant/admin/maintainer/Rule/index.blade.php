@@ -4,7 +4,7 @@
 @section('page_title', 'Listado de Reglas')
 
 @section('content')
-<div class="container-fluid mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-gavel mr-2"></i>Reglas de contrato</div>
@@ -48,8 +48,8 @@
 
                 <td class="text-center">
                   <a href="{{ route('reglas.edit', $rule->id_rule) }}"
-                    class="btn btn-sm btn-outline-secondary" title="Editar">
-                    <i class="fas fa-edit"></i>
+                    class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                    <i class="fas fa-pen"></i>
                   </a>
                 </td>
               </tr>

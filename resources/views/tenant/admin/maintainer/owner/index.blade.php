@@ -4,7 +4,7 @@
 @section('page_title', 'Listado de Propietarios')
 
 @section('content')
-<div class="container-fluid mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-user-tie mr-2"></i>Propietario registrados</div>
@@ -35,11 +35,11 @@
                   <td>{{ $item->number_phone }}</td>
                   <td class="text-center">
                     <a href="{{ route('dueños.edit', $item->id_owner) }}"
-                      class="btn btn-sm btn-outline-secondary" title="Editar">
-                      <i class="fas fa-edit"></i>
+                      class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                      <i class="fas fa-pen"></i>
                     </a>
                     <a href="{{ route('asociado.show', $item->id_owner) }}"
-                      class="btn btn-sm btn-outline-secondary" title="Ver Autos">
+                      class="btn btn-outline-secondary btn-sm text-dark" title="Ver Autos">
                       <i class="fas fa-car"></i>
                     </a>
                   </td>

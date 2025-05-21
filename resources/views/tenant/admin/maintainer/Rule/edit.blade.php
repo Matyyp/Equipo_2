@@ -4,7 +4,7 @@
 @section('page_title', 'Editar Regla del Sistema')
 
 @section('content')
-<div class="container px-3 px-md-5 mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-gavel mr-2"></i>Editar Regla del Sistema</div>

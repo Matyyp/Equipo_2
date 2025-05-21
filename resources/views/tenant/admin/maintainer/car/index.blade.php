@@ -4,7 +4,7 @@
 @section('page_title', 'Listado de Autos')
 
 @section('content')
-<div class="container-fluid mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-car mr-2"></i>Autos registrados</div>
@@ -41,8 +41,8 @@
                 </td>
                 <td class="text-center">
                   <a href="{{ route('autos.edit', ['auto' => $item['id']]) }}"
-                    class="btn btn-sm btn-outline-secondary" title="Editar">
-                    <i class="fas fa-edit"></i>
+                    class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                    <i class="fas fa-pen"></i>
                   </a>
                 </td>
               </tr>

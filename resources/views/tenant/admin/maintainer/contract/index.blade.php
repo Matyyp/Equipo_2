@@ -4,7 +4,7 @@
 @section('page_title', 'Contratos por Sucursal')
 
 @section('content')
-<div class="container-fluid mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex align-items-center">
       <i class="fas fa-file-contract mr-2"></i>Contratos disponibles para la sucursal
@@ -76,8 +76,8 @@
                 <td class="text-center">
                   @if($contrato)
                     <a href="{{ route('contratos.edit', $contrato['id_contract']) }}"
-                       class="btn btn-sm btn-outline-warning" title="Editar">
-                      <i class="fas fa-edit"></i> Editar
+                       class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                      <i class="fas fa-pen"></i> Editar
                     </a>
                   @else
                     <a href="{{ $hasContactInfo && $hasRules ? route('contratos.create', ['branch' => $branchId, 'type' => $key]) : '#' }}"

@@ -93,10 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
         searchable: false,
         render: function(id) {
           return `
-            <a href="/contrato/${id}/print" target="_blank" class="btn btn-sm btn-outline-secondary me-1" title="Contrato">
+            <a href="/contrato/${id}/print" target="_blank" class="btn btn-outline-secondary btn-sm text-dark" title="Contrato">
               <i class="fas fa-file-contract"></i>
             </a>
-            <a href="/ticket/${id}/print" class="btn btn-sm btn-outline-secondary" title="Ticket">
+            <a href="/ticket/${id}/print" class="btn btn-outline-secondary btn-sm text-dark" title="Ticket">
               <i class="fas fa-ticket-alt"></i>
             </a>
           `;

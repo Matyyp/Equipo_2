@@ -5,7 +5,7 @@
 @section('page_title', 'Editar Pago')
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <form method="POST" action="{{ route('payment.update', $payment->id_payment) }}">
     @csrf
     @method('PUT')

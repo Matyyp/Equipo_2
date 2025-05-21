@@ -2,7 +2,7 @@
 @extends('tenant.layouts.admin')
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <h3>Pagos Pendientes</h3>
 
   <table class="table table-hover">

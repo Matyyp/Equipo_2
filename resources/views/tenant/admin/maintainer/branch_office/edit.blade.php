@@ -9,7 +9,7 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <div class="card mb-4">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-edit mr-2"></i> Editar Sucursal</div>

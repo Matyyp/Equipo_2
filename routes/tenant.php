@@ -132,7 +132,6 @@ Route::middleware([
 
         Route::resource('estacionamiento', ParkingController::class);
         Route::post('/estacionamiento/{parking}/checkout', [ParkingController::class, 'checkout'])->name('estacionamiento.checkout');
-        Route::resource('estacionamiento', ParkingController::class);
         Route::get('/payment/{id}/voucher', [PaymentRecordController::class, 'downloadPdf'])->name('payment.record');
 
     });

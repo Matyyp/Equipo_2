@@ -4,7 +4,7 @@
 @section('page_title', 'Listado de Modelos de Autos')
 
 @section('content')
-<div class="container-fluid mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
       <div class="d-flex justify-content-between align-items-center w-100">
@@ -34,8 +34,8 @@
                 <td>{{ $model->name_model }}</td>
                 <td class="text-center">
                   <a href="{{ route('modelo.edit', $model->id_model) }}"
-                    class="btn btn-sm btn-outline-secondary" title="Editar">
-                    <i class="fas fa-edit"></i>
+                    class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                    <i class="fas fa-pen"></i>
                   </a>
                 </td>
               </tr>

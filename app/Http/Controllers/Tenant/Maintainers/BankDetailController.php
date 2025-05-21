@@ -31,8 +31,8 @@ class BankDetailController extends Controller
                 $editUrl = route('cuentas_bancarias.edit', $detail->id_bank_details);
 
                 return '
-                    <a href="' . $editUrl . '" class="btn btn-sm btn-outline-secondary me-1" title="Editar">
-                    <i class="fas fa-edit"></i>
+                    <a href="' . $editUrl . '" class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                    <i class="fas fa-pen"></i>
                     </a>
                 ';
             })

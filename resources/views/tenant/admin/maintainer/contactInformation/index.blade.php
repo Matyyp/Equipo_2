@@ -4,7 +4,7 @@
 @section('page_title', 'Listado de Información de Contacto')
 
 @section('content')
-<div class="container-fluid mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-address-book mr-2"></i>Contactos Registrados</div>
@@ -42,8 +42,8 @@
                   <td>{{ $item->data_contact }}</td>
                   <td class="text-center">
                     <a href="{{ route('informacion_contacto.edit', $item->id_contact_information) }}"
-                       class="btn btn-sm btn-outline-secondary" title="Editar">
-                      <i class="fas fa-edit"></i>
+                       class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                      <i class="fas fa-pen"></i>
                     </a>
                   </td>
                 </tr>

@@ -4,7 +4,7 @@
 @section('page_title', 'Listado de Empleados')
 
 @section('content')
-<div class="container-fluid mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-users mr-2"></i> Empleados asociados a la sucursal</div>

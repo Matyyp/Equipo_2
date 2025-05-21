@@ -17,8 +17,8 @@ class RegionController extends Controller
             return DataTables::of($regions)
                 ->addColumn('action', function ($region) {
                     return '
-                        <a href="' . route('region.edit', $region->id) . '" class="btn btn-sm btn-outline-secondary me-1" title="Editar">
-                            <i class="fas fa-edit"></i>
+                        <a href="' . route('region.edit', $region->id) . '" class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                            <i class="fas fa-pen"></i>
                         </a>
                     ';
                 })
