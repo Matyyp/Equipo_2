@@ -142,7 +142,7 @@ Route::middleware([
         Route::resource('lavados', CarWashController::class);
         Route::patch('lavados/{id}/disable', [CarWashController::class, 'disable'])->name('lavados.disable');
     
-        // 👉 Ruta AJAX para obtener tipos de lavado por sucursal
+        //Ruta AJAX para obtener tipos de lavado por sucursal
         Route::get('lavados-sucursal', [CarWashController::class, 'getByBranch'])->name('lavados.sucursal');
         Route::get('carwash/history', [CarWashController::class, 'history'])->name('carwash.history');
         Route::patch('carwash/marcar-lavado/{id}', [CarWashController::class, 'markAsWashed'])->name('carwash.markAsWashed');

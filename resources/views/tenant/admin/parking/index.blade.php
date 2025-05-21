@@ -64,7 +64,7 @@
               <th>Inicio</th>
               <th>Término</th>
               <th>Días</th>
-              <th>Lavado</th>
+              <th>Incluye lavado</th>
               <th>Precio Servicio</th>
               <th>Total</th>
               <th>Acciones</th>

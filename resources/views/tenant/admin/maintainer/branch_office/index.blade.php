@@ -54,10 +54,6 @@
                     <a href="{{ route('sucursales.show', $branch['id']) }}" class="btn btn-secondary btn-sm">
                       <i class="fas fa-cog"></i> Configuración
                     </a>
-                    <a href="{{ route('lavados.show', $branch['id']) }}" class="btn btn-info btn-sm mb-1">
-                      <i class="fas fa-soap"></i> Lavado de auto
-                    </a>
-
                   </td>
                 </tr>
               @endforeach

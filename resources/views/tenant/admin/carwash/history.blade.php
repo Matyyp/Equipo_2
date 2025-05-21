@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css" />
 <style>
-  #history-table th, #history-table td {
+  #wash-history-table th, #wash-history-table td {
     vertical-align: middle;
     white-space: nowrap;
   }
@@ -52,6 +52,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+  const csrfToken = @json(csrf_token());
+
   $(function() {
     const table = $('#wash-history-table').DataTable({
       responsive: true,
@@ -105,7 +107,7 @@
       }
     });
 
-    // SweetAlert2 para confirmar el cambio de estado
+    // SweetAlert para marcar como lavado
     $(document).on('click', '.marcar-lavado', function () {
       const id = $(this).data('id');
 
@@ -124,7 +126,7 @@
             url: `/carwash/marcar-lavado/${id}`,
             method: 'PATCH',
             headers: {
-  'X-CSRF-TOKEN': csrfToken
+              'X-CSRF-TOKEN': csrfToken
             },
             success: function (res) {
               Swal.fire({
@@ -148,8 +150,5 @@
       });
     });
   });
-</script>
-<script>
-  const csrfToken = @json(csrf_token());
 </script>
 @endpush

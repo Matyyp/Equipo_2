@@ -293,22 +293,37 @@ $('#wash_service').on('change', function () {
   const checked = $(this).is(':checked');
   const $group = $('#wash-type-group');
   const $select = $('#wash_type');
+  const branchId = $('#branch_office_id').val();
 
   if (checked) {
+    if (!branchId) {
+      alert('Primero debe seleccionar una sucursal.');
+      $(this).prop('checked', false);
+      return;
+    }
+
     $group.show();
-    $.get('{{ route("lavados.sucursal") }}', function (data) {
-      $select.empty().append('<option value="">Seleccione un tipo de lavado</option>');
-      data.forEach(item => {
-        $select.append(`<option value="${item.id_service}">${item.name}</option>`);
-      });
-    }).fail(() => {
-      alert('Error al cargar tipos de lavado.');
+    $.ajax({
+      url: '{{ route("lavados.sucursal") }}',
+      method: 'GET',
+      data: { id_branch_office: branchId },
+      success: function (data) {
+        $select.empty().append('<option value="">Seleccione un tipo de lavado</option>');
+        data.forEach(item => {
+          $select.append(`<option value="${item.id_service}">${item.name}</option>`);
+        });
+      },
+      error: function () {
+        alert('Error al cargar tipos de lavado.');
+      }
     });
   } else {
     $group.hide();
     $select.empty();
   }
 });
+
+
 
 
 
