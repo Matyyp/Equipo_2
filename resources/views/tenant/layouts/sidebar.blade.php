@@ -50,6 +50,14 @@
                                 <p>Historial</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('carwash.history') }}"
+                                class="nav-link {{ request()->routeIs('carwash.history') ? 'active' : '' }}">
+
+                                <p>Historial Lavado</p>
+                            </a>
+
+                        </li>
                     </ul>
                 </li>
                 @endcan

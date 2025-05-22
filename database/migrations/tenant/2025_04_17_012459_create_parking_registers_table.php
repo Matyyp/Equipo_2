@@ -21,6 +21,9 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->enum('status', ['paid', 'unpaid']);
+            $table->boolean('washed')->nullable();
+            $table->unsignedBigInteger('id_service')->nullable();
+            $table->foreign('id_service')->references('id_service')->on('car_washes')->onDelete('cascade');
             $table->timestamps();
 
         });

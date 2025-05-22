@@ -26,4 +26,8 @@ class CarWash extends Model
     {
         return $this->hasMany(Request::class, 'id_service', 'id_service');
     }
+    public function car_wash_parking_register()
+    {
+        return $this->hasMany(ParkingRegister::class, 'id_service', 'id_service');
+    }
 }

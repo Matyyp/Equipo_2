@@ -98,7 +98,6 @@ class ServiceController extends Controller
         $tipos = [
             'parking_daily'  => 'Estacionamiento Diario',
             'parking_annual' => 'Estacionamiento Anual',
-            'car_wash'       => 'Lavado de Autos',
             'rent'           => 'Arriendo',
         ];
 

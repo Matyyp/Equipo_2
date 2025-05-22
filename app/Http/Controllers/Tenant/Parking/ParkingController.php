@@ -43,37 +43,38 @@ class ParkingController extends Controller
         if ($request->ajax()) {
             $user = auth()->user();
 
-            $data = ParkingRegister::all()
-                ->filter(function ($reg) {
-                    $park = Park::find($reg->id_park);
-                    return $park && $park->status === 'parked';
-                })
-                ->map(function ($reg) use ($user) {
-                    $park = Park::find($reg->id_park);
-                    $car = $park?->park_car;
-                    $owner = $car?->car_belongs->first()?->belongs_owner;
-                    $brand = $car?->car_brand?->name_brand;
-                    $model = $car?->car_model?->name_model;
-                    $service = Service::with('service_branch_office')->find($park?->id_service);
-                    $branch = $service?->service_branch_office;
+        $data = ParkingRegister::all()
+            ->filter(function ($reg) {
+                $park = Park::find($reg->id_park);
+                return $park && $park->status === 'parked';
+            })
+            ->map(function ($reg) use ($user) {
+                $park = Park::find($reg->id_park);
+                $car = $park?->park_car;
+                $owner = $car?->car_belongs->first()?->belongs_owner;
+                $brand = $car?->car_brand?->name_brand;
+                $model = $car?->car_model?->name_model;
+                $service = Service::with('service_branch_office')->find($park?->id_service); 
+                $branch = $service?->service_branch_office;
 
                     if (!$service) return null;
 
-                    return [
-                        'owner_name'    => $owner?->name ?? '-',
-                        'patent'        => $car?->patent ?? '-',
-                        'brand_model'   => trim(($brand ?? '') . ' ' . ($model ?? '')),
-                        'start_date'    => $reg->start_date ? \Carbon\Carbon::parse($reg->start_date)->format('d-m-Y') : '[NULO]',
-                        'end_date'      => $reg->end_date ? \Carbon\Carbon::parse($reg->end_date)->format('d-m-Y') : '[NULO]',
-                        'days'          => $reg->days,
-                        'service_price' => number_format($service->price_net, 0, ',', '.'),
-                        'total_value'   => $reg->total_value,
-                        'total_formatted' => number_format($reg->total_value, 0, ',', '.'),
-                        'id_parking_register' => $reg->getKey(),
-                        'branch_name'   => $user->hasRole('SuperAdmin') ? $branch?->name_branch_offices ?? 'N/D' : null,
-                    ];
-                })
-                ->filter();
+                return [
+                    'owner_name'    => $owner?->name ?? '-',
+                    'patent'        => $car?->patent ?? '-',
+                    'brand_model'   => trim(($brand ?? '') . ' ' . ($model ?? '')),
+                    'start_date'    => $reg->start_date ? \Carbon\Carbon::parse($reg->start_date)->format('d-m-Y') : '[NULO]',
+                    'end_date'      => $reg->end_date ? \Carbon\Carbon::parse($reg->end_date)->format('d-m-Y') : '[NULO]',
+                    'days'          => $reg->days,
+                    'washed' => $reg->id_service !== null,
+                    'service_price' => number_format($service->price_net, 0, ',', '.'),
+                    'total_value'   => $reg->total_value,
+                    'total_formatted' => number_format($reg->total_value, 0, ',', '.'),
+                    'id_parking_register' => $reg->getKey(),
+                    'branch_name'   => $user->hasRole('SuperAdmin') ? $branch?->name_branch_offices ?? 'N/D' : null,
+                ];
+            })
+            ->filter();
 
             return DataTables::of($data)->toJson();
         }
@@ -246,6 +247,7 @@ class ParkingController extends Controller
             'brand_name'   => 'required|string|max:100',
             'model_name'   => 'required|string|max:100',
             'service_id'   => 'required|exists:services,id_service',
+            'wash_type'    => 'nullable|exists:services,id_service',
         ]);
     
         $brandName = Str::title(trim($data['brand_name']));
@@ -293,8 +295,10 @@ class ParkingController extends Controller
             'km_exit'      => $data['km_exit'] ?? null,
             'days'         => $days,
             'total_value'  => $total,
-            'id_park'      => $park->id,
-            'status'       => 'unpaid'
+            'id_park'      => $park->id,    
+            'status'       => 'unpaid',
+            'washed'       => '0',
+            'id_service'   => $request->input('wash_type'),
         ]);
     
         Register::create([
@@ -329,148 +333,177 @@ class ParkingController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit($id)
-    {
-        $user = auth()->user();
+{
+    $user = auth()->user();
 
-        // 1. Obtener el registro de ingreso
-        $parking = ParkingRegister::findOrFail($id);
+    $parking = ParkingRegister::findOrFail($id);
 
-        // 2. Obtener el parqueo (park) asociado
-        $park = Park::with([
-            'park_car.car_belongs.belongs_owner',
-            'park_car.car_brand',
-            'park_car.car_model',
-        ])->find($parking->id_park);
+    $park = Park::with([
+        'park_car.car_belongs.belongs_owner',
+        'park_car.car_brand',
+        'park_car.car_model',
+    ])->find($parking->id_park);
 
-        if (!$park) {
-            abort(404, 'No se encontró el parque asociado al registro.');
-        }
-
-        $car = $park->park_car;
-        $brands = optional($car->car_brand)->name_brand ?? 'Sin marca';
-        $models = optional($car->car_model)->name_model ?? 'Sin modelo';
-        $owner = optional($car->car_belongs->first())->belongs_owner ?? null;
-
-        // Servicio actual
-        $service = Service::find($park->id_service);
-
-        // Consulta base para obtener servicios disponibles
-        $query = Service::with('service_branch_office.branch_office_contract')
-            ->whereIn('type_service', ['parking_daily', 'parking_annual'])
-            ->where('status', 'available');
-
-        // Si no es SuperAdmin, filtrar por sucursal del park
-        if (!$user->hasRole('SuperAdmin')) {
-            $query->where('id_branch_office', $park->id_branch_office);
-        }
-
-        $parkingServices = $query->get();
-
-        // Verificar si al menos uno tiene contrato activo
-        $hasContract = false;
-        foreach ($parkingServices as $svc) {
-            $contract = $svc->service_branch_office->branch_office_contract->first();
-
-            if ($contract) {
-                $exists = $svc->type_service === 'parking_daily'
-                    ? \App\Models\DailyContract::where('id_contract', $contract->id_contract)->exists()
-                    : \App\Models\AnnualContract::where('id_contract', $contract->id_contract)->exists();
-
-                if ($exists) {
-                    $hasContract = true;
-                    break;
-                }
-            }
-        }
-
-        // Solo SuperAdmin puede elegir sucursal
-        $branches = $user->hasRole('SuperAdmin')
-            ? BranchOffice::where('status', 'active')->get()
-            : [];
-
-        return view('tenant.admin.parking.edit', compact(
-            'parking', 'car', 'owner', 'service', 'brands', 'models',
-            'parkingServices', 'branches', 'hasContract'
-        ));
+    if (!$park) {
+        abort(404, 'No se encontró el parque asociado al registro.');
     }
 
+    $car = $park->park_car;
+    $brands = optional($car->car_brand)->name_brand ?? 'Sin marca';
+    $models = optional($car->car_model)->name_model ?? 'Sin modelo';
+    $owner = optional($car->car_belongs->first())->belongs_owner ?? null;
 
+    $service = Service::find($park->id_service);
+
+    // Consulta base para servicios de estacionamiento
+    $query = Service::with('service_branch_office.branch_office_contract')
+        ->whereIn('type_service', ['parking_daily', 'parking_annual'])
+        ->where('status', 'available');
+
+    // SuperAdmin puede ver todos, otros solo su sucursal
+    if (!$user->hasRole('SuperAdmin')) {
+        $query->where('id_branch_office', $park->id_branch_office);
+    }
+
+    $parkingServices = $query->get();
+
+    // Verifica si hay al menos un contrato activo
+    $hasContract = false;
+    foreach ($parkingServices as $svc) {
+        $contract = $svc->service_branch_office->branch_office_contract->first();
+
+        if ($contract) {
+            $exists = $svc->type_service === 'parking_daily'
+                ? \App\Models\DailyContract::where('id_contract', $contract->id_contract)->exists()
+                : \App\Models\AnnualContract::where('id_contract', $contract->id_contract)->exists();
+
+            if ($exists) {
+                $hasContract = true;
+                break;
+            }
+        }
+    }
+
+    // Lavados disponibles
+    $carWashServices = Service::where('type_service', 'car_wash')
+        ->where('status', 'available')
+        ->where('id_branch_office', $park->id_branch_office)
+        ->get();
+
+    // Verificar si ya hay un lavado asignado
+    $lavadoAsignado = null;
+    if ($parking->id_service) {
+        $lavado = Service::find($parking->id_service);
+        if ($lavado && $lavado->type_service === 'car_wash') {
+            $lavadoAsignado = $lavado->id_service;
+        }
+    }
+
+    // SuperAdmin puede seleccionar sucursal
+    $branches = $user->hasRole('SuperAdmin')
+        ? BranchOffice::where('status', 'active')->get()
+        : [];
+
+    return view('tenant.admin.parking.edit', compact(
+        'parking', 'car', 'owner', 'service', 'brands', 'models',
+        'parkingServices', 'carWashServices', 'lavadoAsignado',
+        'branches', 'hasContract'
+    ));
+}
 
 
 
     /**
      * Update the specified resource in storage.
      */
-public function update(Request $request, $id)
+    public function update(Request $request, $id)
 {
     $user = auth()->user();
 
     $data = $request->validate([
-        'plate'          => 'required|string|max:8',
-        'name'           => 'required|string|max:255',
-        'phone'          => 'required|string|max:9',
-        'start_date'     => 'required|date',
-        'end_date'       => 'required|date|after_or_equal:start_date',
-        'arrival_km'     => 'nullable|integer|min:0',
-        'km_exit'        => 'nullable|integer|min:0',
-        'brand_name'     => 'required|string|max:255',
-        'model_name'     => 'required|string|max:255',
-        'wash_service'   => 'nullable|boolean',
-        'service_id'     => 'required|exists:services,id_service',
+        'plate'            => 'required|string|max:8',
+        'name'             => 'required|string|max:255',
+        'phone'            => 'required|string|max:9',
+        'start_date'       => 'required|date',
+        'end_date'         => 'required|date|after_or_equal:start_date',
+        'arrival_km'       => 'nullable|integer|min:0',
+        'km_exit'          => 'nullable|integer|min:0',
+        'brand_name'       => 'required|string|max:255',
+        'model_name'       => 'required|string|max:255',
+        'wash_type'        => 'nullable|exists:services,id_service',
+        'wash_service'     => 'nullable|boolean',
+        'service_id'       => 'required|exists:services,id_service',
         'branch_office_id' => 'nullable|exists:branch_offices,id_branch',
     ]);
 
-    DB::transaction(function () use ($data, $id, $user) {
+    DB::transaction(function () use ($data, $id, $user, $request) {
         $parking = ParkingRegister::findOrFail($id);
         $park = Park::with('park_car.car_belongs.belongs_owner')->findOrFail($parking->id_park);
         $car = $park->park_car;
         $owner = $car->car_belongs->first()->belongs_owner;
 
+        // Actualizar dueño
         $owner->update([
             'name' => $data['name'],
             'number_phone' => $data['phone']
         ]);
 
         // Marca
-        $brand = Brand::firstOrCreate(
-            ['name_brand' => Str::title($data['brand_name'])]
-        );
+        $brand = Brand::firstOrCreate([
+            'name_brand' => Str::title($data['brand_name'])
+        ]);
         $car->id_brand = $brand->id_brand;
 
         // Modelo
-        $model = ModelCar::firstOrCreate(
-            ['name_model' => Str::title($data['model_name'])]
-        );
+        $model = ModelCar::firstOrCreate([
+            'name_model' => Str::title($data['model_name'])
+        ]);
         $car->id_model = $model->id_model;
 
         $car->save();
 
-        // Si el usuario es SuperAdmin, puede cambiar el servicio
+        // Si es SuperAdmin, puede cambiar el tipo de estacionamiento
         if ($user->hasRole('SuperAdmin')) {
             $park->id_service = $data['service_id'];
             $park->save();
         }
 
-        $start = Carbon::parse($data['start_date']);
-        $end = Carbon::parse($data['end_date']);
-        $days = $start->diffInDays($end) + 1;
+        $startDate = Carbon::parse($data['start_date']);
+        $endDate   = Carbon::parse($data['end_date']);
+        $days      = $startDate->diffInDays($endDate) + 1;
 
         $service = Service::find($park->id_service);
-        $total = $days * $service->price_net;
+        $total   = $days * ($service?->price_net ?? 0);
+
+        // Asignar lavado si fue solicitado
+        $washServiceId = null;
+        $washServiceInput = $request->input('wash_service');
+        $washTypeInput = $request->input('wash_type');
+
+        if ($washServiceInput && $washTypeInput) {
+            $selectedWash = Service::find($washTypeInput);
+            if ($selectedWash && $selectedWash->type_service === 'car_wash') {
+                $washServiceId = $selectedWash->id_service;
+            }
+        }
+
 
         $parking->update([
-            'start_date'    => $start,
-            'end_date'      => $end,
-            'arrival_km'    => $data['arrival_km'] ?? null,
-            'km_exit'       => $data['km_exit'] ?? null,
-            'days'          => $days,
-            'total_value'   => $total,
-            //'wash_service'  => $request->has('wash_service')
+            'start_date'   => $startDate,
+            'end_date'     => $endDate,
+            'arrival_km'   => $data['arrival_km'] ?? null,
+            'km_exit'      => $data['km_exit'] ?? null,
+            'days'         => $days,
+            'total_value'  => $total,
+            'washed' => $washServiceId ? false : null,// no marcar como lavado aún
+            'id_service'   => $washServiceId,    // puede ser null si no hay lavado
         ]);
     });
 
     return redirect()->route('estacionamiento.index')->with('success', 'Registro actualizado correctamente.');
 }
+
+
 
 public function history(Request $request)
 {
@@ -516,8 +549,10 @@ public function history(Request $request)
                 'total_value'         => $reg->total_value ?? 0,
                 'id_parking_register' => $register->id_parking_register,
                 'branch_name'         => $user->hasRole('SuperAdmin') ? $branch?->name_branch_offices ?? 'N/D' : null,
+                'washed' => $reg?->id_service !== null,
             ];
         })->filter()->values();
+               
 
         return response()->json(['data' => $rows]);
     }

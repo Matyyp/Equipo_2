@@ -26,6 +26,7 @@ use App\Http\Controllers\Tenant\Parking\ParkingController;
 use App\Http\Controllers\Tenant\Maintainers\PaymentRecordController;
 use App\Http\Controllers\Tenant\Maintainers\BankDetailController;
 use App\Http\Controllers\Tenant\Dashboard\DashboardController;
+use App\Http\Controllers\Tenant\CarWash\CarWashController;
 use App\Http\Controllers\Tenant\Maintainers\WorkerController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\RentalCarController;
@@ -135,6 +136,18 @@ Route::middleware([
         Route::get('/payment/{id}/voucher', [PaymentRecordController::class, 'downloadPdf'])->name('payment.record');
 
     });
+    // módulo lavado
+    Route::middleware(['auth', 'permission:carwash.access'])->group(function () {
+        Route::resource('lavados', CarWashController::class);
+        Route::patch('lavados/{id}/disable', [CarWashController::class, 'disable'])->name('lavados.disable');
+    
+        //Ruta AJAX para obtener tipos de lavado por sucursal
+        Route::get('lavados-sucursal', [CarWashController::class, 'getByBranch'])->name('lavados.sucursal');
+        Route::get('carwash/history', [CarWashController::class, 'history'])->name('carwash.history');
+        Route::patch('carwash/marcar-lavado/{id}', [CarWashController::class, 'markAsWashed'])->name('carwash.markAsWashed');
+    });
+
+
     // Modulo ventas
     Route::middleware(['auth', 'permission:ventas.access'])->group(function () {
         Route::resource('pagos', PaymentRecordController::class)->names('payment');
