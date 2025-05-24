@@ -12,8 +12,8 @@
     @media screen {
         body {
             margin: 10px;
-            margin-top:0px;
-            margin-bottom:0px;
+            margin-top: 0px;
+            margin-bottom: 0px;
         }
     }
 
@@ -82,6 +82,14 @@
         margin-bottom: 20px;
     }
 
+    .footer-pagina1 {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        font-size: 12px;
+        text-align: center;
+    }
+
     @media print {
         @page {
             margin: 0;
@@ -92,6 +100,7 @@
             height: 100%;
             margin: 0 !important;
             padding: 0 !important;
+            position: relative;
         }
 
         .logo-top {
@@ -117,22 +126,18 @@
             page-break-before: always;
         }
 
-        .titulo,
-        .linea-gruesa,
-        .subtitulo,
-        table,
-        .firmas {
-            margin-top: 100px;
+        .footer-pagina1 {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
         }
     }
     </style>
-
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </head>
 <body>
 
 <div class="logo-top">
-    <img src="file://{{ $url_logo }}" alt="Logo Empresa">
+    <img src="{{ $url_logo }}" alt="Logo Empresa" style="height: 180px; width: auto;">
 </div>
 
 <div class="titulo">
@@ -163,12 +168,12 @@
         <td colspan="2" rowspan="3"></td>
     </tr>
     <tr>
-        <td class="espaciado-horizontal">KM. AL LLEGAR:</td>
-        <td></td>
+        <td class="espaciado-horizontal">KM. AL LLEGAR: </td>
+        <td>{{$km_arrival}}</td>
     </tr>
     <tr>
-        <td class="espaciado-horizontal">KM. SALIDA:</td>
-        <td></td>
+        <td class="espaciado-horizontal">KM. SALIDA: </td>
+        <td>{{$km_exit}}</td>
     </tr>
     <tr>
         <td colspan="2" style="padding: 8px;">
@@ -202,18 +207,28 @@
         <td colspan="2">VALOR DIARIO</td>
         <td colspan="2">{{ '$' . number_format($valor_estacionamiento, 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span></td>
     </tr>
+
+    @if($servicio_lavado)
     <tr>
-        <td colspan="2">LAVADO AUTO</td>
-        <td colspan="2">{{ '$' . number_format(20000, 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span></td>
+        <td colspan="2">{{ strtoupper($servicio_lavado['nombre']) }}</td>
+        <td colspan="2">{{ '$' . number_format($servicio_lavado['precio'], 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span></td>
     </tr>
+    @endif
+
     <tr>
-        <td colspan="2">LAVADO STATION MEDIANO</td>
-        <td colspan="2">{{ '$' . number_format(25000, 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span></td>
+        <td colspan="4">
+            <div style="font-weight: bold; text-align: center; margin-bottom: 6px;">SERVICIOS EXTRA</div>
+            @if($servicios_extra && count($servicios_extra) > 0)
+                @foreach($servicios_extra as $servicio)
+                    <span style="font-weight: bold;">{{ strtoupper($servicio['nombre']) }} - </span>
+                    ${{ number_format($servicio['precio'], 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span> |
+                @endforeach
+            @else
+                No hay servicios extra
+            @endif
+        </td>
     </tr>
-    <tr>
-        <td colspan="2">LAVADO CAMIONETAS, VEHÍCULOS GRANDES Y/O LIMPIEZA MAYOR</td>
-        <td colspan="2">{{ '$' . number_format(30000, 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span></td>
-    </tr>
+
     <tr>
         <td colspan="4" style="text-align: center; padding: 14px;">
             <span style="color: red; font-weight: bold; font-size: 22px; text-transform: uppercase;">
@@ -223,37 +238,39 @@
     </tr>
 </table>
 
-<div style="text-align: center; font-weight: bold; font-size: 12px; margin-top: 0px; margin-bottom: 8px;">
+<div style="text-align: center; font-weight: bold; font-size: 12px; margin: 0 0 8px 0;">
     EL PAGO POR CUSTODIA PRIVADO, SE PUEDE REALIZAR MEDIANTE TARJETA CRÉDITO (SIN CUOTAS),<br>
     DÉBITO, EFECTIVO Y/O TRANSFERENCIAS, SOLO SE EXTENDERÁN BOLETAS DE VENTA.
 </div>
 
-<div style="height: 1px; background-color: black; width: 100%; margin: 8px 0;"></div>
+<div class="footer-pagina1">
+    <div style="height: 1px; background-color: black; width: 100%; margin: 8px 0;"></div>
 
-<table style="width: 100%; font-size: 10px; margin-bottom: 0; text-align: justify;">
-    <tr>
-        <td style="width: 20%; border: none; padding-right: 10px; padding-top: 4px; text-transform: uppercase;">
-            Declaro conocer y acepto en todas sus partes las estipulaciones del presente contrato contenidas en este documento.
-        </td>
-        <td style="width: 20%; border: none; padding-left: 10px; padding-top: 4px; text-transform: uppercase;">
-            Los daños que tenga un vehículo al ingreso en custodia privada no son responsabilidad del arrendador, al igual si existiese ruedas con neumáticos pinchados u otro daño.
-        </td>
-    </tr>
-</table>
+    <table style="width: 100%; font-size: 10px; margin-bottom: 0; text-align: justify;">
+        <tr>
+            <td style="width: 50%; border: none; padding-right: 10px; padding-top: 4px; text-transform: uppercase;">
+                Declaro conocer y acepto en todas sus partes las estipulaciones del presente contrato contenidas en este documento.
+            </td>
+            <td style="width: 50%; border: none; padding-left: 10px; padding-top: 4px; text-transform: uppercase;">
+                Los daños que tenga un vehículo al ingreso en custodia privada no son responsabilidad del arrendador, al igual si existiese ruedas con neumáticos pinchados u otro daño.
+            </td>
+        </tr>
+    </table>
 
-<div style="height: 1px; background-color: black; width: 100%; margin: 8px 0;"></div>
+    <div style="height: 1px; background-color: black; width: 100%; margin: 8px 0;"></div>
 
-<table style="width: 100%; font-size: 12px; text-align: center; border: none; margin-top: 50px;">
-    <tr>
-        <td style="width: 45%; border: none; border-top: 1px solid black; padding-top: 6px; font-weight: bold;">
-            NOMBRE, FIRMA Y RUT DEL ARRENDADO
-        </td>
-        <td style="width: 10%; border: none;"></td>
-        <td style="width: 45%; border: none; border-top: 1px solid black; padding-top: 6px; font-weight: bold;">
-            NOMBRE, FIRMA Y RUT DEL ARRENDATARIO
-        </td>
-    </tr>
-</table>
+    <table style="width: 100%; font-size: 12px; text-align: center; border: none; margin-top: 40px;">
+        <tr>
+            <td style="width: 45%; border: none; border-top: 1px solid black; padding-top: 6px; font-weight: bold;">
+                NOMBRE, FIRMA Y RUT DEL ARRENDADO
+            </td>
+            <td style="width: 10%; border: none;"></td>
+            <td style="width: 45%; border: none; border-top: 1px solid black; padding-top: 6px; font-weight: bold;">
+                NOMBRE, FIRMA Y RUT DEL ARRENDATARIO
+            </td>
+        </tr>
+    </table>
+</div>
 
 <div class="page-break"></div>
 
@@ -261,7 +278,7 @@
 
     <div style="border: 1px solid black; padding: 10px; font-size: 12px; text-align: justify; text-transform: uppercase;">
         <span style="color: red; font-weight: bold;">NOTA IMPORTANTE:</span>
-        “Toda garantía por daños que pueda producirse mientras el vehículo indicado precedentemente, esté en el recinto Calle {{ $direccion_sucursal }}, se perderá en forma inmediata, desde el momento en que el dueño o titular del vehículo en custodia privada, facilite dicho vehículo a un tercero, siendo este familiar, amigo u otra condición”
+        "Toda garantía por daños que pueda producirse mientras el vehículo indicado precedentemente, esté en el recinto Calle {{ $direccion_sucursal }}, se perderá en forma inmediata, desde el momento en que el dueño o titular del vehículo en custodia privada, facilite dicho vehículo a un tercero, siendo este familiar, amigo u otra condición"
     </div>
 
     <div style="font-weight: bold; text-transform: uppercase; font-size: 14px; margin-top: 10px; text-align: center;">
@@ -270,7 +287,6 @@
 
     <div style="height: 2px; background-color: black; width: 100%; margin: 4px 0;"></div>
 
-    {{-- REGLAS CON ESTILO APLICADO --}}
     <div style="font-size: 13px; margin-top: 10px; text-transform: uppercase; font-weight: bold;">
         @foreach($reglas as $i => $regla)
             <p>{{ $i + 1 }}. {{ $regla->description }}</p>
@@ -286,16 +302,15 @@
                     <img src="file://{{ $url_logo }}" alt="Logo Empresa" style="max-height: 200px;">
                 </td>
                 <td style="width: 0%; vertical-align: top; border: none; text-align: right;">
-                    <div style="font-weight: bold; font-size: 14px;">{{ $dueño }}</div>
-                    <div style="margin-top: 2px;">RUT: {{ $rut }}</div>
                     <div style="height: 1px; background-color: black; width: 100%; margin: 6px 0;"></div>
                     <div style="margin-top: 6px; font-weight: bold;">DIRECCIÓN DE SUCURSAL</div>
                     <div style="margin-top: 4px;">{{ $direccion_sucursal }}</div>
                     <div style="height: 1px; background-color: black; width: 100%; margin: 6px 0;"></div>
                     <div style="margin-top: 6px; font-weight: bold;">Datos de contacto</div>
                     @foreach($datos_contacto as $contacto)
-                        <p>{{ $contacto->type_contact }}: {{ $contacto->data_contact }}</p>
+                    <p>{{ $contacto['tipo'] }}: {{ $contacto['dato'] }}</p>
                     @endforeach
+
                 </td>
             </tr>
         </table>

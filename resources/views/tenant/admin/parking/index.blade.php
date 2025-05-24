@@ -6,12 +6,48 @@
 @push('styles')
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <style>
     /* 🔧 Solución al conflicto de superposición del overlay */
     #sidebar-overlay {
         pointer-events: none !important;
         background: transparent !important;
     }
+/* Estilos para mejorar la apariencia */
+/* Estilos para el select y la lista */
+#serviceSelect {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    background-color: white;
+    cursor: pointer;
+}
+
+#serviceSelect option {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+#serviceSelect option:hover {
+    background-color: #f8f9fa;
+}
+
+#selectedServicesList {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.remove-service {
+    padding: 0.15rem 0.35rem;
+    line-height: 1;
+}
+
+#extraServicesTotal {
+    font-size: 1.2rem;
+    color: #28a745;
+}
   </style>
 @endpush
 
@@ -81,38 +117,139 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="extraServicesModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Servicios Adicionales</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="extraServicesForm">
+          @csrf
+          <input type="hidden" name="register_id" id="extra-services-register-id">
+          
+          <!-- Selector de servicios -->
+          <div class="form-group">
+            <label class="font-weight-bold">Seleccione servicios:</label>
+            <select class="form-control" id="serviceSelect" size="5">
+              <!-- Opciones se cargarán dinámicamente -->
+            </select>
+          </div>
+
+          <!-- Lista de servicios seleccionados -->
+          <div class="border rounded p-2 mb-3 bg-light">
+            <label class="font-weight-bold">Servicios seleccionados:</label>
+            <div id="selectedServicesList" style="min-height: 100px; max-height: 200px; overflow-y: auto;">
+              <div class="text-muted text-center py-4">No hay servicios seleccionados</div>
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="text-right border-top pt-2">
+            <span class="font-weight-bold">Total adicional:</span>
+            <span id="extraServicesTotal" class="font-weight-bold text-success ml-2">$0</span>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" id="saveExtraServices" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal de Check-Out -->
 <div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <form id="checkout-form" method="POST">
       @csrf
       <input type="hidden" name="id_parking_register" id="checkout-id">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="checkoutModalLabel">Confirmar Check-Out</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="checkoutModalLabel">
+            <i class="fas fa-door-open mr-2"></i>Confirmar Check-Out
+          </h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
+        
         <div class="modal-body">
-          <div class="mb-3">
-            <label for="checkout-total" class="form-label">Total a pagar</label>
-            <input type="text" id="checkout-total" class="form-control" readonly>
-          </div>
-          <div class="mb-3">
-            <label for="payment-method" class="form-label">Método de pago</label>
-            <select name="type_payment" id="payment-method" class="form-control" required>
-              <option value="">— Selecciona —</option>
-              <option value="efectivo">Efectivo</option>
-              <option value="tarjeta">Tarjeta</option>
-              <option value="transferencia">Transferencia</option>
-            </select>
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card mb-4">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0">
+                    <i class="fas fa-list-check mr-2"></i>Detalles del Servicio
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="font-weight-bold">Servicios incluidos:</label>
+                    <div class="table-responsive">
+                      <table class="table table-sm table-hover mb-0">
+                        <thead class="bg-light">
+                          <tr>
+                            <th>Servicio</th>
+                            <th class="text-right">Precio</th>
+                            <th class="text-right">Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody id="services-list">
+                          <!-- Los servicios se cargarán aquí dinámicamente -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="card mb-4">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0">
+                    <i class="fas fa-money-bill-wave mr-2"></i>Pago
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label for="checkout-total" class="font-weight-bold">Total a pagar:</label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                      </div>
+                      <input type="text" id="checkout-total" class="form-control form-control-lg font-weight-bold text-success" readonly>
+                    </div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="payment-method" class="font-weight-bold">Método de pago:</label>
+                    <select name="type_payment" id="payment-method" class="form-control" required>
+                      <option value="">— Seleccione método —</option>
+                      <option value="efectivo">Efectivo</option>
+                      <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                      <option value="transferencia">Transferencia Bancaria</option>
+                      <option value="otro">Otro</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-success">Confirmar Check-Out</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <i class="fas fa-times mr-1"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-check-circle mr-1"></i> Confirmar Check-Out
+          </button>
         </div>
       </div>
     </form>
@@ -121,116 +258,521 @@
 @endsection
 
 @push('scripts')
+<!-- Dependencias -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
 
+<!-- CSRF token para AJAX -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <script>
-  $(function() {
-    const table = $('#parking-table').DataTable({
-      responsive: true,
-      processing: true,
-      serverSide: true,
-      ajax: {
-        url: '{{ route("estacionamiento.index") }}',
-        dataSrc: 'data',
-        error: function(xhr, error, thrown) {
-          console.error('AJAX Error:', xhr.status, thrown);
-          alert(`Error cargando datos: ${xhr.status} – ${thrown}`);
-        }
-      },
-      columns: [
-        @role('SuperAdmin')
-          { data: 'branch_name', title: 'Sucursal' },
-        @endrole
-        { data: 'owner_name' },
-        { data: 'patent' },
-        { data: 'brand_model' },
-        { data: 'start_date' },
-        { data: 'end_date' },
-        { data: 'days' },
-        { 
-          data: 'washed',
-          render: function(data) {
-            return data 
-              ? '<span class="">Sí</span>' 
-              : '<span class="">No</span>';
-          }
-        },
-        { data: 'service_price' },
-        { data: 'total_formatted' },
-        {
-          data: null,
-          orderable: false,
-          searchable: false,
-          render: function(row) {
-            return `
-              <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-outline-secondary btn-sm text-dark" title="Contrato">
-                <i class="fas fa-file-contract"></i>
-              </a>
-              <a href="/ticket/${row.id_parking_register}/print" class="btn btn-outline-secondary btn-sm text-dark" title="Ticket">
-                <i class="fas fa-ticket-alt"></i>
-              </a>
-              <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
-                <i class="fas fa-pen"></i>
-              </a>
-              <button 
-                class="btn btn-outline-secondary btn-sm text-dark btn-checkout" 
-                title="Check-Out"
-                data-id="${row.id_parking_register}"
-                data-total="${row.total_value}"
-              >
-                <i class="fas fa-door-open"></i>
-              </button>
-            `;
-          }
-        }
-      ],
-      order: [[3, 'desc']],
-      language: {
-        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-      }
-    });
-
-    $('#parking-table').on('click', '.btn-checkout', function() {
-      const id = $(this).data('id');
-      const total = $(this).data('total');
-
-      $('#checkout-form').attr('action', `/estacionamiento/${id}/checkout`);
-      $('#checkout-id').val(id);
-      $('#checkout-total').val(
-        new Intl.NumberFormat('es-CL').format(total)
-      );
-      $('#checkoutModal').modal('show');
-    });
-  });
+// Configuración inicial
+const userIsSuperAdmin = @json(auth()->check() && auth()->user()->hasRole('SuperAdmin'));
+let currentRegisterBranchId = null;
 </script>
-@endpush
-@push('scripts')
+
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // Oculta completamente el overlay si existe
-    const overlay = document.getElementById('sidebar-overlay');
-    if (overlay) {
-      overlay.style.display = 'none';
-      overlay.remove(); // Elimina si es seguro
+$(function () {
+    const table = $('#parking-table').DataTable({
+        responsive: true,
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("estacionamiento.index") }}',
+            dataSrc: 'data',
+            error: function (xhr, error, thrown) {
+                alert(`Error cargando datos: ${xhr.status} – ${thrown}`);
+            }
+        },
+        columns: [
+            @role('SuperAdmin')
+                { data: 'branch_name', title: 'Sucursal' },
+            @endrole
+            { data: 'owner_name' },
+            { data: 'patent' },
+            { data: 'brand_model' },
+            { data: 'start_date' },
+            { data: 'end_date' },
+            { data: 'days' },
+            { 
+                data: 'washed',
+                render: function(data) {
+                    return data ? '<span class="badge badge-success">Sí</span>' : '<span class="badge badge-secondary">No</span>';
+                }
+            },
+            { data: 'service_price' },
+            { 
+                data: 'total_formatted',
+                render: function(data, type, row) {
+                    return `<span class="font-weight-bold">$${data}</span>`;
+                }
+            },
+            {
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function(row) {
+                    return `
+                        <div >
+                            <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-sm btn-outline-secondary" title="Contrato">
+                                <i class="fas fa-file-contract"></i>
+                            </a>
+                            <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-secondary" title="Ticket">
+                                <i class="fas fa-ticket-alt"></i>
+                            </a>
+                            <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-secondary" title="Editar">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <button class="btn btn-sm btn-outline-primary btn-checkout" 
+                                title="Check-Out"
+                                data-id="${row.id_parking_register}"
+                                data-total="${row.total_value}"
+                                data-row='${JSON.stringify(row)}'>
+                                <i class="fas fa-door-open"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-info btn-extra-services" 
+                                title="Servicios Extra"
+                                data-id="${row.id_parking_register}"
+                                data-row='${JSON.stringify(row)}'>
+                                <i class="fas fa-plus-circle"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        ],
+        order: [[4, 'desc']],
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        }
+    });
+
+    let currentRowData = null;
+    let currentRowNode = null;
+
+    // Modal de Checkout
+    $('#parking-table').on('click', '.btn-checkout', function () {
+        const row = $(this).data('row');
+        currentRowData = row;
+        currentRowNode = table.row($(this).closest('tr'));
+
+        $('#checkout-form').attr('action', `/estacionamiento/${row.id_parking_register}/checkout`);
+        $('#checkout-id').val(row.id_parking_register);
+        
+        $('#checkout-total').val(new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP'
+        }).format(row.total_value).replace('CLP', '').trim());
+
+        renderCheckoutServices(row);
+
+        if (row.washed && !row.washed_done && row.car_wash_service) {
+            $('#lavado-container').removeClass('d-none');
+            $('#confirmar-lavado-btn').data('id', row.id_parking_register)
+                                    .data('price', row.car_wash_service.price);
+        } else {
+            $('#lavado-container').addClass('d-none');
+        }
+
+        $('#checkoutModal').modal('show');
+    });
+
+    function renderCheckoutServices(row) {
+        let html = '';
+        
+        // Servicio principal
+        html += `
+            <tr>
+                <td>Estacionamiento (${row.days} días)</td>
+                <td class="text-right">$${row.service_price}</td>
+                <td class="text-right"></td>
+            </tr>
+        `;
+
+        // Servicio de lavado si aplica
+        if (row.washed && row.car_wash_service) {
+            html += `
+                <tr class="${row.washed_done ? '' : 'table-warning'}">
+                    <td>${row.car_wash_service.name}</td>
+                    <td class="text-right">$${row.car_wash_service.price.toLocaleString('es-CL')}</td>
+                    <td class="text-right">
+                        ${row.washed_done ? '' : `
+                            <button type="button" class="btn btn-sm btn-success btn-mark-washed" 
+                                data-id="${row.id_parking_register}" 
+                                data-price="${row.car_wash_service.price}">
+                                <i class="fas fa-check"></i> Confirmar
+                            </button>
+                        `}
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Servicios adicionales
+        if (row.addons && row.addons.length > 0) {
+            row.addons.forEach(addon => {
+                html += `
+                    <tr>
+                        <td>${addon.name}</td>
+                        <td class="text-right">$${addon.price.toLocaleString('es-CL')}</td>
+                        <td class="text-right">
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-addon" 
+                                    data-id="${addon.id_add}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        $('#services-list').html(html);
     }
 
-    // Asegura que el menú dropdown funcione
-    $('.user-menu > a').on('click', function (e) {
-      e.preventDefault();
-      $(this).siblings('.dropdown-menu').toggle();
+    // Eliminar servicio adicional - Versión mejorada
+    $(document).on('click', '.btn-remove-addon', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const btn = $(this);
+        const addonId = btn.data('id');
+        const registerId = $('#checkout-id').val();
+        const tr = btn.closest('tr');
+        const priceText = tr.find('td:nth-child(2)').text().replace('$', '').replace(/\./g, '');
+        const price = parseFloat(priceText) || 0;
+
+
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+        $.ajax({
+            url: `/estacionamiento/extra/${addonId}`,
+            type: 'DELETE',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                register_id: registerId
+            },
+            success: function(response) {
+                toastr.success(response.message);
+                
+                // 1. Eliminar visualmente la fila
+                tr.fadeOut(300, function() {
+                    $(this).remove();
+                    
+                    // 2. Actualizar el total
+                    const currentTotalText = $('#checkout-total').val().replace('$', '').replace(/\./g, '');
+                    const currentTotal = parseFloat(currentTotalText) || 0;
+                    const newTotal = currentTotal - price;
+                    
+                    $('#checkout-total').val(
+                        new Intl.NumberFormat('es-CL', {
+                            style: 'currency',
+                            currency: 'CLP'
+                        }).format(newTotal)
+                        .replace('CLP', '')
+                        .trim()
+                    );
+                    
+                    // 3. Actualizar los datos del botón checkout
+                    if (currentRowData) {
+                        currentRowData.addons = currentRowData.addons.filter(a => a.id_add !== addonId);
+                        currentRowData.total_value = newTotal;
+                        $(`.btn-checkout[data-id="${registerId}"]`)
+                            .data('total', newTotal)
+                            .data('row', JSON.stringify(currentRowData));
+                    }
+                    
+                    btn.prop('disabled', false);
+                });
+            },
+            error: function(xhr) {
+                toastr.error(xhr.responseJSON?.message || 'Error al eliminar servicio');
+                btn.prop('disabled', false).html('<i class="fas fa-trash"></i>');
+            }
+        });
     });
 
-    // Opcional: cerrar el dropdown si se hace clic afuera
-    $(document).on('click', function (e) {
-      if (!$(e.target).closest('.user-menu').length) {
-        $('.user-menu .dropdown-menu').hide();
-      }
+    // Confirmar lavado
+// Confirmar lavado
+$(document).on('click', '.btn-mark-washed', function() {
+    const btn = $(this);
+    const id = btn.data('id');
+    const price = parseFloat(btn.data('price')) || 0;
+
+    btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+    $.ajax({
+        url: `/carwash/marcar-lavado/${id}`,
+        type: 'PATCH',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            toastr.success(response.message);
+
+            // 1. Actualizar los datos locales
+            if (currentRowData) {
+                currentRowData.washed = true;
+                currentRowData.washed_done = true; // ← Añade esta línea
+                currentRowData.total_value += price;
+                
+                // Actualizar el botón checkout
+                $('.btn-checkout[data-id="'+id+'"]')
+                    .data('total', currentRowData.total_value)
+                    .data('row', JSON.stringify(currentRowData));
+            }
+
+            // 2. Actualizar la vista del modal
+            renderCheckoutServices(currentRowData);
+            updateCheckoutTotal(currentRowData.total_value);
+
+            // 3. Ocultar el contenedor de lavado pendiente
+            $('#lavado-container').addClass('d-none');
+            
+            // 4. Opcional: recargar la tabla
+            table.ajax.reload(null, false);
+        },
+        error: function(xhr) {
+            toastr.error(xhr.responseJSON?.message || 'Error al confirmar lavado');
+            btn.prop('disabled', false).html('<i class="fas fa-check"></i> Confirmar');
+        }
     });
-  });
+});
+
+
+    // Resetear modales al cerrar
+    $('#extraServicesModal, #checkoutModal').on('hidden.bs.modal', function() {
+        selectedServices = [];
+        currentRegisterId = null;
+        if ($.fn.select2) {
+            $('#serviceSelect').val(null).trigger('change');
+        }
+    });
+
+    // Manejar cambio de método de pago
+    $('#payment-method').change(function() {
+        if ($(this).val() === 'efectivo') {
+            $('#cash-container').removeClass('d-none');
+            $('#cash-received').focus();
+        } else {
+            $('#cash-container').addClass('d-none');
+        }
+    });
+
+    // Script para servicios extras (se mantiene igual)
+    let availableServices = [];
+    let selectedServices = [];
+    let currentRegisterId = null;
+
+    $('#parking-table').on('click', '.btn-extra-services', function() {
+        const rowData = $(this).data('row');
+        currentRegisterBranchId = rowData.id_branch;
+        currentRegisterId = rowData.id_parking_register;
+        selectedServices = JSON.parse(JSON.stringify(rowData.extra_services || []));
+        
+        loadAvailableServices();
+        renderSelectedServices();
+        updateTotal();
+        $('#extraServicesModal').modal('show');
+    });
+
+    function loadAvailableServices() {
+        let url = 'estacionamiento/extra-services';
+        let params = {};
+        
+        if (userIsSuperAdmin && currentRegisterBranchId) {
+            params.id_branch = currentRegisterBranchId;
+        }
+        
+        $.ajax({
+            url: params ? `${url}?${$.param(params)}` : url,
+            type: 'GET',
+            success: function(response) {
+                availableServices = response;
+                renderServiceSelect();
+            },
+            error: function(xhr) {
+                console.error('Error cargando servicios:', xhr);
+                showError('No se pudieron cargar los servicios');
+            }
+        });
+    }
+
+    function renderServiceSelect() {
+        const select = $('#serviceSelect');
+        select.empty();
+        
+        availableServices.forEach(service => {
+            select.append(`<option value="${service.id}">${service.name} - $${service.price.toLocaleString('es-CL')}</option>`);
+        });
+        
+        select.off('change').change(function() {
+            const serviceId = $(this).val();
+            if (!serviceId) return;
+            
+            const service = availableServices.find(s => s.id == serviceId);
+            if (service) {
+                selectedServices.push({
+                    ...service,
+                    uniqueId: Date.now() + Math.random()
+                });
+                
+                renderSelectedServices();
+                updateTotal();
+                $(this).val('');
+            }
+        });
+    }
+
+    function renderSelectedServices() {
+        const container = $('#selectedServicesList');
+        container.empty();
+        
+        if (selectedServices.length === 0) {
+            container.append('<div class="text-muted text-center py-4">No hay servicios seleccionados</div>');
+            return;
+        }
+        
+        selectedServices.forEach(service => {
+            container.append(`
+                <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+                    <div>
+                        <span>${service.name}</span>
+                        <span class="text-primary ml-2">$${service.price.toLocaleString('es-CL')}</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-service" 
+                            data-uniqueid="${service.uniqueId}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `);
+        });
+    }
+
+    $('#selectedServicesList').on('click', '.remove-service', function() {
+        const uniqueId = $(this).data('uniqueid');
+        selectedServices = selectedServices.filter(s => s.uniqueId != uniqueId);
+        renderSelectedServices();
+        updateTotal();
+    });
+
+    function updateTotal() {
+        const total = selectedServices.reduce((sum, service) => sum + service.price, 0);
+        $('#extraServicesTotal').text('$' + total.toLocaleString('es-CL'));
+    }
+
+    $('#saveExtraServices').click(function() {
+        if (!currentRegisterId) return;
+        
+        const servicesToSave = selectedServices.map(({id, name, price}) => ({id, name, price}));
+        
+        $.ajax({
+            url: `estacionamiento/${currentRegisterId}/update-extra-services`,
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                extra_services: servicesToSave
+            },
+            success: function(response) {
+                $('#parking-table').DataTable().ajax.reload(null, false);
+                $('#extraServicesModal').modal('hide');
+                toastr.success('Servicios actualizados correctamente');
+            },
+            error: function(xhr) {
+                toastr.error('Error al guardar servicios');
+                console.error('Error:', xhr.responseJSON);
+            }
+        });
+    });
+});
+
+// Limpieza del overlay del sidebar (si existe)
+document.addEventListener("DOMContentLoaded", function () {
+    const overlay = document.getElementById('sidebar-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+        overlay.remove();
+    }
+
+    $('.user-menu > a').on('click', function (e) {
+        e.preventDefault();
+        $(this).siblings('.dropdown-menu').toggle();
+    });
+
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.user-menu').length) {
+            $('.user-menu .dropdown-menu').hide();
+        }
+    });
+});
+function renderCheckoutServices(rowData) {
+    let html = '';
+    
+    // Servicio principal
+    html += `
+        <tr>
+            <td>Estacionamiento (${row.days} días)</td>
+            <td class="text-right">$${row.service_price}</td>
+            <td class="text-right"></td>
+        </tr>
+    `;
+
+    // Servicio de lavado si aplica
+    if (row.washed && row.car_wash_service) {
+        html += `
+            <tr class="${row.washed_done ? '' : 'table-warning'}">
+                <td>${row.car_wash_service.name}</td>
+                <td class="text-right">$${row.car_wash_service.price.toLocaleString('es-CL')}</td>
+                <td class="text-right">
+                    ${row.washed_done ? 
+                        '<span class="badge badge-success">Confirmado</span>' : 
+                        `<button type="button" class="btn btn-sm btn-success btn-mark-washed" 
+                            data-id="${row.id_parking_register}" 
+                            data-price="${row.car_wash_service.price}">
+                            <i class="fas fa-check"></i> Confirmar
+                        </button>`
+                    }
+                </td>
+            </tr>
+        `;
+    }
+
+    // Servicios adicionales
+    if (rowData.addons && rowData.addons.length > 0) {
+        rowData.addons.forEach(addon => {
+            html += `
+                <tr>
+                    <td>${addon.name}</td>
+                    <td class="text-right">$${addon.price.toLocaleString('es-CL')}</td>
+                    <td class="text-right">
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-addon" 
+                                data-id="${addon.id_add}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    $('#services-list').html(html);
+}
+
+function updateCheckoutTotal(total) {
+    $('#checkout-total').val(
+        new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP'
+        }).format(total)
+        .replace('CLP', '')
+        .trim()
+    );
+}
 </script>
 @endpush

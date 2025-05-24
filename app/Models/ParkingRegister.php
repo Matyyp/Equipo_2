@@ -39,10 +39,16 @@ class ParkingRegister extends Model
     {
         return $this->hasMany(Generate::class, 'id_parking_register', 'id_parking_register');
     }
+
+    public function parking_register_addon()
+    {
+        return $this->hasMany(Addon::class, 'id_parking_register', 'id_parking_register');
+    }
+
     public function park()
     {
         return $this->belongsTo(
-            \App\Models\Park::class,
+            Park::class,
             'id_park',  // FK en parking_registers
             'id'        // PK en parks
         );

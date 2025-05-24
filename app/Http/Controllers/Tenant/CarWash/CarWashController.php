@@ -228,15 +228,15 @@ class CarWashController extends Controller
 }
 
 
-
-
-
     public function markAsWashed($id)
     {
         $registro = ParkingRegister::findOrFail($id);
 
         if (!$registro->washed) {
+            $precio = service::where('id_service', $registro->id_service)->value('price_net');
+
             $registro->washed = true;
+            $registro->total_value += $precio;
             $registro->save();
         }
 
@@ -245,4 +245,5 @@ class CarWashController extends Controller
             'message' => 'Vehículo marcado como lavado correctamente.',
         ]);
     }
+
 }

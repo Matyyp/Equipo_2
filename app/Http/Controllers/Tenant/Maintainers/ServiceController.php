@@ -25,7 +25,7 @@ class ServiceController extends Controller
      */
     public function create(Request $request)
     {
-        $sucursalId = $request->query('sucursal_id');
+        $sucursalId = $request->query('sucursal'); // o 'sucursal_id' según el nombre que uses
         return view('tenant.admin.maintainer.service.create', compact('sucursalId'));
     }
 
@@ -37,56 +37,56 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'price_net' => 'required|numeric|min:0',
-            'type_service' => 'required|in:parking_daily,parking_annual,car_wash,rent',
+            'type_service' => 'required|in:parking_daily,parking_annual,car_wash,rent,extra',
             'id_branch_office' => 'required|exists:branch_offices,id_branch',
-            'status'=>'available',
+            'status' => 'required|in:available,unavailable',
         ]);
-    
-        // Verificar si ya existe ese tipo de servicio en la sucursal
-        $exists = Service::where('type_service', $validated['type_service'])
-                        ->where('id_branch_office', $validated['id_branch_office'])
-                        ->where('status', 'available')
-                        ->exists();
-    
-        if ($exists) {
-            // Si es JSON (fetch desde JavaScript), responder con error
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Este tipo de servicio ya existe en esta sucursal.'
-                ], 409);
+
+        // Solo validar existencia si el tipo no es 'extra'
+        if ($validated['type_service'] !== 'extra') {
+            $exists = Service::where('type_service', $validated['type_service'])
+                ->where('id_branch_office', $validated['id_branch_office'])
+                ->where('status', 'available')
+                ->exists();
+
+            if ($exists) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Este tipo de servicio ya existe en esta sucursal.'
+                    ], 409);
+                }
+
+                return redirect()
+                    ->back()
+                    ->withErrors(['type_service' => 'Este servicio ya está registrado en esta sucursal.']);
             }
-    
-            // Si es una petición normal, redirigir con error
-            return redirect()
-                ->back()
-                ->withErrors(['type_service' => 'Este servicio ya está registrado en esta sucursal.']);
         }
-    
-        // Crear servicio
+
+        // Crear servicio base
         $service = Service::create($validated);
-    
-        // Crear entidad relacionada según el tipo
+
+        // Crear detalle según el tipo
         match ($validated['type_service']) {
             'rent'           => Rent::create(['id_service' => $service->id_service]),
             'car_wash'       => CarWash::create(['id_service' => $service->id_service]),
             'parking_daily',
             'parking_annual' => Parking::create(['id_service' => $service->id_service]),
+             'extra'            => null,
         };
-    
-        // Si es JSON (fetch), responder como API
+
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Servicio activado correctamente.',
+                'message' => 'Servicio creado correctamente.',
                 'data' => $service
             ]);
         }
-    
-        // Si viene de un formulario HTML tradicional
+
         return redirect()->route('servicios.show', $validated['id_branch_office'])
-                         ->with('success', 'Servicio creado exitosamente.');
+            ->with('success', 'Servicio creado exitosamente.');
     }
+
 
     /**
      * Display the specified resource.
@@ -99,6 +99,7 @@ class ServiceController extends Controller
             'parking_daily'  => 'Estacionamiento Diario',
             'parking_annual' => 'Estacionamiento Anual',
             'rent'           => 'Arriendo',
+            'extra'          => 'Extra'
         ];
 
         // Obtener los últimos servicios por tipo (sin importar el status)
@@ -159,7 +160,7 @@ class ServiceController extends Controller
         $request->validate([
             'name' => 'required|string|max:100',
             'price_net' => 'required|numeric|min:0',
-            'type_service' => 'required|in:parking_daily,parking_annual,car_wash,rent',
+            'type_service' => 'required|in:parking_daily,parking_annual,car_wash,rent,extra',
         ]);
     
         $old_service = Service::findOrFail($id);
