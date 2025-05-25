@@ -76,7 +76,7 @@
 
     {{-- DERECHA: Formulario --}}
     <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
-      <form action="{{ route('cars.reserve.store', $car) }}" method="POST" class="space-y-4 flex-1">
+      <form action="{{ route('webpay.init', $car) }}" method="POST" class="space-y-4 flex-1">
         @csrf
 
         {{-- RUT --}}
@@ -158,10 +158,10 @@
         </div>
 
         <button
-          type="submit"
-          class="mt-auto w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            type="submit"
+            class="mt-auto w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
         >
-          Confirmar reserva
+            Confirmar reserva
         </button>
       </form>
     </div>

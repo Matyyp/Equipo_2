@@ -31,6 +31,7 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\RentalCarController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\TransbankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,8 +63,7 @@ Route::middleware([
     Route::middleware('auth')->group(function() {
         Route::get('cars/{car}/reserve', [LandingController::class,'reserve'])
             ->name('cars.reserve');
-        Route::post('cars/{car}/reserve', [LandingController::class,'storeReservation'])
-            ->name('cars.reserve.store');
+
     });
 
     Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
@@ -150,6 +150,10 @@ Route::middleware([
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
+
+    //transbank
+    Route::post('/webpay/init/{car}', [TransbankController::class, 'init'])->name('webpay.init');
+    Route::get('/webpay/confirm', [TransbankController::class, 'confirm'])->name('webpay.confirm');
     
     // Modulo de reservas
     Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
