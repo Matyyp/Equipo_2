@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     modelInput.val('').prop('readonly', false);
   }
 
-  function searchByPlate(plate) {
+function searchByPlate(plate) {
     if (!plate) return;
     plateLoading.addClass('active');
     plateChecked = false;
@@ -248,15 +248,27 @@ document.addEventListener('DOMContentLoaded', () => {
             clearAssociatedFields();
             plateChecked = false;
           } else {
-            nameInput.val(response.name || '').prop('readonly', true);
-            phoneInput.val(response.phone || '').prop('readonly', true);
-            brandInput.val(response.brand || '').prop('readonly', true);
-            modelInput.val(response.model || '').prop('readonly', true);
-            showAlert('success', 'Vehículo disponible. Puede continuar con el ingreso.');
+            // Bloquear marca y modelo SIEMPRE que existan en la respuesta
+            if (response.brand || response.model) {
+              brandInput.val(response.brand || '').prop('readonly', true);
+              modelInput.val(response.model || '').prop('readonly', true);
+            }
+
+            // Bloquear nombre y teléfono SOLO si vienen en la respuesta
+            nameInput.val(response.name || '').prop('readonly', !!response.name);
+            phoneInput.val(response.phone || '').prop('readonly', !!response.phone);
+
+            // Mensaje según qué datos se encontraron
+            if (response.name && response.phone) {
+              showAlert('success', 'Vehículo y dueño registrados. Datos completos.');
+            } else if (response.brand || response.model) {
+              showAlert('info', 'Vehículo registrado. Complete los datos del dueño.');
+            }
+            
             plateChecked = true;
           }
         } else {
-          showAlert('warning', 'La patente no existe en los registros. Ingrese los datos manualmente.');
+          showAlert('warning', 'Patente no registrada. Ingrese todos los datos manualmente.');
           clearAssociatedFields();
           plateChecked = true;
         }
@@ -265,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         plateLoading.removeClass('active');
       }
     });
-  }
+}
 
   plateInput.on('input', function() {
     const plate = $(this).val().trim().toUpperCase();
@@ -358,33 +370,6 @@ $('#wash_service').on('change', function () {
   }
 });
 
-
-
-
-
-
-  $('#service_id').on('changed.bs.select', function () {
-    const serviceId = $(this).val();
-    if (!serviceId) return;
-    $.ajax({
-      url: contratoUrl,
-      method: 'GET',
-      data: { service_id: serviceId },
-      success: function (res) {
-        $('#contract-warning').remove();
-        if (!res.contract_exists) {
-          submitBtn.prop('disabled', true);
-          submitBtn.after('<div id="contract-warning" class="text-danger mt-2">Este servicio no tiene contrato activo.</div>');
-        } else {
-          submitBtn.prop('disabled', false);
-        }
-      },
-      error: function () {
-        alert('No se pudo verificar el contrato del servicio.');
-      }
-    });
-  });
-
   @role('SuperAdmin')
   $('#branch_office_id').on('changed.bs.select', function () {
     const branchId = $(this).val();
@@ -433,6 +418,45 @@ $('#wash_service').on('change', function () {
 
   const today = new Date().toISOString().slice(0, 10);
   $('#start_date').attr('min', today);
+  $('#start_date').on('change', function() {
+    $('#end_date').attr('min', $(this).val());
+  });
+});
+
+$(document).ready(function() {
+  // Configuración inicial de fechas
+  const today = new Date().toISOString().slice(0, 10);
+  $('#start_date').attr('min', today);
+
+  // Función para calcular y bloquear fechas anuales
+  function handleAnnualParking() {
+    const startDate = $('#start_date').val();
+    const endDateInput = $('#end_date');
+    
+    if (startDate) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + 30);
+      endDateInput.val(date.toISOString().split('T')[0]);
+    }
+    
+    endDateInput.prop('readonly', true).css('background-color', '#f8f9fa');
+  }
+
+  // Manejador único para cambios de servicio
+  $('#service_id').on('changed.bs.select', function() {
+    const selectedText = $(this).find('option:selected').text().toLowerCase();
+    const isAnnual = selectedText.includes('anual'); // Ajusta según tu naming
+
+    if (isAnnual) {
+      handleAnnualParking();
+      $('#start_date').off('change').on('change', handleAnnualParking);
+    } else {
+      $('#end_date').prop('readonly', false).css('background-color', '').val('');
+      $('#start_date').off('change');
+    }
+  });
+
+  // Actualizar fecha mínima de término cuando cambia la inicial
   $('#start_date').on('change', function() {
     $('#end_date').attr('min', $(this).val());
   });

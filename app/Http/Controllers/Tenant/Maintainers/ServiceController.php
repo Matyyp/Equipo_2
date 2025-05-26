@@ -39,7 +39,7 @@ class ServiceController extends Controller
             'price_net' => 'required|numeric|min:0',
             'type_service' => 'required|in:parking_daily,parking_annual,car_wash,rent,extra',
             'id_branch_office' => 'required|exists:branch_offices,id_branch',
-            'status' => 'required|in:available,unavailable',
+            'status' => 'available',
         ]);
 
         // Solo validar existencia si el tipo no es 'extra'

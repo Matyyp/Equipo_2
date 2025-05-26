@@ -95,6 +95,7 @@ public function index(Request $request)
                     'washed'        => $hasCarWashService,
                     'washed_done'   => $washedDone,
                     'service_price' => number_format($service->price_net, 0, ',', '.'),
+                    'service_type' =>  $service->type_service,
                     'total_value'   => $reg->total_value,
                     'total_formatted' => number_format($reg->total_value, 0, ',', '.'),
                     'id_parking_register' => $reg->getKey(),
@@ -323,7 +324,17 @@ public function index(Request $request)
         $start = Carbon::parse($data['start_date']);
         $end = Carbon::parse($data['end_date']);
         $days = $start->diffInDays($end) + 1;
-        $total = $days * $service->price_net;
+        $tipo_servicio = $service->type_service;
+
+        if ($tipo_servicio === 'parking_daily') {
+            $id_contract = DailyContract::select('id_contract')->first();
+            $total = $days * $service->price_net;
+        } elseif ($tipo_servicio === 'parking_annual') {
+            $id_contract = AnnualContract::select('id_contract')->first();
+            $total = $service->price_net;
+        }
+
+        
     
         $park = Park::create([
             'id_car'     => $car->id_car,
@@ -349,12 +360,6 @@ public function index(Request $request)
             'id_service'          => $data['service_id'],
             'id_parking_register' => $parking->id_parking_register
         ]);
-        $tipo_servicio = $service->type_service;
-        if ($tipo_servicio === 'parking_daily') {
-            $id_contract = DailyContract::select('id_contract')->first();
-        } elseif ($tipo_servicio === 'parking_annual') {
-            $id_contract = AnnualContract::select('id_contract')->first();
-        }
     
         Generate::create([
             'id_contract'          => $id_contract->id_contract,
@@ -363,6 +368,119 @@ public function index(Request $request)
     
         return redirect()->route('estacionamiento.index')->with('success', 'Registro creado correctamente');
     }
+public function renew(Request $request, $id)
+{
+    $request->validate([
+        'payment_method' => 'required',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        $originalRegister = ParkingRegister::with('parking_register_register.register_parking.parking_service')->findOrFail($id);
+
+        if ($originalRegister->park->service->type_service !== 'parking_annual') {
+            throw new \Exception('Solo se pueden renovar registros de tipo anual.');
+        }
+
+        // Calcular fechas de renovación
+        $start_date = Carbon::parse($originalRegister->end_date)->copy();
+        $end_date = (clone $start_date)->addDays(30);
+        $days = $start_date->diffInDays($end_date);
+
+        $oldPark = Park::with('park_car')->findOrFail($originalRegister->id_park);
+
+        // Crear nuevo Park
+        $newPark = Park::create([
+            'id_car'     => $oldPark->id_car,
+            'id_service' => $originalRegister->parking_register_register->register_parking->parking_service->id_service,
+            'status'     => 'parked',
+        ]);
+        // Crear nuevo ParkingRegister
+        $newRegister = ParkingRegister::create([
+            'id_brand'     => $oldPark->park_car->id_brand,
+            'id_model'     => $oldPark->park_car->id_model,
+            'start_date'   => $start_date,
+            'end_date'     => $end_date,
+            'arrival_km'   => $originalRegister->km_exit,
+            'km_exit'      => null,
+            'days'         => $days,
+            'total_value'  => $originalRegister->parking_register_register->register_parking->parking_service->price_net,
+            'id_park'      => $newPark->id,
+            'status'       => 'unpaid',
+            'washed'       => '0',
+            'id_service'   => null,
+        ]);
+
+        // Crear registros en Register y Generate
+        Register::create([
+            'id_service'          => $originalRegister->park->service->id_service,
+            'id_parking_register' => $newRegister->id_parking_register,
+        ]);
+
+        $id_contract = AnnualContract::select('id_contract')->first();
+        if (!$id_contract) {
+            throw new \Exception('No se encontró contrato anual válido');
+        }
+
+        Generate::create([
+            'id_contract'         => $id_contract->id_contract,
+            'id_parking_register' => $newRegister->id_parking_register,
+        ]);
+
+        // Registrar pago
+        $serviceId = $originalRegister->parking_register_register->register_parking->parking_service->id_service;
+
+        $payment = Payment::create([
+            'id_service' => $serviceId,
+            'id_voucher' => null,
+        ]);
+
+        $paymentRecord = PaymentRecord::create([
+            'id_payment'          => $payment->id,
+            'id_service'          => $serviceId,
+            'id_parking_register' => $newRegister->id_parking_register,
+            'type_payment'        => $request->payment_method,
+            'amount'              => $newRegister->total_value,
+            'payment_date'        => now(),
+            'id_voucher'          => null,
+            'payment_method'      => $request->payment_method, // nuevo campo si existe en tabla
+        ]);
+
+        $voucher = Voucher::create([
+            'code'         => random_int(100000, 999999),
+            'payment'      => $request->payment_method,
+            'amount'       => $paymentRecord->amount,
+            'id_register'  => $paymentRecord->id_parking_register,
+            'discount'     => 0,
+            'created_at'   => now(),
+            'updated_at'   => now(),
+        ]);
+
+        $payment->update(['id_voucher' => $voucher->id_voucher]);
+        $paymentRecord->update(['id_voucher' => $voucher->id_voucher]);
+
+        // Cambiar estado de registros
+        $newRegister->update(['status' => 'unpaid']);
+        $originalRegister->update(['status' => 'paid']);
+
+        Park::where('id',$originalRegister->id_park)->update(['status' => 'not_parked']);
+
+        DB::commit();
+
+        return response()->json([
+            'message'        => 'Servicio renovado y pagado correctamente.',
+            'new_register_id' => $newRegister->id_parking_register,
+            'voucher_code'   => $voucher->code
+        ]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'Error al renovar: ' . $e->getMessage(),
+        ], 400);
+    }
+}
+
     
     public function show(string $id)
     {
@@ -453,92 +571,130 @@ public function index(Request $request)
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
-    {
-        $user = auth()->user();
+public function update(Request $request, $id)
+{
+    $user = auth()->user();
 
-        $data = $request->validate([
-            'plate'            => 'required|string|max:8',
-            'name'             => 'required|string|max:255',
-            'phone'            => 'required|string|max:9',
-            'start_date'       => 'required|date',
-            'end_date'         => 'required|date|after_or_equal:start_date',
-            'arrival_km'       => 'nullable|integer|min:0',
-            'km_exit'          => 'nullable|integer|min:0',
-            'brand_name'       => 'required|string|max:255',
-            'model_name'       => 'required|string|max:255',
-            'wash_type'        => 'nullable|exists:services,id_service',
-            'wash_service'     => 'nullable|boolean',
-            'service_id'       => 'required|exists:services,id_service',
-            'branch_office_id' => 'nullable|exists:branch_offices,id_branch',
+    $data = $request->validate([
+        'plate'            => 'required|string|max:8',
+        'name'             => 'required|string|max:255',
+        'phone'            => 'required|string|max:9',
+        'start_date'       => 'required|date',
+        'end_date'         => 'required|date|after_or_equal:start_date',
+        'arrival_km'       => 'nullable|integer|min:0',
+        'km_exit'          => 'nullable|integer|min:0',
+        'brand_name'       => 'required|string|max:100',
+        'model_name'       => 'required|string|max:100',
+        'service_id'       => 'required|exists:services,id_service',
+        'wash_type'        => 'nullable|exists:services,id_service',
+        'wash_service'     => 'nullable|boolean',
+        'branch_office_id' => 'nullable|exists:branch_offices,id_branch',
+    ]);
+
+    DB::transaction(function () use ($data, $id, $user, $request) {
+        $parking = ParkingRegister::findOrFail($id);
+        $park = Park::with('park_car.car_belongs.belongs_owner')->findOrFail($parking->id_park);
+        $car = $park->park_car;
+        $owner = $car->car_belongs->first()->belongs_owner;
+        $total = 0;
+
+        // Servicio principal
+        $oldService = Service::findOrFail($park->id_service);
+        $newService = Service::findOrFail($data['service_id']);
+
+        $start = Carbon::parse($data['start_date']);
+        $end = Carbon::parse($data['end_date']);
+        $days = $start->diffInDays($end) + 1;
+
+        if ($newService->type_service === 'parking_daily') {
+            $id_contract = DailyContract::select('id_contract')->first();
+            $total += $days * $newService->price_net;
+        } elseif ($newService->type_service === 'parking_annual') {
+            $id_contract = AnnualContract::select('id_contract')->first();
+            $total += $newService->price_net;
+        }
+
+        // Lógica de lavado simplificada
+        $washServiceId = $data['wash_type'] ?? null;
+        $washPrice = 0;
+
+        // Si hay servicio de lavado y está marcado como hecho
+        if ($washServiceId && $parking->washed == '1') {
+            $washService = Service::find($washServiceId);
+            $washPrice = $washService->price_net;
+            $total += $washPrice;
+        }
+
+        // Addons
+        $sumaTotalAddons = Addon::where('id_parking_register', $parking->id_parking_register)
+            ->with('addon_service')
+            ->get()
+            ->sum(fn($addon) => $addon->addon_service->price_net);
+
+        $total += $sumaTotalAddons;
+
+        // Actualizar dueño
+        $owner->update([
+            'name' => $data['name'],
+            'number_phone' => $data['phone'],
+            'type_owner' => 'cliente'
         ]);
 
-        DB::transaction(function () use ($data, $id, $user, $request) {
-            $parking = ParkingRegister::findOrFail($id);
-            $park = Park::with('park_car.car_belongs.belongs_owner')->findOrFail($parking->id_park);
-            $car = $park->park_car;
-            $owner = $car->car_belongs->first()->belongs_owner;
+        // Marca y modelo
+        $brand = Brand::firstOrCreate(
+            ['name_brand' => Str::title(trim($data['brand_name']))],
+            ['name_brand' => Str::title(trim($data['brand_name']))]
+        );
 
-            // Actualizar dueño
-            $owner->update([
-                'name' => $data['name'],
-                'number_phone' => $data['phone']
-            ]);
+        $model = ModelCar::firstOrCreate(
+            ['name_model' => Str::title(trim($data['model_name']))],
+            ['name_model' => Str::title(trim($data['model_name']))]
+        );
 
-            // Marca
-            $brand = Brand::firstOrCreate([
-                'name_brand' => Str::title($data['brand_name'])
-            ]);
-            $car->id_brand = $brand->id_brand;
+        // Vehículo
+        $car->update([
+            'patent' => strtoupper($data['plate']),
+            'id_brand' => $brand->id_brand,
+            'id_model' => $model->id_model
+        ]);
 
-            // Modelo
-            $model = ModelCar::firstOrCreate([
-                'name_model' => Str::title($data['model_name'])
-            ]);
-            $car->id_model = $model->id_model;
+        // Solo SuperAdmin cambia el servicio principal
+        if ($user->hasRole('SuperAdmin')) {
+            $park->update(['id_service' => $data['service_id']]);
+        }
 
-            $car->save();
+        // Actualizar parking register (incluyendo el servicio de lavado)
+        $parking->update([
+            'id_brand' => $brand->id_brand,
+            'id_model' => $model->id_model,
+            'start_date' => $start,
+            'end_date' => $end,
+            'arrival_km' => $data['arrival_km'] ?? null,
+            'km_exit' => $data['km_exit'] ?? null,
+            'days' => $days,
+            'total_value' => $total,
+            'id_service' => $washServiceId, // Aquí se guarda el servicio de lavado
+            'status' => $parking->status,
+            // washed se mantiene como estaba
+        ]);
 
-            // Si es SuperAdmin, puede cambiar el tipo de estacionamiento
-            if ($user->hasRole('SuperAdmin')) {
-                $park->id_service = $data['service_id'];
-                $park->save();
-            }
+        // Registrar servicio principal
+        Register::updateOrCreate(
+            ['id_parking_register' => $parking->id_parking_register],
+            ['id_service' => $data['service_id']]
+        );
 
-            $startDate = Carbon::parse($data['start_date']);
-            $endDate   = Carbon::parse($data['end_date']);
-            $days      = $startDate->diffInDays($endDate) + 1;
+        // Registrar contrato
+        if (isset($id_contract)) {
+            Generate::updateOrCreate(
+                ['id_parking_register' => $parking->id_parking_register],
+                ['id_contract' => $id_contract->id_contract]
+            );
+        }
+    });
 
-            $service = Service::find($park->id_service);
-            $total   = $days * ($service?->price_net ?? 0);
-
-            // Asignar lavado si fue solicitado
-            $washServiceId = null;
-            $washServiceInput = $request->input('wash_service');
-            $washTypeInput = $request->input('wash_type');
-
-            if ($washServiceInput && $washTypeInput) {
-                $selectedWash = Service::find($washTypeInput);
-                if ($selectedWash && $selectedWash->type_service === 'car_wash') {
-                    $washServiceId = $selectedWash->id_service;
-                }
-            }
-
-
-            $parking->update([
-                'start_date'   => $startDate,
-                'end_date'     => $endDate,
-                'arrival_km'   => $data['arrival_km'] ?? null,
-                'km_exit'      => $data['km_exit'] ?? null,
-                'days'         => $days,
-                'total_value'  => $total,
-                'washed' => $washServiceId ? false : null,// no marcar como lavado aún
-                'id_service'   => $washServiceId,    // puede ser null si no hay lavado
-            ]);
-        });
-
-        return redirect()->route('estacionamiento.index')->with('success', 'Registro actualizado correctamente.');
-    }
+    return redirect()->route('estacionamiento.index')->with('success', 'Registro actualizado correctamente.');
+}
 
 
 
@@ -836,43 +992,42 @@ public function index(Request $request)
             ->with('success', 'Check-Out y pago registrados correctamente.');
     }
 
-    public function getServicesByBranch(Request $request)
-    {
-        $branchId = $request->input('branch_id');
+public function getServicesByBranch(Request $request)
+{
+    $branchId = $request->input('branch_id');
 
-        $services = Service::with('service_branch_office.branch_office_contract')
-            ->where('id_branch_office', $branchId)
-            ->where('status', 'available')
-            ->whereIn('type_service', ['parking_daily', 'parking_annual'])
-            ->get();
+    $services = Service::with(['service_branch_office.branch_office_contract'])
+        ->where('id_branch_office', $branchId)
+        ->where('status', 'available')
+        ->whereIn('type_service', ['parking_daily', 'parking_annual'])
+        ->get();
 
-        $filteredServices = [];
+    $filteredServices = [];
 
-        foreach ($services as $svc) {
-            $contract = $svc->service_branch_office->branch_office_contract->first();
+    foreach ($services as $svc) {
+        // Elimina first() para recorrer TODOS los contratos
+        foreach ($svc->service_branch_office->branch_office_contract as $contract) {
+            $hasValidContract = false;
 
-            if ($contract) {
-                $hasValidContract = false;
+            if ($svc->type_service === 'parking_daily') {
+                $hasValidContract = DailyContract::where('id_contract', $contract->id_contract)->exists();
+            } elseif ($svc->type_service === 'parking_annual') {
+                $hasValidContract = AnnualContract::where('id_contract', $contract->id_contract)->exists();
+            }
 
-                if ($svc->type_service === 'parking_daily') {
-                    $hasValidContract = DailyContract::where('id_contract', $contract->id_contract)->exists();
-                }
-
-                if ($svc->type_service === 'parking_annual') {
-                    $hasValidContract = AnnualContract::where('id_contract', $contract->id_contract)->exists();
-                }
-
-                if ($hasValidContract) {
-                    $filteredServices[] = [
-                        'id_service' => $svc->id_service,
-                        'name' => $svc->name,
-                    ];
-                }
+            if ($hasValidContract) {
+                $filteredServices[] = [
+                    'id_service' => $svc->id_service,
+                    'name' => $svc->name,
+                    'type_service' => $svc->type_service // Opcional: útil para lógica frontend
+                ];
+                break; // Salir del loop de contratos si se encuentra uno válido
             }
         }
+    }
 
-        return response()->json($filteredServices);
-    }  
+    return response()->json($filteredServices);
+}
 
     /**
      * Remove the specified resource from storage.

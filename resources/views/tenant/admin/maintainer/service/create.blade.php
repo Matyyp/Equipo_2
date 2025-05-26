@@ -27,9 +27,6 @@
             {{-- Campo oculto para el tipo de servicio --}}
             <input type="hidden" name="type_service" value="extra">
 
-            {{-- Campo oculto para el status --}}
-            <input type="hidden" name="status" value="available">
-
             <div class="form-group mb-3">
                 <label for="name">Nombre del Servicio</label>
                 <input type="text" name="name" id="name" class="form-control"

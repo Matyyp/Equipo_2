@@ -48,7 +48,7 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Calle</label>
-            <input type="text" name="street" class="form-control" value="{{ old('street', $branch->street) }}" required pattern="^.*\\s\\d{1,5}.*$" title="Debe incluir nombre de calle y número (ej: Calle Falsa 123)">
+            <input type="text" name="street" class="form-control" value="{{ old('street', $branch->street) }}" required pattern="^.*\s\d{1,5}.*$" title="Debe incluir nombre de calle y número (ej: Calle Falsa 123)">
           </div>
 
           <div class="col-md-6">

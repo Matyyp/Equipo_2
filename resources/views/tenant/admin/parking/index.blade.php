@@ -244,6 +244,11 @@
         </div>
         
         <div class="modal-footer">
+          <div id="renew-button-container" class="mr-auto" style="display: none;">
+            <button type="button" id="btn-renew" class="btn btn-success">
+              <i class="fas fa-sync-alt mr-1"></i> Renovar Servicio
+            </button>
+          </div>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">
             <i class="fas fa-times mr-1"></i> Cancelar
           </button>
@@ -334,6 +339,7 @@ $(function () {
                                 title="Check-Out"
                                 data-id="${row.id_parking_register}"
                                 data-total="${row.total_value}"
+                                data-service-type="${row.service_type}"
                                 data-row='${JSON.stringify(row)}'>
                                 <i class="fas fa-door-open"></i>
                             </button>
@@ -365,6 +371,12 @@ $(function () {
 
         $('#checkout-form').attr('action', `/estacionamiento/${row.id_parking_register}/checkout`);
         $('#checkout-id').val(row.id_parking_register);
+
+        if (row.service_type === 'parking_annual') {
+            $('#renew-button-container').show();
+        } else {
+            $('#renew-button-container').hide();
+        }
         
         $('#checkout-total').val(new Intl.NumberFormat('es-CL', {
             style: 'currency',
@@ -498,7 +510,73 @@ $(function () {
         });
     });
 
-    // Confirmar lavado
+
+// Manejar clic en botón de renovación
+// Manejar clic en botón de renovación
+$('#btn-renew').click(function() {
+    if (!currentRowData) return;
+    
+    const registerId = currentRowData.id_parking_register;
+    const paymentMethod = $('#payment-method').val();
+    
+    // Validar que se haya seleccionado un método de pago
+    if (!paymentMethod) {
+        toastr.error('Debe seleccionar un método de pago antes de renovar');
+        $('#payment-method').focus();
+        return;
+    }
+    
+    Swal.fire({
+        title: '¿Renovar servicio anual?',
+        text: 'Esta acción creará una nueva estadía con las mismas características por 30 días más',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, renovar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: `/estacionamiento/${registerId}/renew`,
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    payment_method: paymentMethod
+                },
+                beforeSend: function() {
+                    $('#btn-renew').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Procesando...');
+                },
+                success: function(response) {
+                    $('#checkoutModal').modal('hide');
+                    Swal.fire({
+                        title: '¡Renovación exitosa!',
+                        text: response.message,
+                        icon: 'success'
+                    }).then(() => {
+                        table.ajax.reload();
+                    });
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Ocurrió un error al renovar',
+                        icon: 'error'
+                    });
+                    $('#btn-renew').prop('disabled', false).html('<i class="fas fa-sync-alt mr-1"></i> Renovar Servicio');
+                }
+            });
+        }
+    });
+});
+// Deshabilitar botón de renovación si no hay método de pago seleccionado
+$('#payment-method').change(function() {
+    const paymentSelected = $(this).val() !== '';
+    $('#btn-renew').prop('disabled', !paymentSelected);
+});
+
+// Inicialmente deshabilitar el botón si no hay selección
+$('#btn-renew').prop('disabled', $('#payment-method').val() === '');
 // Confirmar lavado
 $(document).on('click', '.btn-mark-washed', function() {
     const btn = $(this);

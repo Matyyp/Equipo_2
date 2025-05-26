@@ -22,7 +22,6 @@
               <th>Patente</th>
               <th>Marca</th>
               <th>Modelo</th>
-              <th>Valor Arriendo</th>
               <th class="text-center">Acciones</th>
             </tr>
           </thead>
@@ -32,13 +31,6 @@
                 <td>{{ $item['patent'] }}</td>
                 <td>{{ $item['brand'] }}</td>
                 <td>{{ $item['model'] }}</td>
-                <td>
-                  @if ($item['value_rent'])
-                    ${{ number_format($item['value_rent'], 0, ',', '.') }}
-                  @else
-                    <span class="text-muted">No disponible</span>
-                  @endif
-                </td>
                 <td class="text-center">
                   <a href="{{ route('autos.edit', ['auto' => $item['id']]) }}"
                     class="btn btn-outline-secondary btn-sm text-dark" title="Editar">

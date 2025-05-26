@@ -55,7 +55,7 @@
               $tipos = [
                 'rent' => 'Renta',
                 'parking_daily' => 'Estacionamiento Diario',
-                'parking_annual' => 'Estacionamiento Mensual'
+                'parking_annual' => 'Estacionamiento Anual'
               ];
             @endphp
 

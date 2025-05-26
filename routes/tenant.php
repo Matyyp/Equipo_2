@@ -121,6 +121,8 @@ Route::middleware([
         ->name('estacionamiento.data');
         Route::delete('estacionamiento/extra/{addon}', [ParkingController::class, 'removeAddon'])
         ->name('estacionamiento.extra.remove');
+        Route::post('/estacionamiento/{id}/renew', [ParkingController::class, 'renew'])
+        ->name('estacionamiento.renew');
         Route::get('estacionamiento/extra-services', [ParkingController::class, 'getExtraServices']);
         Route::post('estacionamiento/{id}/update-extra-services', [ParkingController::class, 'updateExtraServices']);
         Route::get('estacionamiento/servicios-por-sucursal', [ParkingController::class, 'getServicesByBranch'])

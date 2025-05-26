@@ -13,7 +13,6 @@ class Car extends Model
 
     protected $fillable = [
         'patent',
-        'value_rent',
         'id_model',
         'id_brand'
     ];
