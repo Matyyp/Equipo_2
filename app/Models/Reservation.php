@@ -36,4 +36,8 @@ class Reservation extends Model
     {
         return $this->hasOne(RentRegister::class, 'reservation_id','id_rent_register');
     }
+    public function payment()
+    {
+        return $this->hasOne(ReservationPayment::class, 'reservation_id');
+    }
 }

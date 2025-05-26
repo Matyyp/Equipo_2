@@ -96,7 +96,7 @@ class TransbankController extends Controller
             ]);
 
             // Registrar el pago
-            ReservationPayment::create([
+            $payment = ReservationPayment::create([
                 'reservation_id'      => $reservation->id,
                 'token'               => $token,
                 'session_id' => session('webpay_session_id'), 
@@ -104,18 +104,17 @@ class TransbankController extends Controller
                 'authorization_code'  => $response->getAuthorizationCode(),
                 'payment_type'        => $response->getPaymentTypeCode(),
                 'response_code'       => $response->getResponseCode(),
+                'buy_order' => $response->getBuyOrder(),
             ]);
 
             // Limpiar sesión
             session()->forget(['reservation_data', 'webpay_token']);
 
-            return redirect()
-                ->route('landings.available')
-                ->with('success', 'Pago aprobado. Tu reserva ha sido confirmada.');
+            $reservation->load(['payment', 'branchOffice']);
+
+            return view('webpay.success', compact('reservation', 'payment'));
         }
 
-        return redirect()
-            ->route('landings.available')
-            ->with('error', 'Pago rechazado. No se creó ninguna reserva.');
+        return view('webpay.failure');
     }
 }

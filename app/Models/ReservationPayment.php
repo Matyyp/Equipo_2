@@ -16,6 +16,7 @@ class ReservationPayment extends Model
         'authorization_code',
         'payment_type',
         'response_code',
+        'buy_order'
     ];
     public function reservation()
     {
