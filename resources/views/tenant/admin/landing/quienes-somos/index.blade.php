@@ -76,23 +76,23 @@
               <td>
                 <div class="d-flex flex-column gap-1 small">
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->button_text_color }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->button_text_color }};border-radius:50%;border:1px solid #ccc;"></span>
                     Texto Botón
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->button_color }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->button_color }};border-radius:50%;border:1px solid #ccc;"></span>
                     Fondo Botón
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->card_color }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->card_color }};border-radius:50%;border:1px solid #ccc;"></span>
                     Fondo Tarjeta
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->card_text_color }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->card_text_color }};border-radius:50%;border:1px solid #ccc;"></span>
                     Texto Tarjeta
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->video_card_color }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->video_card_color }};border-radius:50%;border:1px solid #ccc;"></span>
                     Color Tarjeta Video
                   </div>
                 </div>

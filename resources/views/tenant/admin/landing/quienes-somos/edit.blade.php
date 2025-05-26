@@ -16,9 +16,16 @@
         <div class="form-group mb-4">
           <label>Texto Superior</label>
           <textarea name="top_text" class="form-control" rows="3">{{ old('top_text', $aboutUs->top_text) }}</textarea>
-          <div class="form-check form-switch mt-2">
-            <input class="form-check-input" type="checkbox" name="top_text_active" value="1" {{ $aboutUs->top_text_active ? 'checked' : '' }}>
-            <label class="form-check-label">Activar Texto Superior</label>
+          <label class="mt-2 d-block">Activar Texto Superior</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="top_text_active" value="1" {{ old('top_text_active', $aboutUs->top_text_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="top_text_active" value="0" {{ old('top_text_active', $aboutUs->top_text_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 
@@ -26,9 +33,16 @@
         <div class="form-group mb-4">
           <label>Título Principal</label>
           <input type="text" name="main_title" value="{{ old('main_title', $aboutUs->main_title) }}" class="form-control">
-          <div class="form-check form-switch mt-2">
-            <input class="form-check-input" type="checkbox" name="main_title_active" value="1" {{ $aboutUs->main_title_active ? 'checked' : '' }}>
-            <label class="form-check-label">Activar Título Principal</label>
+          <label class="mt-2 d-block">Activar Título Principal</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="main_title_active" value="1" {{ old('main_title_active', $aboutUs->main_title_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="main_title_active" value="0" {{ old('main_title_active', $aboutUs->main_title_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 
@@ -36,9 +50,16 @@
         <div class="form-group mb-4">
           <label>Texto Secundario</label>
           <textarea name="secondary_text" class="form-control" rows="3">{{ old('secondary_text', $aboutUs->secondary_text) }}</textarea>
-          <div class="form-check form-switch mt-2">
-            <input class="form-check-input" type="checkbox" name="secondary_text_active" value="1" {{ $aboutUs->secondary_text_active ? 'checked' : '' }}>
-            <label class="form-check-label">Activar Texto Secundario</label>
+          <label class="mt-2 d-block">Activar Texto Secundario</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="secondary_text_active" value="1" {{ old('secondary_text_active', $aboutUs->secondary_text_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="secondary_text_active" value="0" {{ old('secondary_text_active', $aboutUs->secondary_text_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 
@@ -46,9 +67,16 @@
         <div class="form-group mb-4">
           <label>Texto Tercero</label>
           <textarea name="tertiary_text" class="form-control" rows="3">{{ old('tertiary_text', $aboutUs->tertiary_text) }}</textarea>
-          <div class="form-check form-switch mt-2">
-            <input class="form-check-input" type="checkbox" name="tertiary_text_active" value="1" {{ $aboutUs->tertiary_text_active ? 'checked' : '' }}>
-            <label class="form-check-label">Activar Texto Tercero</label>
+          <label class="mt-2 d-block">Activar Texto Tercero</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="tertiary_text_active" value="1" {{ old('tertiary_text_active', $aboutUs->tertiary_text_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="tertiary_text_active" value="0" {{ old('tertiary_text_active', $aboutUs->tertiary_text_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 
@@ -65,9 +93,18 @@
           <input type="text" name="button_link" value="{{ old('button_link', $aboutUs->button_link) }}" class="form-control">
         </div>
 
-        <div class="form-check form-switch mb-4">
-          <input class="form-check-input" type="checkbox" name="button_active" value="1" {{ $aboutUs->button_active ? 'checked' : '' }}>
-          <label class="form-check-label">Activar Botón</label>
+        <div class="mb-4">
+          <label class="mt-2 d-block">Activar Botón</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="button_active" value="1" {{ old('button_active', $aboutUs->button_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="button_active" value="0" {{ old('button_active', $aboutUs->button_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
         </div>
 
         <hr>

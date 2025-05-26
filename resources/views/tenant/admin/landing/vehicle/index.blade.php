@@ -16,7 +16,8 @@
   <div class="card">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-car-side mr-2"></i>Tipos de Vehículo</div>
-      <a href="{{ route('landing.vehicle.create') }}" class="btn btn-outline-light btn-sm">
+      <a href="{{ route('landing.vehicle.create') }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
         <i class="fas fa-plus"></i> Nuevo
       </a>
     </div>
@@ -27,10 +28,7 @@
             <th>Imagen</th>
             <th>Título</th>
             <th>Subtítulo</th>
-            <th>Estado Título</th>
-            <th>Estado Subtítulo</th>
-            <th>Color Fondo Tarjeta</th>
-            <th>Color Texto</th>
+            <th>Colores</th>
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
@@ -55,10 +53,7 @@
           { data: 'image', name: 'image', orderable: false, searchable: false },
           { data: 'card_title', name: 'card_title' },
           { data: 'card_subtitle', name: 'card_subtitle' },
-          { data: 'card_title_active', name: 'card_title_active', className: 'text-center' },
-          { data: 'card_subtitle_active', name: 'card_subtitle_active', className: 'text-center' },
-          { data: 'card_background_color', name: 'card_background_color', orderable: false, searchable: false },
-          { data: 'text_color', name: 'text_color', orderable: false, searchable: false },
+          { data: 'colores', name: 'colores', orderable: false, searchable: false },
           { data: 'acciones', name: 'acciones', orderable: false, searchable: false, className: 'text-center' }
         ],
         order: [[1, 'asc']],

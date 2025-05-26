@@ -20,60 +20,81 @@
           <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title', $hero->title) }}" required>
           @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
-{{-- Activar título --}}
-<div class="mb-3">
-  <label class="form-label">Mostrar título</label>
-  <div>
-    <input type="hidden" name="title_active" value="0">
-    <input type="checkbox" name="title_active" value="1" {{ old('title_active', $hero->title_active) ? 'checked' : '' }}>
-  </div>
-</div>
+        {{-- Activar título --}}
+        <div class="mb-3">
+          <label class="mt-2 d-block">Mostrar título</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="title_active" value="1" {{ old('title_active', $hero->title_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="title_active" value="0" {{ old('title_active', $hero->title_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
+        </div>
+
         {{-- Subtítulo --}}
         <div class="mb-3">
           <label for="subtitle" class="form-label">Subtítulo</label>
           <input type="text" name="subtitle" id="subtitle" class="form-control @error('subtitle') is-invalid @enderror" value="{{ old('subtitle', $hero->subtitle) }}">
           @error('subtitle') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
-{{-- Activar subtítulo --}}
-<div class="mb-3">
-  <label class="form-label">Mostrar subtítulo</label>
-  <div>
-    <input type="hidden" name="subtitle_active" value="0">
-    <input type="checkbox" name="subtitle_active" value="1" {{ old('subtitle_active', $hero->subtitle_active) ? 'checked' : '' }}>
-  </div>
-</div>
+        {{-- Activar subtítulo --}}
+        <div class="mb-3">
+          <label class="mt-2 d-block">Mostrar subtítulo</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="subtitle_active" value="1" {{ old('subtitle_active', $hero->subtitle_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="subtitle_active" value="0" {{ old('subtitle_active', $hero->subtitle_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
+        </div>
+
         {{-- Texto del botón --}}
         <div class="mb-3">
           <label for="button_text" class="form-label">Texto del botón</label>
           <input type="text" name="button_text" id="button_text" class="form-control" value="{{ old('button_text', $hero->button_text) }}">
         </div>
-{{-- Mostrar botón --}}
-<div class="mb-3">
-  <label class="form-label">Mostrar botón</label>
-  <div>
-    <input type="hidden" name="button_active" value="0">
-    <input type="checkbox" name="button_active" value="1" {{ old('button_active', $hero->button_active) ? 'checked' : '' }}>
-  </div>
-</div>
+        {{-- Mostrar botón --}}
+        <div class="mb-3">
+          <label class="mt-2 d-block">Mostrar botón</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="button_active" value="1" {{ old('button_active', $hero->button_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="button_active" value="0" {{ old('button_active', $hero->button_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
+        </div>
 
         {{-- URL del botón --}}
         <div class="mb-3">
           <label for="button_url" class="form-label">URL del botón</label>
           <input type="url" name="button_url" id="button_url" class="form-control" value="{{ old('button_url', $hero->button_url) }}">
         </div>
+        
+        <h5 class="mt-4 mb-3">Colores</h5>
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="button_color" class="form-label">Color del botón</label>
+            <input type="color" name="button_color" id="button_color" class="form-control form-control-color" value="{{ old('button_color', $hero->button_color ?? '#0000ff') }}">
+          </div>
 
-        {{-- Color del botón --}}
-        <div class="mb-3">
-          <label for="button_color" class="form-label">Color del botón</label>
-          <input type="color" name="button_color" id="button_color" class="form-control form-control-color" value="{{ old('button_color', $hero->button_color ?? '#0000ff') }}">
+          {{-- Color del texto --}}
+          <div class="col-md-4 mb-3">
+            <label for="text_color" class="form-label">Color del texto</label>
+            <input type="color" name="text_color" id="text_color" class="form-control form-control-color" value="{{ old('text_color', $hero->text_color ?? '#000000') }}">
+          </div>
         </div>
-
-        {{-- Color del texto --}}
-        <div class="mb-3">
-          <label for="text_color" class="form-label">Color del texto</label>
-          <input type="color" name="text_color" id="text_color" class="form-control form-control-color" value="{{ old('text_color', $hero->text_color ?? '#000000') }}">
-        </div>
-
         {{-- Imagen existente --}}
         @if($hero->image)
         <div class="mb-4">

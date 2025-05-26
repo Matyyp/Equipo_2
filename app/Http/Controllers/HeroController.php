@@ -7,7 +7,7 @@ use App\Models\HeroImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
-
+use Illuminate\Support\Str;
 class HeroController extends Controller
 {
     public function index()
@@ -15,32 +15,66 @@ class HeroController extends Controller
         return view('tenant.admin.landing.hero.index');
     }
 
-    public function data(Request $request)
-    {
-        return DataTables::of(Heroes::with('image'))
-            ->addColumn('image', fn($h) => $h->image ? '<img src="' . tenant_asset("" . $h->image->path) . '" width="100"/>' : '')
-            ->addColumn('title_status', fn($h) => $h->title_active ? 'Yes' : 'No')
-            ->addColumn('subtitle_status', fn($h) => $h->subtitle_active ? 'Yes' : 'No')
-            ->addColumn('button_status', fn($h) => $h->button_active ? 'Yes' : 'No')
-            ->addColumn('button_color', fn($h) => '<div style="width: 30px; height: 30px; background-color: '.$h->button_color.';"></div>')
-            ->addColumn('text_color', fn($h) => '<div style="width: 30px; height: 30px; background-color: '.$h->text_color.';"></div>')
-            ->addColumn('acciones', function ($h) {
-                $edit = route('landing.hero.edit', $h);
-                $delete = route('landing.hero.destroy', $h);
-                $csrf = csrf_field();
-                $method = method_field('DELETE');
+public function data(Request $request)
+{
+    return DataTables::of(Heroes::with('image'))
+        ->addColumn('image', fn($h) => $h->image ? '<img src="' . tenant_asset($h->image->path) . '" width="100"/>' : '')
+        
+        ->addColumn('title', function ($h) {
+            $badge = $h->title_active
+                ? '<span class="badge bg-success mb-1">Activo</span>'
+                : '<span class="badge bg-secondary mb-1">Inactivo</span>';
+            return $badge . '<div class="small">' . e($h->title) . '</div>';
+        })
 
-                return <<<HTML
-                    <a href="{$edit}" class="btn btn-outline-secondary btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
-                    <form action="{$delete}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar Hero?')">
-                        {$csrf}{$method}
-                        <button  class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-trash"></i></button>
-                    </form>
-                HTML;
-            })
-            ->rawColumns(['image', 'button_color', 'text_color', 'acciones'])
-            ->make(true);
-    }
+        ->addColumn('subtitle', function ($h) {
+            $badge = $h->subtitle_active
+                ? '<span class="badge bg-success mb-1">Activo</span>'
+                : '<span class="badge bg-secondary mb-1">Inactivo</span>';
+            return $badge . '<div class="small">' . e($h->subtitle) . '</div>';
+        })
+
+        ->addColumn('button', function ($h) {
+            $badge = $h->button_active
+                ? '<span class="badge bg-success mb-1">Activo</span>'
+                : '<span class="badge bg-secondary mb-1">Inactivo</span>';
+            return $badge . '<div class="small">' . e($h->button_text ?? '—') . '</div>';
+        })
+
+        ->addColumn('colors', function ($h) {
+            return '
+                <div class="d-flex flex-column gap-1 small">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="width: 15px; height: 15px; background-color: ' . $h->button_color . '; border-radius: 50%; border: 1px solid #ccc;"></span>
+                        Botón
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="width: 15px; height: 15px; background-color: ' . $h->text_color . '; border-radius: 50%; border: 1px solid #ccc;"></span>
+                        Texto
+                    </div>
+                </div>
+            ';
+        })
+
+        ->addColumn('acciones', function ($h) {
+            $edit = route('landing.hero.edit', $h);
+            $delete = route('landing.hero.destroy', $h);
+            $csrf = csrf_field();
+            $method = method_field('DELETE');
+
+            return <<<HTML
+                <a href="{$edit}" class="btn btn-outline-secondary btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
+                <form action="{$delete}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar Hero?')">
+                    {$csrf}{$method}
+                    <button class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-trash"></i></button>
+                </form>
+            HTML;
+        })
+
+        ->rawColumns(['image', 'title', 'subtitle', 'button', 'colors', 'acciones'])
+        ->make(true);
+}
+
 
     public function create()
     {

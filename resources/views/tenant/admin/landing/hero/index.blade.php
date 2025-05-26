@@ -16,7 +16,8 @@
   <div class="card">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-photo-video mr-2"></i>Hero Landing</div>
-      <a href="{{ route('landing.hero.create') }}" class="btn btn-outline-light btn-sm">
+      <a href="{{ route('landing.hero.create') }}" 
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
         <i class="fas fa-plus"></i> Nuevo
       </a>
     </div>
@@ -27,11 +28,8 @@
             <th>Imagen</th>
             <th>Título</th>
             <th>Subtítulo</th>
-            <th>Estado Título</th>
-            <th>Estado Subtítulo</th>
-            <th>Estado Botón</th>
-            <th>Color Botón</th>
-            <th>Color Texto</th>
+            <th>Botón</th>
+            <th>Colores</th>
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
@@ -56,14 +54,11 @@
           { data: 'image', name: 'image', orderable: false, searchable: false },
           { data: 'title', name: 'title' },
           { data: 'subtitle', name: 'subtitle' },
-          { data: 'title_status', name: 'title_status', className: 'text-center' },
-          { data: 'subtitle_status', name: 'subtitle_status', className: 'text-center' },
-          { data: 'button_status', name: 'button_status', className: 'text-center' },
-          { data: 'button_color', name: 'button_color', orderable: false, searchable: false },
-          { data: 'text_color', name: 'text_color', orderable: false, searchable: false },
+          { data: 'button', name: 'button' },
+          { data: 'colors', name: 'colors', orderable: false, searchable: false },
           { data: 'acciones', name: 'acciones', className: 'text-center', orderable: false, searchable: false }
         ],
-        order: [[1, 'asc']],  // ordenar por título
+        order: [[1, 'asc']],
         language: {
           url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
         },

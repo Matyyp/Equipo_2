@@ -18,11 +18,16 @@
         <div class="form-group mb-4">
           <label>Título</label>
           <input type="text" name="titulo" value="{{ old('titulo', $map->titulo) }}" class="form-control">
-          <div class="form-check form-switch mt-2">
-            <!-- Para titulo_active -->
-            <input type="hidden" name="titulo_active" value="0">
-            <input class="form-check-input" type="checkbox" name="titulo_active" value="1" {{ $map->titulo_active ? 'checked' : '' }}>
-            <label class="form-check-label">Mostrar Título</label>
+          <label class="mt-2 d-block">Mostrar Título</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="titulo_active" value="1" {{ old('titulo_active', $map->titulo_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="titulo_active" value="0" {{ old('titulo_active', $map->titulo_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 
@@ -31,11 +36,16 @@
             <div class="form-group mb-4">
               <label>Ciudad</label>
               <input type="text" name="ciudad" value="{{ old('ciudad', $map->ciudad) }}" class="form-control">
-              <div class="form-check form-switch mt-2">
-                <!-- Para ciudad_active -->
-                <input type="hidden" name="ciudad_active" value="0">
-                <input class="form-check-input" type="checkbox" name="ciudad_active" value="1" {{ $map->ciudad_active ? 'checked' : '' }}>
-                <label class="form-check-label">Mostrar Ciudad</label>
+              <label class="mt-2 d-block">Mostrar Ciudad</label>
+              <div>
+                <label class="me-3">
+                  <input type="radio" name="ciudad_active" value="1" {{ old('ciudad_active', $map->ciudad_active) == '1' ? 'checked' : '' }}>
+                  Sí
+                </label>
+                <label>
+                  <input type="radio" name="ciudad_active" value="0" {{ old('ciudad_active', $map->ciudad_active) == '0' ? 'checked' : '' }}>
+                  No
+                </label>
               </div>
             </div>
           </div>
@@ -43,11 +53,16 @@
             <div class="form-group mb-4">
               <label>Dirección</label>
               <input type="text" name="direccion" value="{{ old('direccion', $map->direccion) }}" class="form-control">
-              <div class="form-check form-switch mt-2">
-                <!-- Para direccion_active -->
-                <input type="hidden" name="direccion_active" value="0">
-                <input class="form-check-input" type="checkbox" name="direccion_active" value="1" {{ $map->direccion_active ? 'checked' : '' }}>
-                <label class="form-check-label">Mostrar Dirección</label>
+              <label class="mt-2 d-block">Mostrar Dirección</label>
+              <div>
+                <label class="me-3">
+                  <input type="radio" name="direccion_active" value="1" {{ old('direccion_active', $map->direccion_active) == '1' ? 'checked' : '' }}>
+                  Sí
+                </label>
+                <label>
+                  <input type="radio" name="direccion_active" value="0" {{ old('direccion_active', $map->direccion_active) == '0' ? 'checked' : '' }}>
+                  No
+                </label>
               </div>
             </div>
           </div>
@@ -58,11 +73,16 @@
           <label>Contactos (separados por comas)</label>
           <textarea name="contactos" class="form-control" rows="3">{{ old('contactos', $map->contactos) }}</textarea>
           <small class="text-muted">Ejemplo: +569 12345678,contacto@empresa.com,direccion@empresa.com</small>
-          <div class="form-check form-switch mt-2">
-            <!-- Para contactos_active -->
-            <input type="hidden" name="contactos_active" value="0">
-            <input class="form-check-input" type="checkbox" name="contactos_active" value="1" {{ $map->contactos_active ? 'checked' : '' }}>
-            <label class="form-check-label">Mostrar Contactos</label>
+          <label class="mt-2 d-block">Mostrar Contactos</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="contactos_active" value="1" {{ old('contactos_active', $map->contactos_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="contactos_active" value="0" {{ old('contactos_active', $map->contactos_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 
@@ -71,11 +91,16 @@
           <label>Horario de Atención</label>
           <textarea name="horario" class="form-control" rows="3">{{ old('horario', $map->horario) }}</textarea>
           <small class="text-muted">Ejemplo: Lunes a Viernes: 8:00 AM - 6:00 PM / Sábados: 9:00 AM - 1:00 PM</small>
-          <div class="form-check form-switch mt-2">
-            <!-- Para horario_active -->
-            <input type="hidden" name="horario_active" value="0">
-            <input class="form-check-input" type="checkbox" name="horario_active" value="1" {{ $map->horario_active ? 'checked' : '' }}>
-            <label class="form-check-label">Mostrar Horario</label>
+          <label class="mt-2 d-block">Mostrar Horario</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="horario_active" value="1" {{ old('horario_active', $map->horario_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="horario_active" value="0" {{ old('horario_active', $map->horario_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 
@@ -89,11 +114,18 @@
           <small class="text-muted">Ejemplo: 4.710989,-74.072092</small>
         </div>
 
-        <div class="form-check form-switch mb-4">
-          <!-- Para map_active -->
-            <input type="hidden" name="map_active" value="0">
-            <input class="form-check-input" type="checkbox" name="map_active" value="1" {{ $map->map_active ? 'checked' : '' }}>
-          <label class="form-check-label">Mostrar Mapa</label>
+        <div class="mb-4">
+          <label class="mt-2 d-block">Mostrar Mapa</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="map_active" value="1" {{ old('map_active', $map->map_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="map_active" value="0" {{ old('map_active', $map->map_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
         </div>
 
         <!-- Configuración del Botón -->
@@ -111,11 +143,18 @@
           <small class="text-muted">Ejemplo: https://maps.google.com/?q=4.710989,-74.072092</small>
         </div>
 
-        <div class="form-check form-switch mb-4">
-          <!-- Para boton_active -->
-            <input type="hidden" name="boton_active" value="0">
-            <input class="form-check-input" type="checkbox" name="boton_active" value="1" {{ $map->boton_active ? 'checked' : '' }}>
-          <label class="form-check-label">Mostrar Botón</label>
+        <div class="mb-4">
+          <label class="mt-2 d-block">Mostrar Botón</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="boton_active" value="1" {{ old('boton_active', $map->boton_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="boton_active" value="0" {{ old('boton_active', $map->boton_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
         </div>
 
         <!-- Configuración de Colores -->

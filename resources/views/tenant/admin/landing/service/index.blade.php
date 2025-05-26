@@ -22,9 +22,10 @@
     <div class="card">
         <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
         <div><i class="fas fa-photo-video mr-2"></i>Services Landing</div>
-        <a href="{{ route('landing.service.create') }}" class="btn btn-outline-light btn-sm">
-            <i class="fas fa-plus"></i> Nuevo
-        </a>
+        <a href="{{ route('landing.service.create') }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+        <i class="fas fa-plus"></i> Nuevo
+      </a>
         </div>
         
         <div class="card-body ">
@@ -35,13 +36,8 @@
                             <th width="100">Imagen</th>
                             <th>Título</th>
                             <th>Texto Secundario</th>
-                            <th width="120">Estado Título</th>
-                            <th width="120">Estado Texto Sec.</th>
-                            <th width="120">Estado Small Text</th>
-                            <th width="50">Color Título</th>
-                            <th width="50">Color Texto</th>
-                            <th width="50">Color Small</th>
-                            <th width="50">Color Fondo</th>
+                            <th>Texto Pequeño</th>
+                            <th width="150">Colores</th>
                             <th width="120" class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -74,13 +70,8 @@
                 { data: 'image', name: 'image', orderable: false, searchable: false },
                 { data: 'title', name: 'title' },
                 { data: 'secondary_text', name: 'secondary_text' },
-                { data: 'title_status', name: 'title_active', className: 'text-center' },
-                { data: 'secondary_text_status', name: 'secondary_text_active', className: 'text-center' },
-                { data: 'small_text_status', name: 'small_text_active', className: 'text-center' },
-                { data: 'title_color', name: 'title_color', orderable: false, searchable: false, className: 'text-center' },
-                { data: 'secondary_text_color', name: 'secondary_text_color', orderable: false, searchable: false, className: 'text-center' },
-                { data: 'small_text_color', name: 'small_text_color', orderable: false, searchable: false, className: 'text-center' },
-                { data: 'card_background_color', name: 'card_background_color', orderable: false, searchable: false, className: 'text-center' },
+                { data: 'small_text', name: 'small_text' },
+                { data: 'colores', name: 'colores', orderable: false, searchable: false, className: 'text-center' },
                 { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-center' }
             ],
             language: {

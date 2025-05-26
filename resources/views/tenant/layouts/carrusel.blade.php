@@ -34,7 +34,7 @@
       </div>
     @else
       <!-- Mensaje si no hay imágenes -->
-      <p class="text-gray-500 py-10">Próximamente más imágenes de la Patagonia</p>
+      <p class="text-gray-500 py-10">Agrega Imagenes desde el panel de administración</p>
     @endif
   </div>
 </section>

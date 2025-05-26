@@ -7,39 +7,63 @@ use App\Models\VehicleTypeImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
-
+use Illuminate\Support\Str;
 class VehicleTypeController extends Controller
 {
     public function index()
     {
         return view('tenant.admin.landing.vehicle.index');
     }
+public function data(Request $request)
+{
+    return DataTables::of(VehicleType::with('image'))
+        ->addColumn('image', fn($v) => $v->image ? '<img src="' . tenant_asset($v->image->path) . '" width="100"/>' : '')
+        
+        ->addColumn('card_title', function($v) {
+            $estado = $v->card_title_active
+                ? '<span class="badge bg-success">Activo</span>'
+                : '<span class="badge bg-secondary">Inactivo</span>';
+            return $estado . '<div class="mt-2 small">' . e(Str::limit($v->card_title, 50)) . '</div>';
+        })
 
-    public function data(Request $request)
-    {
-        return DataTables::of(VehicleType::with('image'))
-            ->addColumn('image', fn($v) => $v->image ? '<img src="' . tenant_asset("" . $v->image->path) . '" width="100"/>' : '')
-            ->addColumn('card_title_active', fn($v) => $v->card_title_active ? 'Yes' : 'No')
-            ->addColumn('card_subtitle_active', fn($v) => $v->card_subtitle_active ? 'Yes' : 'No')
-            ->addColumn('card_background_color', fn($v) => '<div style="width: 30px; height: 30px; background-color: '.$v->card_background_color.';"></div>')
-            ->addColumn('text_color', fn($v) => '<div style="width: 30px; height: 30px; background-color: '.$v->text_color.';"></div>')
+        ->addColumn('card_subtitle', function($v) {
+            $estado = $v->card_subtitle_active
+                ? '<span class="badge bg-success">Activo</span>'
+                : '<span class="badge bg-secondary">Inactivo</span>';
+            return $estado . '<div class="mt-2 small">' . e(Str::limit($v->card_subtitle, 50)) . '</div>';
+        })
 
-            ->addColumn('acciones', function ($v) {
-                $edit = route('landing.vehicle.edit',$v); // ajustar a edit si lo deseas
-                $delete = route('landing.vehicle.destroy', $v);
-                $csrf = csrf_field();
-                $method = method_field('DELETE');
-                return <<<HTML
-                    <a href="{$edit}" class="btn btn-outline-secondary btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
-                    <form action="{$delete}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar tarjeta?')">
-                        {$csrf}{$method}
-                        <button class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-trash"></i></button>
-                    </form>
-                HTML;
-            })
-            ->rawColumns(['image', 'card_background_color', 'text_color', 'acciones'])
-            ->make(true);
-    }
+        ->addColumn('colores', function($v) {
+            return '
+                <div class="d-flex flex-column gap-1 small">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="width:15px;height:15px;background-color:' . $v->card_background_color . ';border-radius:50%;border:1px solid #ccc;"></span> Fondo Tarjeta
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="width:15px;height:15px;background-color:' . $v->text_color . ';border-radius:50%;border:1px solid #ccc;"></span> Texto
+                    </div>
+                </div>
+            ';
+        })
+
+        ->addColumn('acciones', function ($v) {
+            $edit = route('landing.vehicle.edit', $v);
+            $delete = route('landing.vehicle.destroy', $v);
+            $csrf = csrf_field();
+            $method = method_field('DELETE');
+            return <<<HTML
+                <a href="{$edit}" class="btn btn-outline-secondary btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
+                <form action="{$delete}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar tarjeta?')">
+                    {$csrf}{$method}
+                    <button class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-trash"></i></button>
+                </form>
+            HTML;
+        })
+
+        ->rawColumns(['image', 'card_title', 'card_subtitle', 'colores', 'acciones'])
+        ->make(true);
+}
+
 
     public function create()
     {

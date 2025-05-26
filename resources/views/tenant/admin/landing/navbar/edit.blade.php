@@ -12,7 +12,7 @@
         @csrf
         @method('PUT')
 
-        @foreach(['reservations', 'schedule', 'email', 'address', 'services', 'about_us', 'contact_us'] as $field)
+        @foreach(['Texto Reserva', 'Horario', 'Email', 'Dirección', 'Servicios', 'Quienes Somos', 'Contáctanos'] as $field)
           <div class="form-group mb-4">
             <label>{{ ucfirst(str_replace('_', ' ', $field)) }}</label>
             <input type="text" name="{{ $field }}" value="{{ $navbar->$field }}" class="form-control">

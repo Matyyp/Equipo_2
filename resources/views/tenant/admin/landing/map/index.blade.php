@@ -12,8 +12,9 @@
   <div class="card">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-map-marked-alt mr-2"></i>Mapa y Contacto</div>
-      <a href="{{ route('landing.map.create') }}" class="btn btn-light btn-sm">
-        <i class="fas fa-plus mr-1"></i> Crear Nuevo
+      <a href="{{ route('landing.map.create') }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+        <i class="fas fa-plus"></i> Nuevo
       </a>
     </div>
     <div class="card-body">
@@ -27,7 +28,7 @@
               <th>Horario</th>
               <th>Botón</th>
               <th>Colores</th>
-              <th>Estado</th>
+              <th>Estado Mapa</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -107,23 +108,23 @@
               <td>
                 <div class="d-flex flex-column gap-1 small">
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->boton_color_texto }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->boton_color_texto }};border-radius:50%;border:1px solid #ccc;"></span>
                     Texto Botón
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->boton_color }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->boton_color }};border-radius:50%;border:1px solid #ccc;"></span>
                     Fondo Botón
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->color_tarjeta }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->color_tarjeta }};border-radius:50%;border:1px solid #ccc;"></span>
                     Fondo Tarjeta
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->color_texto_tarjeta }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->color_texto_tarjeta }};border-radius:50%;border:1px solid #ccc;"></span>
                     Texto Tarjeta
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->color_mapa }};border:1px solid #ccc;"></span>
+                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->color_mapa }};border-radius:50%;border:1px solid #ccc;"></span>
                     Color Mapa
                   </div>
                 </div>

@@ -24,10 +24,18 @@
         </div>
 
         {{-- Activar título --}}
-        <div class="mb-3 form-check">
-          <input type="hidden" name="card_title_active" value="0">
-          <input type="checkbox" class="form-check-input" name="card_title_active" id="card_title_active" value="1" {{ old('card_title_active', $vehicle->card_title_active) ? 'checked' : '' }}>
-          <label class="form-check-label" for="card_title_active">Mostrar título</label>
+        <div class="mb-3">
+          <label class="mt-2 d-block">Mostrar título</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="card_title_active" value="1" {{ old('card_title_active', $vehicle->card_title_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="card_title_active" value="0" {{ old('card_title_active', $vehicle->card_title_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
         </div>
 
         {{-- Subtítulo --}}
@@ -40,10 +48,18 @@
         </div>
 
         {{-- Activar subtítulo --}}
-        <div class="mb-3 form-check">
-          <input type="hidden" name="card_subtitle_active" value="0">
-          <input type="checkbox" class="form-check-input" name="card_subtitle_active" id="card_subtitle_active" value="1" {{ old('card_subtitle_active', $vehicle->card_subtitle_active) ? 'checked' : '' }}>
-          <label class="form-check-label" for="card_subtitle_active">Mostrar subtítulo</label>
+        <div class="mb-3">
+          <label class="mt-2 d-block">Mostrar subtítulo</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="card_subtitle_active" value="1" {{ old('card_subtitle_active', $vehicle->card_subtitle_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="card_subtitle_active" value="0" {{ old('card_subtitle_active', $vehicle->card_subtitle_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
         </div>
 
         {{-- Colores --}}

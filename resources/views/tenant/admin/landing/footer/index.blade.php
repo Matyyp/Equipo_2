@@ -19,42 +19,47 @@
             <tr>
               <th>Copyright</th>
               <th>Contacto</th>
-              <th>Contacto activo</th>
               <th>Redes</th>
-              <th>Redes activo</th>
-              <th>Fondo</th>
-              <th>Texto 1</th>
-              <th>Texto 2</th>
+              <th>Colores</th>
               <th class="text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
             @foreach($footers as $footer)
               <tr>
-                <td>{{ $footer->copyright }}</td>
-                <td>{{ $footer->contact_text }}</td>
-                <td class="text-center">{{ $footer->contact_active ? 'Sí' : 'No' }}</td>
-                <td>{{ $footer->social_text }}</td>
-                <td class="text-center">{{ $footer->social_active ? 'Sí' : 'No' }}</td>
-
-                {{-- Color: fondo --}}
-                <td class="text-center">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 20px; height: 20px; border-radius: 50%; background-color: {{ $footer->background_color }}; border: 1px solid #ccc;"></span>
-                  </div>
+                <td>
+                  <span class="badge bg-success">Activo</span>
+                  <div class="mt-2 small">{{ Str::limit($footer->copyright, 50) }}</div>
+                </td>
+                <td>
+                  @if($footer->contact_active)
+                    <span class="badge bg-success">Activo</span>
+                  @else
+                    <span class="badge bg-secondary">Inactivo</span>
+                  @endif
+                  <div class="mt-2 small">{{ Str::limit($footer->contact_text, 50) }}</div>
+                </td>
+                <td>
+                  @if($footer->social_active)
+                    <span class="badge bg-success">Activo</span>
+                  @else
+                    <span class="badge bg-secondary">Inactivo</span>
+                  @endif
+                  <div class="mt-2 small">{{ Str::limit($footer->social_text, 50) }}</div>
                 </td>
 
-                {{-- Color: texto 1 --}}
-                <td class="text-center">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 20px; height: 20px; border-radius: 50%; background-color: {{ $footer->text_color_1 }}; border: 1px solid #ccc;"></span>
-                  </div>
-                </td>
-
-                {{-- Color: texto 2 --}}
-                <td class="text-center">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 20px; height: 20px; border-radius: 50%; background-color: {{ $footer->text_color_2 }}; border: 1px solid #ccc;"></span>
+                <td>
+                  <div class="d-flex flex-column gap-1 small">
+                    @foreach([
+                      'Fondo' => $footer->background_color,
+                      'Texto 1' => $footer->text_color_1,
+                      'Texto 2' => $footer->text_color_2
+                    ] as $label => $color)
+                      <div class="d-flex align-items-center gap-2">
+                        <span style="display:inline-block;width:15px;height:15px;background-color:{{ $color }};border-radius:50%;border:1px solid #ccc;"></span>
+                        {{ $label }}
+                      </div>
+                    @endforeach
                   </div>
                 </td>
 

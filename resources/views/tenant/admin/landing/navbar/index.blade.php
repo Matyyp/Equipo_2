@@ -32,13 +32,69 @@
           </thead>
           <tbody>
             <tr>
-              <td>{{ $navbar->reservations }}</td>
-              <td>{{ $navbar->schedule }}</td>
-              <td>{{ $navbar->email }}</td>
-              <td>{{ $navbar->address }}</td>
-              <td>{{ $navbar->services }}</td>
-              <td>{{ $navbar->about_us }}</td>
-              <td>{{ $navbar->contact_us }}</td>
+              <td>
+                @if($navbar->reservations_active)
+                  <span class="badge bg-success">Activo</span>
+                @else
+                  <span class="badge bg-secondary">Inactivo</span>
+                @endif
+                <div class="mt-2 small">{{ Str::limit($navbar->reservations, 50) }}</div>
+              </td>
+
+              <td>
+                @if($navbar->schedule_active)
+                  <span class="badge bg-success">Activo</span>
+                @else
+                  <span class="badge bg-secondary">Inactivo</span>
+                @endif
+                <div class="mt-2 small">{{ Str::limit($navbar->schedule, 50) }}</div>
+              </td>
+
+              <td>
+                @if($navbar->email_active)
+                  <span class="badge bg-success">Activo</span>
+                @else
+                  <span class="badge bg-secondary">Inactivo</span>
+                @endif
+                <div class="mt-2 small">{{ Str::limit($navbar->email, 50) }}</div>
+              </td>
+
+              <td>
+                @if($navbar->address_active)
+                  <span class="badge bg-success">Activo</span>
+                @else
+                  <span class="badge bg-secondary">Inactivo</span>
+                @endif
+                <div class="mt-2 small">{{ Str::limit($navbar->address, 50) }}</div>
+              </td>
+
+              <td>
+                @if($navbar->services_active)
+                  <span class="badge bg-success">Activo</span>
+                @else
+                  <span class="badge bg-secondary">Inactivo</span>
+                @endif
+                <div class="mt-2 small">{{ Str::limit($navbar->services, 50) }}</div>
+              </td>
+
+              <td>
+                @if($navbar->about_us_active)
+                  <span class="badge bg-success">Activo</span>
+                @else
+                  <span class="badge bg-secondary">Inactivo</span>
+                @endif
+                <div class="mt-2 small">{{ Str::limit($navbar->about_us, 50) }}</div>
+              </td>
+
+              <td>
+                @if($navbar->contact_us_active)
+                  <span class="badge bg-success">Activo</span>
+                @else
+                  <span class="badge bg-secondary">Inactivo</span>
+                @endif
+                <div class="mt-2 small">{{ Str::limit($navbar->contact_us, 50) }}</div>
+              </td>
+
               <td>
                 <div class="d-flex flex-column gap-1 small">
                   @foreach([
@@ -56,18 +112,35 @@
                   @endforeach
                 </div>
               </td>
+
               <td>
                 <div class="d-flex flex-column small">
-                  <div><strong>Botón 1:</strong> {{ $navbar->button_1 }}</div>
-                  <div><strong>Botón 2:</strong> {{ $navbar->button_2 }}</div>
+                  <div>
+                    @if($navbar->button_1_active)
+                      <span class="badge bg-success">Activo</span>
+                    @else
+                      <span class="badge bg-secondary">Inactivo</span>
+                    @endif
+                    <strong class="ms-1">Botón 1:</strong> {{ Str::limit($navbar->button_1, 40) }}
+                  </div>
+                  <div class="mt-2">
+                    @if($navbar->button_2_active)
+                      <span class="badge bg-success">Activo</span>
+                    @else
+                      <span class="badge bg-secondary">Inactivo</span>
+                    @endif
+                    <strong class="ms-1">Botón 2:</strong> {{ Str::limit($navbar->button_2, 40) }}
+                  </div>
                 </div>
               </td>
+
               <td>
                 <a href="{{ route('landing.navbar.edit', $navbar) }}" class="btn btn-outline-secondary btn-sm text-dark me-1" title="Editar">
-                    <i class="fas fa-pen"></i>
+                  <i class="fas fa-pen"></i>
                 </a>
               </td>
             </tr>
+
           </tbody>
         </table>
       </div>
@@ -76,20 +149,4 @@
 </div>
 @endsection
 
-@push('scripts')
-<!-- jQuery + DataTables JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  $('#navbar-table').DataTable({
-    language: {
-      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-    },
-    responsive: true
-  });
-});
-</script>
-@endpush

@@ -23,10 +23,16 @@
 
         {{-- Activar título --}}
         <div class="mb-3">
-          <label class="form-label">Mostrar título</label>
+          <label class="mt-2 d-block">Mostrar título</label>
           <div>
-            <input type="hidden" name="title_active" value="0">
-            <input type="checkbox" name="title_active" value="1" {{ old('title_active', $serviceLanding->title_active) ? 'checked' : '' }}>
+            <label class="me-3">
+              <input type="radio" name="title_active" value="1" {{ old('title_active', $serviceLanding->title_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="title_active" value="0" {{ old('title_active', $serviceLanding->title_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 
@@ -39,10 +45,16 @@
 
         {{-- Activar texto secundario --}}
         <div class="mb-3">
-          <label class="form-label">Mostrar texto secundario</label>
+          <label class="mt-2 d-block">Mostrar texto secundario</label>
           <div>
-            <input type="hidden" name="secondary_text_active" value="0">
-            <input type="checkbox" name="secondary_text_active" value="1" {{ old('secondary_text_active', $serviceLanding->secondary_text_active) ? 'checked' : '' }}>
+            <label class="me-3">
+              <input type="radio" name="secondary_text_active" value="1" {{ old('secondary_text_active', $serviceLanding->secondary_text_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="secondary_text_active" value="0" {{ old('secondary_text_active', $serviceLanding->secondary_text_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 
@@ -54,10 +66,16 @@
 
         {{-- Activar small text --}}
         <div class="mb-3">
-          <label class="form-label">Mostrar texto pequeño</label>
+          <label class="mt-2 d-block">Mostrar texto pequeño</label>
           <div>
-            <input type="hidden" name="small_text_active" value="0">
-            <input type="checkbox" name="small_text_active" value="1" {{ old('small_text_active', $serviceLanding->small_text_active) ? 'checked' : '' }}>
+            <label class="me-3">
+              <input type="radio" name="small_text_active" value="1" {{ old('small_text_active', $serviceLanding->small_text_active) == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="small_text_active" value="0" {{ old('small_text_active', $serviceLanding->small_text_active) == '0' ? 'checked' : '' }}>
+              No
+            </label>
           </div>
         </div>
 

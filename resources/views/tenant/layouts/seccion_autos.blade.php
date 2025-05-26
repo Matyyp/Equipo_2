@@ -9,10 +9,11 @@
   <h2 class="text-3xl font-bold text-center mb-8">Nuestros Vehículos Para Tí</h2>
   <div class="container mx-auto px-4 overflow-hidden">
     <div class="relative">
-      <!-- Contenedor principal -->
-      <div id="vehicleCarousel" class="flex transition-transform duration-500 ease-in-out">
-        <!-- Duplicamos los elementos para el efecto circular -->
-        @foreach (array_merge($vehicles->toArray(), $vehicles->toArray()) as $v)
+      <div id="vehicleCarousel" class="flex transition-transform duration-500 ease-in-out {{ $vehicleCount > 4 ? '' : 'flex-wrap justify-center' }}">
+        @php
+          $vehicleList = $vehicleCount > 4 ? array_merge($vehicles->toArray(), $vehicles->toArray()) : $vehicles->toArray();
+        @endphp
+        @foreach ($vehicleList as $v)
         <div class="w-64 px-3 flex-shrink-0">
           <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 h-full">
             <img src="{{ tenant_asset($v['image']['path'] ?? 'img/placeholder.jpg') }}"
@@ -32,8 +33,8 @@
         @endforeach
       </div>
 
-      <!-- Controles de navegación -->
       @if($vehicleCount > 4)
+      <!-- Controles solo si hay carrusel -->
       <button id="prevBtn" class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg z-10 hover:bg-gray-100 transition-all">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -50,33 +51,32 @@
 </section>
 @endif
 
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  const vehicleCount = {{ $vehicleCount }};
+  const itemsToShow = 4;
+
+  if (vehicleCount <= itemsToShow) {
+    // No carrusel, solo estilo flex-wrap aplicado desde Blade
+    return;
+  }
+
   const carousel = document.getElementById('vehicleCarousel');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   const items = carousel.children;
   const itemWidth = items[0].offsetWidth;
-  const itemsToShow = 4;
-  const vehicleCount = {{ $vehicleCount }};
-  
-  if(vehicleCount <= itemsToShow) {
-    // Si hay 4 o menos, mostramos todos sin animación
-    carousel.style.justifyContent = 'center';
-    return;
-  }
-  
-  // Configuración del carrusel circular
+
   let currentIndex = 0;
   const totalItems = vehicleCount;
-  const clonedItems = vehicleCount; // Cantidad de items clonados
-  
+  const clonedItems = vehicleCount;
+
   function updateCarousel() {
     const newPosition = -currentIndex * itemWidth;
     carousel.style.transform = `translateX(${newPosition}px)`;
-    
-    // Efecto circular: cuando llegamos al final, saltamos sin animación al principio
-    if(currentIndex >= totalItems) {
+
+    if (currentIndex >= totalItems) {
       currentIndex = 0;
       setTimeout(() => {
         carousel.style.transition = 'none';
@@ -87,43 +87,37 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 500);
     }
   }
-  
-  // Navegación
-  if(prevBtn) {
-    prevBtn.addEventListener('click', function() {
-      currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-      updateCarousel();
-    });
-  }
-  
-  if(nextBtn) {
-    nextBtn.addEventListener('click', function() {
-      currentIndex = (currentIndex + 1) % (totalItems + 1);
-      updateCarousel();
-    });
-  }
-  
+
+  // Botones
+  prevBtn?.addEventListener('click', function() {
+    currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+    updateCarousel();
+  });
+
+  nextBtn?.addEventListener('click', function() {
+    currentIndex = (currentIndex + 1) % (totalItems + 1);
+    updateCarousel();
+  });
+
   // Autoplay
-  if(vehicleCount > itemsToShow) {
-    let autoplay = setInterval(() => {
+  let autoplay = setInterval(() => {
+    currentIndex = (currentIndex + 1) % (totalItems + 1);
+    updateCarousel();
+  }, 3000);
+
+  carousel.addEventListener('mouseenter', () => clearInterval(autoplay));
+  carousel.addEventListener('mouseleave', () => {
+    autoplay = setInterval(() => {
       currentIndex = (currentIndex + 1) % (totalItems + 1);
       updateCarousel();
     }, 3000);
-    
-    // Pausar al interactuar
-    carousel.addEventListener('mouseenter', () => clearInterval(autoplay));
-    carousel.addEventListener('mouseleave', () => {
-      autoplay = setInterval(() => {
-        currentIndex = (currentIndex + 1) % (totalItems + 1);
-        updateCarousel();
-      }, 3000);
-    });
-  }
-  
-  // Inicializar
+  });
+
+  // Iniciar carrusel
   updateCarousel();
 });
 </script>
+
 
 <style>
 #vehicleCarousel {
