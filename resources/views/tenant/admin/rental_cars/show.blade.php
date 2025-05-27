@@ -47,6 +47,28 @@
             <span class="badge bg-secondary">Inactivo</span>
           @endif
         </dd>
+
+        <dt class="col-sm-3">Sucursal</dt>
+        <dd class="col-sm-9">
+          @if($rentalCar->branchOffice)
+            {{ $rentalCar->branchOffice->name_branch_offices }}
+          @else
+            <span class="text-muted">—</span>
+          @endif
+        </dd>
+        <dt class="col-sm-3">Pasajeros</dt>
+        <dd class="col-sm-9">{{ $rentalCar->passenger_capacity }}</dd>
+
+        <dt class="col-sm-3">Transmisión</dt>
+        <dd class="col-sm-9">{{ ucfirst($rentalCar->transmission) }}</dd>
+
+        <dt class="col-sm-3">Maletas</dt>
+        <dd class="col-sm-9">{{ $rentalCar->luggage_capacity }}</dd>
+
+        <dt class="col-sm-3">Precio/Día</dt>
+        <dd class="col-sm-9">
+          ${{ number_format($rentalCar->price_per_day, 2, ',', '.') }}
+        </dd>
       </dl>
     </div>
   </div>

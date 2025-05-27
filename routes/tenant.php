@@ -31,6 +31,8 @@ use App\Http\Controllers\Tenant\Maintainers\WorkerController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\RentalCarController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\TransbankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +60,12 @@ Route::middleware([
 
     Route::get('landings/available/cars', [LandingController::class, 'availableCarsPartial'])
      ->name('landings.available.partial');
+
+    Route::middleware('auth')->group(function() {
+        Route::get('cars/{car}/reserve', [LandingController::class,'reserve'])
+            ->name('cars.reserve');
+
+    });
 
     Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
         Route::get('/dashboard', function () {
@@ -155,12 +163,32 @@ Route::middleware([
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
+
+    //transbank
+    Route::post('/webpay/init/{car}', [TransbankController::class, 'init'])->name('webpay.init');
+    Route::get('/webpay/confirm', [TransbankController::class, 'confirm'])->name('webpay.confirm');
     
     // Modulo de reservas
     Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
         Route::get('rental-cars/data', [RentalCarController::class, 'data'])
         ->name('rental-cars.data');
         Route::resource('rental-cars', RentalCarController::class);
+        
+        // Endpoint DataTables
+        Route::get('reservations/data', [ReservationController::class, 'data'])
+            ->name('reservations.data');
+
+        // Listar todas las reservas web
+        Route::get('reservations', [ReservationController::class, 'index'])
+            ->name('reservations.index');
+
+        // Confirmar una reserva (genera rent_register)
+        Route::post('reservations/{reservation}/confirm', [ReservationController::class, 'confirm'])
+            ->name('reservations.confirm');
+
+        // Cancelar una reserva
+        Route::post('reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])
+            ->name('reservations.cancel');
     });
     
 
