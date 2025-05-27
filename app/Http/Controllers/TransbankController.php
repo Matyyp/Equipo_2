@@ -19,6 +19,9 @@ class TransbankController extends Controller
             'branch_office_id' => 'required|exists:branch_offices,id_branch',
             'start_date'       => 'required|date|after_or_equal:today',
             'end_date'         => 'required|date|after_or_equal:start_date',
+        ], [
+            'start_date.after_or_equal' => 'La fecha de inicio debe ser hoy o una fecha futura.',
+            'end_date.after_or_equal'   => 'La fecha de término debe ser igual o posterior a la fecha de inicio.',
         ]);
         
         $conflict = Reservation::where('car_id', $car->id)
