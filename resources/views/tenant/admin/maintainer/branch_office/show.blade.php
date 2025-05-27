@@ -50,6 +50,10 @@
       <a href="{{ url('trabajadores/' . $sucursal->id_branch) }}" class="btn btn-dark btn-lg rounded mx-2 mb-2">
         <i class="fas fa-users"></i> Trabajadores
       </a>
+      <a href="{{ route('lavados.show', $sucursal->id_branch) }}" class="btn btn-info btn-lg rounded mx-2 mb-2">
+        <i class="fas fa-soap"></i> Lavado de auto
+      </a>
+
     </div>
 
 

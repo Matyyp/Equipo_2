@@ -78,6 +78,95 @@
             </label>
           </div>
         </div>
+
+        {{-- Sucursal --}}
+        <div class="mb-3">
+          <label for="branch_office_id" class="form-label">Sucursal</label>
+          <select name="branch_office_id" id="branch_office_id"
+                  class="form-select @error('branch_office_id') is-invalid @enderror" required>
+            <option value="" disabled>Seleccione una sucursal</option>
+            @foreach($branches as $id => $name)
+              <option value="{{ $id }}"
+                {{ old('branch_office_id', $rentalCar->branch_office_id) == $id ? 'selected' : '' }}>
+                {{ $name }}
+              </option>
+            @endforeach
+          </select>
+          @error('branch_office_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+        </div>
+
+        {{-- Capacidad pasajeros --}}
+        <div class="mb-3">
+          <label for="passenger_capacity" class="form-label">Pasajeros</label>
+          <input
+            type="number"
+            name="passenger_capacity"
+            id="passenger_capacity"
+            class="form-control @error('passenger_capacity') is-invalid @enderror"
+            min="1"
+            value="{{ old('passenger_capacity', $rentalCar->passenger_capacity ?? '') }}"
+            required
+          >
+          @error('passenger_capacity')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+        </div>
+
+        {{-- Transmisión --}}
+        <div class="mb-3">
+          <label for="transmission" class="form-label">Transmisión</label>
+          <select
+            name="transmission"
+            id="transmission"
+            class="form-select @error('transmission') is-invalid @enderror"
+            required
+          >
+            <option value="" disabled>Seleccione</option>
+            <option value="manual"   {{ old('transmission', $rentalCar->transmission ?? '')=='manual'   ? 'selected':'' }}>Manual</option>
+            <option value="automatic"{{ old('transmission', $rentalCar->transmission ?? '')=='automatic'?'selected':'' }}>Automática</option>
+          </select>
+          @error('transmission')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+        </div>
+
+        {{-- Capacidad maletas --}}
+        <div class="mb-3">
+          <label for="luggage_capacity" class="form-label">Maletas</label>
+          <input
+            type="number"
+            name="luggage_capacity"
+            id="luggage_capacity"
+            class="form-control @error('luggage_capacity') is-invalid @enderror"
+            min="0"
+            value="{{ old('luggage_capacity', $rentalCar->luggage_capacity ?? '') }}"
+            required
+          >
+          @error('luggage_capacity')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+        </div>
+
+        {{-- Precio por día --}}
+        <div class="mb-3">
+          <label for="price_per_day" class="form-label">Precio (por día)</label>
+          <input
+            type="number"
+            name="price_per_day"
+            id="price_per_day"
+            class="form-control @error('price_per_day') is-invalid @enderror"
+            min="0"
+            step="0.01"
+            value="{{ old('price_per_day', $rentalCar->price_per_day ?? '') }}"
+            required
+          >
+          @error('price_per_day')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+        </div>
+
         {{-- Imágenes existentes --}}
         @if($rentalCar->images->isNotEmpty())
           <div class="mb-4">

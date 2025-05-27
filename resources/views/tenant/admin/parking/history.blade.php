@@ -42,6 +42,7 @@
               <th>Inicio</th>
               <th>Término</th>
               <th>Días</th>
+              <th>Incluye lavado</th>
               <th>Precio</th>
               <th>Total</th>
               <th>Acciones</th>
@@ -86,6 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
       { data: 'start_date'},
       { data: 'end_date'},
       { data: 'days' },
+      {
+        data: 'washed',
+        render: function(data) {
+          return data
+            ? '<span class="">Sí</span>'
+            : '<span class="">No</span>';
+        }
+      },
       { data: 'price', render: formatCLP },
       { data: 'total_value', render: formatCLP },
       {

@@ -26,6 +26,7 @@ use App\Http\Controllers\Tenant\Parking\ParkingController;
 use App\Http\Controllers\Tenant\Maintainers\PaymentRecordController;
 use App\Http\Controllers\Tenant\Maintainers\BankDetailController;
 use App\Http\Controllers\Tenant\Dashboard\DashboardController;
+use App\Http\Controllers\Tenant\CarWash\CarWashController;
 use App\Http\Controllers\Tenant\Maintainers\WorkerController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\RentalCarController;
@@ -39,6 +40,8 @@ use App\Http\Controllers\ServiceLandingController;
 use App\Http\Controllers\ContainerImageLandingController;
 
 
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\TransbankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +72,12 @@ Route::middleware([
 
     Route::get('landings/available/cars', [LandingController::class, 'availableCarsPartial'])
      ->name('landings.available.partial');
+
+    Route::middleware('auth')->group(function() {
+        Route::get('cars/{car}/reserve', [LandingController::class,'reserve'])
+            ->name('cars.reserve');
+
+    });
 
     Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
         Route::get('/dashboard', function () {
@@ -148,18 +157,50 @@ Route::middleware([
         Route::get('/payment/{id}/voucher', [PaymentRecordController::class, 'downloadPdf'])->name('payment.record');
 
     });
+    // módulo lavado
+    Route::middleware(['auth', 'permission:carwash.access'])->group(function () {
+        Route::resource('lavados', CarWashController::class);
+        Route::patch('lavados/{id}/disable', [CarWashController::class, 'disable'])->name('lavados.disable');
+    
+        //Ruta AJAX para obtener tipos de lavado por sucursal
+        Route::get('lavados-sucursal', [CarWashController::class, 'getByBranch'])->name('lavados.sucursal');
+        Route::get('carwash/history', [CarWashController::class, 'history'])->name('carwash.history');
+        Route::patch('carwash/marcar-lavado/{id}', [CarWashController::class, 'markAsWashed'])->name('carwash.markAsWashed');
+    });
+
+
     // Modulo ventas
     Route::middleware(['auth', 'permission:ventas.access'])->group(function () {
         Route::resource('pagos', PaymentRecordController::class)->names('payment');
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
+
+    //transbank
+    Route::post('/webpay/init/{car}', [TransbankController::class, 'init'])->name('webpay.init');
+    Route::get('/webpay/confirm', [TransbankController::class, 'confirm'])->name('webpay.confirm');
     
     // Modulo de reservas
     Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
         Route::get('rental-cars/data', [RentalCarController::class, 'data'])
         ->name('rental-cars.data');
         Route::resource('rental-cars', RentalCarController::class);
+        
+        // Endpoint DataTables
+        Route::get('reservations/data', [ReservationController::class, 'data'])
+            ->name('reservations.data');
+
+        // Listar todas las reservas web
+        Route::get('reservations', [ReservationController::class, 'index'])
+            ->name('reservations.index');
+
+        // Confirmar una reserva (genera rent_register)
+        Route::post('reservations/{reservation}/confirm', [ReservationController::class, 'confirm'])
+            ->name('reservations.confirm');
+
+        // Cancelar una reserva
+        Route::post('reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])
+            ->name('reservations.cancel');
     });
     
 Route::middleware(['auth', 'permission:reservas.access'])->group(function () {

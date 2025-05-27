@@ -50,26 +50,50 @@
                                 <p>Historial</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('carwash.history') }}"
+                                class="nav-link {{ request()->routeIs('carwash.history') ? 'active' : '' }}">
+
+                                <p>Historial Lavado</p>
+                            </a>
+
+                        </li>
                     </ul>
                 </li>
                 @endcan
 
                 {{-- Reservas --}}
                 @can('reservas.access')
-                <li class="nav-item has-treeview {{ request()->is('reservas*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('reservas*') ? 'active' : '' }}">
-                        <i class="nav-icon fa-solid fa-calendar-days"></i>
-                        <p>Reservas<i class="right fas fa-angle-left"></i></p>
+                <li class="nav-item has-treeview {{ request()->is('reservations*') ? 'menu-open' : '' }}">
+                <a href="#" class="nav-link {{ request()->is('reservations*') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-calendar-days"></i>
+                    <p>
+                    Reservas
+                    <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    {{-- Autos de Arriendo --}}
+                    <li class="nav-item">
+                    <a
+                        href="{{ route('rental-cars.index') }}"
+                        class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}"
+                    >
+                        <i class="fas fa-car nav-icon"></i>
+                        <p>Autos de Arriendo</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('rental-cars.index') }}"
-                            class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}">
-                                <i class="fas fa-car nav-icon"></i>
-                                <p>Autos de Arriendo</p>
-                            </a>
-                        </li>
-                    </ul>
+                    </li>
+                    {{-- Listado de Reservas Web --}}
+                    <li class="nav-item">
+                    <a
+                        href="{{ route('reservations.index') }}"
+                        class="nav-link {{ request()->routeIs('reservations.*') ? 'active' : '' }}"
+                    >
+                        <i class="fas fa-list nav-icon"></i>
+                        <p>Listado de Reservas</p>
+                    </a>
+                    </li>
+                </ul>
                 </li>
                 @endcan
                 @can('reservas.access')
@@ -133,6 +157,7 @@
                     </ul>
                 </li>
                 @endcan
+
 
 
                 {{-- Ventas --}}

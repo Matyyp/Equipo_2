@@ -64,6 +64,7 @@
               <th>Inicio</th>
               <th>Término</th>
               <th>Días</th>
+              <th>Incluye lavado</th>
               <th>Precio Servicio</th>
               <th>Total</th>
               <th>Acciones</th>
@@ -145,6 +146,14 @@
         { data: 'start_date' },
         { data: 'end_date' },
         { data: 'days' },
+        { 
+          data: 'washed',
+          render: function(data) {
+            return data 
+              ? '<span class="">Sí</span>' 
+              : '<span class="">No</span>';
+          }
+        },
         { data: 'service_price' },
         { data: 'total_formatted' },
         {
