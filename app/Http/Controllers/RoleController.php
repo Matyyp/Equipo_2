@@ -38,8 +38,8 @@ class RoleController extends Controller
 
     public function create()
     {
-        $permissions = Permission::all();
-        return view('tenant.admin.roles.create', compact('permissions'));
+        $groupedPermissions = config('permissions_ui');
+        return view('tenant.admin.roles.create', compact('groupedPermissions'));
     }
 
     public function store(Request $request)
@@ -62,8 +62,12 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
-        $permissions = Permission::all();
-        return view('tenant.admin.roles.edit', compact('role','permissions'));
+        $groupedPermissions = config('permissions_ui');
+        
+        // Obtener los permisos actuales del rol (solo los nombres)
+        $rolePermissions = $role->permissions->pluck('name')->toArray();
+
+        return view('tenant.admin.roles.edit', compact('role', 'groupedPermissions', 'rolePermissions'));
     }
 
     public function update(Request $request, Role $role)

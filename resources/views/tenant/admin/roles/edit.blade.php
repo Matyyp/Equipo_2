@@ -18,33 +18,48 @@
         @csrf
         @method('PUT')
 
+        {{-- Permisos --}}
         <div class="form-group mb-4">
-          <label class="form-label">Permisos</label>
-          <div class="row">
-            @foreach($permissions as $perm)
-              <div class="col-md-4 mb-2">
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    name="permissions[]"
-                    value="{{ $perm->name }}"
-                    id="perm_{{ $perm->id }}"
-                    {{ $role->hasPermissionTo($perm->name) ? 'checked' : '' }}
-                  >
-                  <label class="form-check-label" for="perm_{{ $perm->id }}">
-                    {{ $perm->name }}
-                  </label>
-                </div>
+          <label class="form-label fw-bold text-dark fs-5">Permisos</label>
+
+          @foreach($groupedPermissions as $group => $perms)
+            <div class="mb-4 p-3 border rounded shadow-sm bg-light">
+              <h6 class="text-primary fw-bold mb-3">
+                <i class="fas fa-folder me-1"></i> {{ $group }}
+              </h6>
+
+              <div class="row">
+                @foreach($perms as $permName => $label)
+                  <div class="col-md-4 mb-2">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="permissions[]"
+                        id="perm_{{ Str::slug($permName) }}"
+                        value="{{ $permName }}"
+                        {{ in_array($permName, old('permissions', $rolePermissions ?? [])) ? 'checked' : '' }}
+                      >
+                      <label class="form-check-label" for="perm_{{ Str::slug($permName) }}">
+                        {{ $label }}
+                      </label>
+                    </div>
+                  </div>
+                @endforeach
               </div>
-            @endforeach
-          </div>
+            </div>
+          @endforeach
+
+          @error('permissions')
+            <div class="text-danger mt-2">{{ $message }}</div>
+          @enderror
         </div>
 
+        {{-- Botones --}}
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('roles.index') }}" class="btn btn-secondary mr-2">
-              <i class="fas fa-arrow-left mr-1"></i> Volver
+            <a href="{{ route('roles.index') }}" class="btn btn-secondary me-2">
+              <i class="fas fa-arrow-left me-1"></i> Volver
             </a>
           </div>
           <div class="col-auto">
