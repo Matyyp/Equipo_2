@@ -4,9 +4,9 @@
 @section('page_title', 'Editar Mapa + Contacto')
 
 @section('content')
-<div class="container">
+<div class="container-fluid">
   <div class="card">
-    <div class="card-header bg-secondary text-white">Editar Mapa + Contacto</div>
+    <div class="card-header bg-secondary text-white"><i class="fas fa-map-marked-alt mr-2"></i>Editar Mapa + Contacto</div>
     <div class="card-body">
       <form action="{{ route('landing.map.update', $map->id_map) }}" method="POST">
         @csrf
@@ -186,7 +186,7 @@
 
         <div class="d-flex justify-content-end mt-4">
           <a href="{{ route('landing.map.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          <button type="submit" class="btn btn-primary ml-1">Actualizar</button>
         </div>
       </form>
     </div>

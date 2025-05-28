@@ -21,15 +21,15 @@ public function data(Request $request)
         
         ->addColumn('card_title', function($v) {
             $estado = $v->card_title_active
-                ? '<span class="badge bg-success">Activo</span>'
-                : '<span class="badge bg-secondary">Inactivo</span>';
+                ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>';
             return $estado . '<div class="mt-2 small">' . e(Str::limit($v->card_title, 50)) . '</div>';
         })
 
         ->addColumn('card_subtitle', function($v) {
             $estado = $v->card_subtitle_active
-                ? '<span class="badge bg-success">Activo</span>'
-                : '<span class="badge bg-secondary">Inactivo</span>';
+                ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>';
             return $estado . '<div class="mt-2 small">' . e(Str::limit($v->card_subtitle, 50)) . '</div>';
         })
 
@@ -52,10 +52,10 @@ public function data(Request $request)
             $csrf = csrf_field();
             $method = method_field('DELETE');
             return <<<HTML
-                <a href="{$edit}" class="btn btn-outline-secondary btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
+                <a href="{$edit}" class="btn btn-outline-warning btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
                 <form action="{$delete}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar tarjeta?')">
                     {$csrf}{$method}
-                    <button class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-trash"></i></button>
+                    <button class="btn btn-outline-danger btn-sm text-dark"><i class="fas fa-trash"></i></button>
                 </form>
             HTML;
         })

@@ -32,9 +32,9 @@
               <!-- Texto Superior -->
               <td>
                 @if($aboutUs->top_text_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($aboutUs->top_text, 50) }}</div>
               </td>
@@ -42,9 +42,9 @@
               <!-- Título Principal -->
               <td>
                 @if($aboutUs->main_title_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2">{{ $aboutUs->main_title }}</div>
               </td>
@@ -52,9 +52,9 @@
               <!-- Texto Secundario -->
               <td>
                 @if($aboutUs->secondary_text_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($aboutUs->secondary_text, 50) }}</div>
               </td>
@@ -62,9 +62,9 @@
               <!-- Botón -->
               <td>
                 @if($aboutUs->button_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2">
                   <span class="d-block"><strong>Texto:</strong> {{ $aboutUs->button_text }}</span>
@@ -100,7 +100,7 @@
               
               <!-- Acciones -->
               <td>
-                <a href="{{ route('landing.quienes-somos.edit', $aboutUs) }}" class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                <a href="{{ route('landing.quienes-somos.edit', $aboutUs) }}" class="btn btn-outline-warning btn-sm text-dark" title="Editar">
                   <i class="fas fa-pen"></i>
                 </a>
               </td>

@@ -73,9 +73,21 @@
 <nav class="px-6 py-4 relative z-50"
      style="background-color: {{ $navbar->background_color_2 ?? '#111111' }}; color: {{ $navbar->text_color_2 }}">
     <div class="flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <img src="{{ tenant_asset('logos/logo.png') }}" alt="Logo Rent a Car" class="h-10">
-        </div>
+        <a href="/"
+        class="brand-link d-flex justify-content-center align-items-center">
+            @if (! empty($tenantLogo))
+                <img
+                    src="{{ $tenantLogo }}"
+                    alt="Sube tu Logo "
+                    class="brand-image" 
+                    style="display:block; margin:0 auto; max-height:50px; width:auto;"
+                />
+            @else
+                <span class="brand-text font-weight-light">
+                    {{ $tenantCompanyName ?? config('app.name') }}
+                </span>
+            @endif
+        </a>    
 
         <!-- Botón móvil -->
         <div class="md:hidden">
@@ -93,11 +105,15 @@
             bg-gray-900 md:bg-transparent flex-col md:flex-row gap-0 md:gap-8 z-40 transition-all duration-200">
 
             {{-- Servicios --}}
-            @if ($navbar->services_active)
+            @php
+            $serviceItems = array_filter(array_map('trim', explode(',', $navbar->services)));
+            @endphp
+
+            @if ($navbar->services_active && count($serviceItems))
             <li x-data="{ open: false }" @click.away="open = false" class="w-full md:w-auto relative">
                 <button @click.prevent="open = !open"
                     class="flex items-center w-full text-left px-4 py-2 hover:text-orange-400 bg-gray-800 md:bg-transparent rounded-none md:rounded focus:outline-none">
-                    {{ $navbar->services ?? 'Servicios' }}
+                    Servicios
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -105,15 +121,26 @@
                 </button>
                 <ul x-show="open" x-cloak x-transition
                     class="absolute mt-1 left-0 bg-gray-900 md:min-w-[180px] shadow-lg rounded overflow-hidden z-50">
-                    <li>
-                        <a href="{{ route('landings.available') }}"
-                           class="block px-4 py-2 text-gray-200 hover:bg-gray-800 hover:text-white">
-                            Arrienda tu auto
-                        </a>
-                    </li>
+                    @foreach ($serviceItems as $item)
+                        @php
+                            $lower = Str::lower($item);
+                            $route = match (true) {
+                                str_contains($lower, 'arrienda') => 'landings.available',
+                                //str_contains($lower, 'agenda estacionamiento') => 'landings.park',
+                                default => null,
+                            };
+                        @endphp
+                        <li>
+                            <a href="{{ $route ? route($route) : '#' }}"
+                            class="block px-4 py-2 text-gray-200 hover:bg-gray-800 hover:text-white">
+                            {{ $item }}
+                            </a>
+                        </li>
+                    @endforeach
                 </ul>
             </li>
             @endif
+
 
             {{-- Quiénes somos --}}
             @if ($navbar->about_us_active)

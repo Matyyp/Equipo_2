@@ -16,15 +16,16 @@
   <div class="card">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-images mr-2"></i>Imágenes del Contenedor</div>
-      <a href="{{ route('landing.container-image.create') }}" class="btn btn-outline-light btn-sm">
-        <i class="fas fa-plus"></i> Nueva Imagen
+      <a href="{{ route('landing.container-image.create') }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+        <i class="fas fa-plus"></i> Nuevo
       </a>
     </div>
     <div class="card-body">
       <table id="container-images-table" class="table table-striped table-bordered w-100">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>N° Imagen</th>
             <th>Imagen</th>
             <th class="text-center">Acciones</th>
           </tr>

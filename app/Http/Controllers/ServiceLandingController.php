@@ -28,24 +28,24 @@ class ServiceLandingController extends Controller
 
             ->addColumn('title', function ($s) {
                 $badge = $s->title_active 
-                    ? '<span class="badge bg-success mb-1">Activo</span>' 
-                    : '<span class="badge bg-secondary mb-1">Inactivo</span>';
+                    ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                    : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>';
 
                 return $badge . '<div>' . e($s->title) . '</div>';
             })
 
             ->addColumn('secondary_text', function ($s) {
                 $badge = $s->secondary_text_active 
-                    ? '<span class="badge bg-success mb-1">Activo</span>' 
-                    : '<span class="badge bg-secondary mb-1">Inactivo</span>';
+                    ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                    : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>';
 
                 return $badge . '<div>' . e($s->secondary_text) . '</div>';
             })
 
             ->addColumn('small_text', function ($s) {
                 $badge = $s->small_text_active 
-                    ? '<span class="badge bg-success mb-1">Activo</span>' 
-                    : '<span class="badge bg-secondary mb-1">Inactivo</span>';
+                    ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                    : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>';
 
                 return $badge . '<div>' . e($s->small_text) . '</div>';
             })
@@ -75,11 +75,11 @@ class ServiceLandingController extends Controller
 
                 return '
                     <div class="d-flex justify-content-center">
-                        <a href="' . $editUrl . '" class="btn btn-outline-secondary btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
+                        <a href="' . $editUrl . '" class="btn btn-outline-warning btn-sm text-dark me-1 mr-1"><i class="fas fa-pen"></i></a>
                         </a>
                         <form action="' . $deleteUrl . '" method="POST" class="d-inline">
                             ' . csrf_field() . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-outline-secondary btn-sm text-dark" onclick="return confirm(\'¿Estás seguro de eliminar este servicio?\')">
+                            <button type="submit" class="btn btn-outline-danger btn-sm text-dark" onclick="return confirm(\'¿Estás seguro de eliminar este servicio?\')">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </form>

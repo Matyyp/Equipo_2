@@ -1,9 +1,12 @@
 @extends('tenant.layouts.admin')
 
+@section('title', 'Editar Footer')
+@section('page_title', 'Editar Footer')
+
 @section('content')
-<div class="container">
+<div class="container-fluid">
   <div class="card">
-    <div class="card-header bg-secondary text-white">Editar Footer</div>
+    <div class="card-header bg-secondary text-white"><i class="fas fa-shoe-prints mr-2"></i>Editar Footer</div>
     <div class="card-body">
       <form action="{{ route('landing.footer.update', $footer->id) }}" method="POST">
         @csrf
@@ -75,7 +78,7 @@
           <div class="d-flex justify-content-end">
 
             <a href="{{ route('landing.footer.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <button type="submit" class="btn btn-primary ml-1">Actualizar</button>
 
           </div>
 

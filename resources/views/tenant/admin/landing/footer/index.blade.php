@@ -28,22 +28,22 @@
             @foreach($footers as $footer)
               <tr>
                 <td>
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                   <div class="mt-2 small">{{ Str::limit($footer->copyright, 50) }}</div>
                 </td>
                 <td>
                   @if($footer->contact_active)
-                    <span class="badge bg-success">Activo</span>
+                    <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                   @else
-                    <span class="badge bg-secondary">Inactivo</span>
+                    <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                   @endif
                   <div class="mt-2 small">{{ Str::limit($footer->contact_text, 50) }}</div>
                 </td>
                 <td>
                   @if($footer->social_active)
-                    <span class="badge bg-success">Activo</span>
+                    <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                   @else
-                    <span class="badge bg-secondary">Inactivo</span>
+                    <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                   @endif
                   <div class="mt-2 small">{{ Str::limit($footer->social_text, 50) }}</div>
                 </td>
@@ -64,7 +64,7 @@
                 </td>
 
                 <td class="text-center">
-                  <a href="{{ route('landing.footer.edit', $footer->id) }}" class="btn btn-outline-secondary btn-sm text-dark me-1" title="Editar">
+                  <a href="{{ route('landing.footer.edit', $footer->id) }}" class="btn btn-outline-warning btn-sm text-dark me-1" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
 

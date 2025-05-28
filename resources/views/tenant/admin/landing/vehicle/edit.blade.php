@@ -4,10 +4,10 @@
 @section('page_title', 'Editar Tipo de Vehículo')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
-      <h5 class="mb-0">Editar Tipo de Vehículo</h5>
+      <h5 class="mb-0"><i class="fas fa-car-side mr-2"></i>Editar Tipo de Vehículo</h5>
     </div>
     <div class="card-body">
       <form action="{{ route('landing.vehicle.update', $vehicle) }}" method="POST" enctype="multipart/form-data">
@@ -103,7 +103,7 @@
         {{-- Botones --}}
         <div class="d-flex justify-content-end">
           <a href="{{ route('landing.vehicle.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Actualizar</button>
+          <button type="submit" class="btn btn-primary ml-1">Actualizar</button>
         </div>
       </form>
     </div>

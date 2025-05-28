@@ -7,7 +7,7 @@
 <div class="container-fluid">
   <div class="card">
     <div class="card-header bg-secondary text-white">
-      <i class="fas fa-edit mr-2"></i>Editar Imagen
+      <i class="fas fa-images mr-2"></i>Editar Imagen
     </div>
     <div class="card-body">
       <form action="{{ route('landing.container-image.update', $container_image) }}" method="POST" enctype="multipart/form-data">
@@ -39,13 +39,14 @@
           <label class="form-check-label" for="delete_image">Eliminar imagen actual</label>
         </div>
 
-        <div class="form-group text-center mt-4">
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save mr-2"></i>Actualizar
-          </button>
+        <div class="form-group text-right mt-4">
           <a href="{{ route('landing.container-image.index') }}" class="btn btn-secondary">
-            <i class="fas fa-times mr-2"></i>Cancelar
+            Cancelar
           </a>
+          <button type="submit" class="btn btn-primary">
+            Actualizar
+          </button>
+
         </div>
       </form>
     </div>

@@ -4,9 +4,9 @@
 @section('page_title', 'Editar Quiénes Somos')
 
 @section('content')
-<div class="container">
+<div class="container-fluid">
   <div class="card">
-    <div class="card-header bg-secondary text-white">Editar Quiénes Somos</div>
+    <div class="card-header bg-secondary text-white"><i class="fas fa-info-circle mr-2"></i>Editar Quiénes Somos</div>
     <div class="card-body">
       <form action="{{ route('landing.quienes-somos.update', $aboutUs->id) }}" method="POST">
         @csrf
@@ -128,7 +128,7 @@
             <input type="color" name="card_text_color" value="{{ old('card_text_color', $aboutUs->card_text_color) }}" class="form-control form-control-color">
           </div>
           <div class="col-md-4 mb-3">
-            <label>Color Card Video</label>
+            <label>Color Tarjeta Video</label>
             <input type="color" name="video_card_color" value="{{ old('video_card_color', $aboutUs->video_card_color) }}" class="form-control form-control-color">
           </div>
         </div>
@@ -144,7 +144,7 @@
 
         <div class="d-flex justify-content-end">
           <a href="{{ route('landing.quienes-somos.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          <button type="submit" class="btn btn-primary ml-1">Actualizar</button>
         </div>
       </form>
     </div>

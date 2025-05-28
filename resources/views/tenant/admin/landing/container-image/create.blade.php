@@ -7,7 +7,7 @@
 <div class="container-fluid">
   <div class="card">
     <div class="card-header bg-secondary text-white">
-      <i class="fas fa-plus-circle mr-2"></i>Nueva Imagen
+      <i class="fas fa-images mr-2"></i>Nueva Imagen
     </div>
     <div class="card-body">
       <form action="{{ route('landing.container-image.store') }}" method="POST" enctype="multipart/form-data">
@@ -27,13 +27,14 @@
           <small class="form-text text-muted">Formatos soportados: JPG, PNG. Tamaño máximo: 2MB</small>
         </div>
 
-        <div class="form-group text-center mt-4">
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save mr-2"></i>Guardar Imagen
-          </button>
+        <div class="form-group text-right mt-4">
           <a href="{{ route('landing.container-image.index') }}" class="btn btn-secondary">
-            <i class="fas fa-times mr-2"></i>Cancelar
+            Cancelar
           </a>
+          <button type="submit" class="btn btn-primary">
+            Guardar
+          </button>
+
         </div>
       </form>
     </div>

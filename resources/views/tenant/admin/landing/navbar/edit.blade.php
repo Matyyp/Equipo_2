@@ -6,30 +6,50 @@
 @section('content')
 <class="container">
   <div class="card">
-    <div class="card-header bg-secondary text-white">Editar Navbar</div>
+    
+    <div class="card-header bg-secondary text-white"><i class="fas fa-bars mr-2"></i>Editar Navbar</div>
     <div class="card-body">
       <form action="{{ route('landing.navbar.update', $navbar) }}" method="POST">
         @csrf
         @method('PUT')
 
-        @foreach(['Texto Reserva', 'Horario', 'Email', 'Dirección', 'Servicios', 'Quienes Somos', 'Contáctanos'] as $field)
-          <div class="form-group mb-4">
-            <label>{{ ucfirst(str_replace('_', ' ', $field)) }}</label>
-            <input type="text" name="{{ $field }}" value="{{ $navbar->$field }}" class="form-control">
+          @php
+            $labels = [
+              'reservations' => 'Reservaciones',
+              'schedule' => 'Horario',
+              'email' => 'Correo electrónico',
+              'address' => 'Dirección',
+              'services' => 'Servicios',
+              'about_us' => 'Sobre nosotros',
+              'contact_us' => 'Contáctanos',
+            ];
+          @endphp
 
-            <label class="mt-2 d-block">Activo</label>
-            <div>
-              <label class="me-3">
-                <input type="radio" name="{{ $field . '_active' }}" value="1" {{ old($field . '_active', $navbar[$field . '_active']) == '1' ? 'checked' : '' }}>
-                Sí
-              </label>
-              <label>
-                <input type="radio" name="{{ $field . '_active' }}" value="0" {{ old($field . '_active', $navbar[$field . '_active']) == '0' ? 'checked' : '' }}>
-                No
-              </label>
+          @foreach(['reservations', 'schedule', 'email', 'address', 'services', 'about_us', 'contact_us'] as $field)
+            <div class="form-group mb-4">
+              <label>{{ $labels[$field] }}</label>
+              <input type="text" name="{{ $field }}" value="{{ $navbar->$field }}" class="form-control">
+
+              @if ($field === 'services')
+                <small class="text-muted d-block mt-1">
+                  Usa las opciones: <strong>Arrienda tu auto</strong> y/o <strong>Agenda estacionamiento</strong>, separadas por coma.
+                </small>
+              @endif
+
+              <label class="mt-2 d-block">{{ $labels[$field] }} activo</label>
+              <div>
+                <label class="me-3">
+                  <input type="radio" name="{{ $field . '_active' }}" value="1" {{ old($field . '_active', $navbar[$field . '_active']) == '1' ? 'checked' : '' }}>
+                  Sí
+                </label>
+                <label>
+                  <input type="radio" name="{{ $field . '_active' }}" value="0" {{ old($field . '_active', $navbar[$field . '_active']) == '0' ? 'checked' : '' }}>
+                  No
+                </label>
+              </div>
             </div>
-          </div>
-        @endforeach
+          @endforeach
+
 
         <hr>
         <h5 class="mt-4 mb-3">Colores</h5>
@@ -86,8 +106,9 @@
           </div>
         </div>
         <div class="d-flex justify-content-end">
-          <button type="submit" class="btn btn-primary">Guardar cambios</button>
           <a href="{{ route('landing.navbar.index') }}" class="btn btn-secondary me-2">Cancelar</a>
+          <button type="submit" class="btn btn-primary ml-1">Actualizar</button>
+
         </div>    
       </form>
     </div>

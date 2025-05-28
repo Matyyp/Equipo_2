@@ -38,45 +38,47 @@
               <!-- Título -->
               <td>
                 @if($map->titulo_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2">{{ $map->titulo }}</div>
               </td>
-              
               <!-- Ubicación -->
               <td>
-                <div class="d-flex flex-column small">
-                  <span><strong>Ciudad:</strong> 
+                <div class="d-flex flex-column small gap-3">
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    <strong>Ciudad:</strong>
                     @if($map->ciudad_active)
-                      <span class="badge bg-success">Activo</span>
+                      <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                     @else
-                      <span class="badge bg-secondary">Inactivo</span>
+                      <span class="border border-dark text-muted px-2 py-1 rounded">Inactivo</span>
                     @endif
-                    {{ $map->ciudad }}
-                  </span>
-                  <span class="mt-1"><strong>Dirección:</strong> 
+                    <span>{{ $map->ciudad }}</span>
+                  </div>
+
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    <strong>Dirección:</strong>
                     @if($map->direccion_active)
-                      <span class="badge bg-success">Activo</span>
+                      <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                     @else
-                      <span class="badge bg-secondary">Inactivo</span>
+                      <span class="border border-dark text-muted px-2 py-1 rounded">Inactivo</span>
                     @endif
-                    {{ Str::limit($map->direccion, 30) }}
-                  </span>
+                    <span>{{ Str::limit($map->direccion, 30) }}</span>
+                  </div>
                 </div>
               </td>
               
               <!-- Contactos -->
               <td>
                 @if($map->contactos_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">
                   @foreach(explode(',', $map->contactos) as $contacto)
-                    <span class="d-block">{{ $contacto }}</span>
+                    <span class="d-block">{{ '*'. $contacto }}</span>
                   @endforeach
                 </div>
               </td>
@@ -84,9 +86,9 @@
               <!-- Horario -->
               <td>
                 @if($map->horario_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($map->horario, 30) }}</div>
               </td>
@@ -94,9 +96,9 @@
               <!-- Botón -->
               <td>
                 @if($map->boton_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">
                   <span class="d-block"><strong>Texto:</strong> {{ $map->texto_boton }}</span>
@@ -133,22 +135,22 @@
               <!-- Estado -->
               <td>
                 @if($map->map_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
               </td>
               
               <!-- Acciones -->
               <td>
                 <div class="d-flex gap-1">
-                  <a href="{{ route('landing.map.edit', $map->id_map) }}" class="btn btn-outline-secondary btn-sm" title="Editar">
+                  <a href="{{ route('landing.map.edit', $map->id_map) }}" class="btn btn-outline-warning btn-sm text-dark me-1" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
                   <form action="{{ route('landing.map.destroy', $map->id_map) }}" method="POST" class="delete-form">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                    <button type="submit" class="btn btn-outline-danger btn-sm text-dark me-1 ml-1" title="Eliminar">
                       <i class="fas fa-trash-alt"></i>
                     </button>
                   </form>

@@ -7,7 +7,7 @@
 <div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
-      <h5 class="mb-0">Editar Hero</h5>
+      <h5 class="mb-0"><i class="fas fa-photo-video mr-2"></i>Editar Hero</h5>
     </div>
     <div class="card-body">
       <form action="{{ route('landing.hero.update', $hero) }}" method="POST" enctype="multipart/form-data">
@@ -122,7 +122,7 @@
 
         <div class="d-flex justify-content-end">
           <a href="{{ route('landing.hero.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Actualizar</button>
+          <button type="submit" class="btn btn-primary ml-1">Actualizar</button>
         </div>
       </form>
     </div>

@@ -96,9 +96,29 @@
                 </ul>
                 </li>
                 @endcan
-                @can('reservas.access')
-                <li class="nav-item has-treeview {{ request()->is('navbar*') || request()->is('footers*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('navbar*') || request()->is('footers*') ? 'active' : '' }}">
+                @can('landing.access')
+                <li class="nav-item has-treeview 
+                    {{ request()->is('navbar*') || 
+                    request()->is('footers*') || 
+                    request()->is('hero*') || 
+                    request()->is('vehicle*') || 
+                    request()->is('quienes-somos*') || 
+                    request()->is('map*') || 
+                    request()->is('service*') || 
+                    request()->is('container-image*') 
+                    ? 'menu-open' : '' }}">
+                    
+                    <a href="#" class="nav-link 
+                        {{ request()->is('navbar*') || 
+                        request()->is('footers*') || 
+                        request()->is('hero*') || 
+                        request()->is('vehicle*') || 
+                        request()->is('quienes-somos*') || 
+                        request()->is('map*') || 
+                        request()->is('service*') || 
+                        request()->is('container-image*') 
+                        ? 'active' : '' }}">
+                        
                         <i class="nav-icon fas fa-globe"></i>
                         <p>
                             Contenido Landing

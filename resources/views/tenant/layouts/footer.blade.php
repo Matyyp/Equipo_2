@@ -31,12 +31,24 @@
     <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between gap-6">
 
         {{-- Logo + Copyright --}}
-        <div>
-            <img src="{{ tenant_asset('logos/logo.png') }}" class="h-12 mb-2" alt="Logo Footer">
-            <p class="text-sm" style="color: {{ $footer->text_color_2 }};">
+        <a href="/"
+            class="brand-link d-flex justify-content-center align-items-center">
+                @if (! empty($tenantLogo))
+                    <img
+                        src="{{ $tenantLogo }}"
+                        alt="Sube tu Logo "
+                        class="brand-image" 
+                        style="display:block; margin:0 auto; max-height:50px; width:auto;"
+                    />
+                @else
+                    <span class="brand-text font-weight-light">
+                        {{ $tenantCompanyName ?? config('app.name') }}
+                    </span>
+                @endif
+                            <p class="text-sm" style="color: {{ $footer->text_color_2 }};">
                 {{ $footer->copyright }} © {{ date('Y') }}
             </p>
-        </div>
+        </a>  
 
         {{-- Contacto --}}
         @if($footer->contact_active && count($contacts))

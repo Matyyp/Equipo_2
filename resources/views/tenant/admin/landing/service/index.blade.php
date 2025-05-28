@@ -21,7 +21,7 @@
 
     <div class="card">
         <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-        <div><i class="fas fa-photo-video mr-2"></i>Services Landing</div>
+        <div><i class="fas fa-photo-video mr-2"></i>Servicios Landing</div>
         <a href="{{ route('landing.service.create') }}"
          style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
         <i class="fas fa-plus"></i> Nuevo
@@ -30,8 +30,8 @@
         
         <div class="card-body ">
             <div class="table-responsive">
-                <table id="services-table" class="table table-striped table-bordered table-hover" style="width:100%">
-                    <thead class="thead-light">
+                <table id="services-table" class="table table-striped table-bordered w-100">
+                    <thead>
                         <tr>
                             <th width="100">Imagen</th>
                             <th>Título</th>

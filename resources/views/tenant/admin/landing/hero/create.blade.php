@@ -4,10 +4,10 @@
 @section('page_title', 'Crear Hero')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
-      <h5 class="mb-0">Nuevo Hero</h5>
+      <h5 class="mb-0"><i class="fas fa-photo-video mr-2"></i>Nuevo Hero</h5>
     </div>
     <div class="card-body">
       <form action="{{ route('landing.hero.store') }}" method="POST" enctype="multipart/form-data">
@@ -22,11 +22,15 @@
 
         {{-- Estado título --}}
         <div class="mb-3">
-          <label class="form-label">Título activo</label>
+          <label class="mt-2 d-block">Mostrar título</label>
           <div>
             <label class="me-3">
-              <input type="checkbox" name="title_active" value="1" {{ old('title_active') ? 'checked' : '' }}>
-              Activo
+              <input type="radio" name="title_active" value="1" {{ old('title_active', '1') == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="title_active" value="0" {{ old('title_active') == '0' ? 'checked' : '' }}>
+              No
             </label>
           </div>
         </div>
@@ -40,11 +44,15 @@
 
         {{-- Estado subtítulo --}}
         <div class="mb-3">
-          <label class="form-label">Subtítulo activo</label>
+          <label class="mt-2 d-block">Mostrar subtítulo</label>
           <div>
             <label class="me-3">
-              <input type="checkbox" name="subtitle_active" value="1" {{ old('subtitle_active') ? 'checked' : '' }}>
-              Activo
+              <input type="radio" name="subtitle_active" value="1" {{ old('subtitle_active', '1') == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="subtitle_active" value="0" {{ old('subtitle_active') == '0' ? 'checked' : '' }}>
+              No
             </label>
           </div>
         </div>
@@ -58,11 +66,15 @@
 
         {{-- Estado botón --}}
         <div class="mb-3">
-          <label class="form-label">Botón activo</label>
+          <label class="mt-2 d-block">Mostrar botón</label>
           <div>
             <label class="me-3">
-              <input type="checkbox" name="button_active" value="1" {{ old('button_active') ? 'checked' : '' }}>
-              Activo
+              <input type="radio" name="button_active" value="1" {{ old('button_active', '1') == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="button_active" value="0" {{ old('button_active') == '0' ? 'checked' : '' }}>
+              No
             </label>
           </div>
         </div>
@@ -97,7 +109,7 @@
 
         <div class="d-flex justify-content-end">
           <a href="{{ route('landing.hero.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="submit" class="btn btn-primary ml-1">Guardar</button>
         </div>
       </form>
     </div>

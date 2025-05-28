@@ -31,7 +31,7 @@
 
             {{-- Botón --}}
             @if($hero->button_active)
-              <a href="{{ $hero->button_link }}"
+              <a href="{{ $hero->button_url }}"
                  class="px-6 py-3 rounded text-sm sm:text-base"
                  style="background-color: {{ $hero->button_color }}; color: {{ $hero->text_color }}"
                  data-aos="zoom-in">

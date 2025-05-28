@@ -4,10 +4,10 @@
 @section('page_title', 'Crear Tipo de Vehículo')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
-      <h5 class="mb-0">Nuevo Tipo de Vehículo</h5>
+      <h5 class="mb-0"><i class="fas fa-car-side mr-2"></i>Nuevo Tipo de Vehículo</h5>
     </div>
     <div class="card-body">
       <form action="{{ route('landing.vehicle.store') }}" method="POST" enctype="multipart/form-data">
@@ -23,9 +23,18 @@
         </div>
 
         {{-- Activar título --}}
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" name="card_title_active" id="card_title_active" value="1" {{ old('card_title_active', true) ? 'checked' : '' }}>
-          <label class="form-check-label" for="card_title_active">Mostrar título</label>
+        <div class="mb-3">
+          <label class="mt-2 d-block">Mostrar título</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="card_title_active" value="1" {{ old('card_title_active', '1') == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="card_title_active" value="0" {{ old('card_title_active') == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
         </div>
 
         {{-- Subtítulo --}}
@@ -36,11 +45,20 @@
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
         </div>
-
+  
         {{-- Activar subtítulo --}}
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" name="card_subtitle_active" id="card_subtitle_active" value="1" {{ old('card_subtitle_active', true) ? 'checked' : '' }}>
-          <label class="form-check-label" for="card_subtitle_active">Mostrar subtítulo</label>
+        <div class="mb-3">
+          <label class="mt-2 d-block">Mostrar subtítulo</label>
+          <div>
+            <label class="me-3">
+              <input type="radio" name="card_subtitle_active" value="1" {{ old('card_subtitle_active', '1') == '1' ? 'checked' : '' }}>
+              Sí
+            </label>
+            <label>
+              <input type="radio" name="card_subtitle_active" value="0" {{ old('card_subtitle_active') == '0' ? 'checked' : '' }}>
+              No
+            </label>
+          </div>
         </div>
 
 
@@ -69,7 +87,7 @@
         {{-- Botones --}}
         <div class="d-flex justify-content-end">
           <a href="{{ route('landing.vehicle.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="submit" class="btn btn-primary ml-1">Guardar</button>
         </div>
       </form>
     </div>

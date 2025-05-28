@@ -22,22 +22,22 @@ public function data(Request $request)
         
         ->addColumn('title', function ($h) {
             $badge = $h->title_active
-                ? '<span class="badge bg-success mb-1">Activo</span>'
-                : '<span class="badge bg-secondary mb-1">Inactivo</span>';
+                ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>';
             return $badge . '<div class="small">' . e($h->title) . '</div>';
         })
 
         ->addColumn('subtitle', function ($h) {
             $badge = $h->subtitle_active
-                ? '<span class="badge bg-success mb-1">Activo</span>'
-                : '<span class="badge bg-secondary mb-1">Inactivo</span>';
+                ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>';
             return $badge . '<div class="small">' . e($h->subtitle) . '</div>';
         })
 
         ->addColumn('button', function ($h) {
             $badge = $h->button_active
-                ? '<span class="badge bg-success mb-1">Activo</span>'
-                : '<span class="badge bg-secondary mb-1">Inactivo</span>';
+                ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>';
             return $badge . '<div class="small">' . e($h->button_text ?? '—') . '</div>';
         })
 
@@ -63,10 +63,10 @@ public function data(Request $request)
             $method = method_field('DELETE');
 
             return <<<HTML
-                <a href="{$edit}" class="btn btn-outline-secondary btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
+                <a href="{$edit}" class="btn btn-outline-warning btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
                 <form action="{$delete}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar Hero?')">
                     {$csrf}{$method}
-                    <button class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-trash"></i></button>
+                    <button class="btn btn-outline-danger btn-sm text-dark"><i class="fas fa-trash"></i></button>
                 </form>
             HTML;
         })

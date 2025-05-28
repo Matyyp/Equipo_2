@@ -34,63 +34,63 @@
             <tr>
               <td>
                 @if($navbar->reservations_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($navbar->reservations, 50) }}</div>
               </td>
 
               <td>
                 @if($navbar->schedule_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($navbar->schedule, 50) }}</div>
               </td>
 
               <td>
                 @if($navbar->email_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($navbar->email, 50) }}</div>
               </td>
 
               <td>
                 @if($navbar->address_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($navbar->address, 50) }}</div>
               </td>
 
               <td>
                 @if($navbar->services_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($navbar->services, 50) }}</div>
               </td>
 
               <td>
                 @if($navbar->about_us_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($navbar->about_us, 50) }}</div>
               </td>
 
               <td>
                 @if($navbar->contact_us_active)
-                  <span class="badge bg-success">Activo</span>
+                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                 @else
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                 @endif
                 <div class="mt-2 small">{{ Str::limit($navbar->contact_us, 50) }}</div>
               </td>
@@ -117,17 +117,17 @@
                 <div class="d-flex flex-column small">
                   <div>
                     @if($navbar->button_1_active)
-                      <span class="badge bg-success">Activo</span>
+                      <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                     @else
-                      <span class="badge bg-secondary">Inactivo</span>
+                      <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                     @endif
                     <strong class="ms-1">Botón 1:</strong> {{ Str::limit($navbar->button_1, 40) }}
                   </div>
-                  <div class="mt-2">
+                  <div class="mt-3">
                     @if($navbar->button_2_active)
-                      <span class="badge bg-success">Activo</span>
+                      <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
                     @else
-                      <span class="badge bg-secondary">Inactivo</span>
+                      <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
                     @endif
                     <strong class="ms-1">Botón 2:</strong> {{ Str::limit($navbar->button_2, 40) }}
                   </div>
@@ -135,7 +135,7 @@
               </td>
 
               <td>
-                <a href="{{ route('landing.navbar.edit', $navbar) }}" class="btn btn-outline-secondary btn-sm text-dark me-1" title="Editar">
+                <a href="{{ route('landing.navbar.edit', $navbar) }}" class="btn btn-outline-warning btn-sm text-dark me-1" title="Editar">
                   <i class="fas fa-pen"></i>
                 </a>
               </td>

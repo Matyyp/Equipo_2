@@ -8,17 +8,21 @@
 <!-- Mapa + Contacto -->
 <section id='contacto' class="py-16 bg-gray-100">
   <div class="container mx-auto px-4">
-    @foreach($maps as $map)
+    @foreach($maps as $index => $map)
       @php
         // Validar y procesar coordenadas
         $coordenadas = explode(',', $map->coordenadas_mapa);
         $latitud = count($coordenadas) > 0 ? trim($coordenadas[0]) : 0;
         $longitud = count($coordenadas) > 1 ? trim($coordenadas[1]) : 0;
+        
+        // Determinar la dirección basado en el índice (par o impar)
+        $mapDirection = $index % 2 === 0 ? 'md:grid-cols-2' : 'md:grid-cols-2';
+        $mapOrder = $index % 2 === 0 ? '' : 'md:order-last';
       @endphp
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center text-center md:text-left mb-16">
+      <div class="grid grid-cols-1 {{ $mapDirection }} gap-12 items-center text-center md:text-left mb-16">
         <!-- Mapa -->
-        <div data-aos="fade-right">
+        <div data-aos="fade-right" class="{{ $mapOrder }}">
           <div id="map-{{ $map->id_map }}" class="w-full h-[300px] md:h-[400px] rounded-xl shadow-lg border-4" 
                style="border-color: {{ $map->color_mapa }}"></div>
         </div>
