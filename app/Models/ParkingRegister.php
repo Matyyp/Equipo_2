@@ -47,4 +47,8 @@ class ParkingRegister extends Model
             'id'        // PK en parks
         );
     }
+    public function registers()
+{
+    return $this->hasMany(\App\Models\Register::class, 'id_parking_register', 'id_parking_register');
+}
 }

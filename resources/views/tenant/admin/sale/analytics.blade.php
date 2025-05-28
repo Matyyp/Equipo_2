@@ -8,11 +8,20 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     let chartBar = null;
+    let chartPie = null;
 
-    function renderBarChart(filter = 'daily') {
-        fetch(`{{ route('analiticas.chart.data') }}?filter=${filter}`)
+    function renderBarChart(filter = 'daily', branchId = null) {
+        let url = `{{ route('analiticas.chart.data') }}?filter=${filter}`;
+        @if(auth()->user()->hasRole('SuperAdmin'))
+        if (branchId) {
+            url += `&branch_id=${branchId}`;
+        }
+        @endif
+
+        fetch(url)
             .then(res => res.json())
             .then(data => {
+                // --- Gráfico de barras ---
                 if (chartBar) chartBar.destroy();
 
                 if (data.labels.length) {
@@ -44,20 +53,36 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
                 }
+            })
+            .catch(err => console.error(err));
+    }
 
-                // Gráfico de torta
+
+    function renderParkingChart(branchId = null) {
+        let url = `{{ route('analiticas.chart.data') }}?filter=daily`;
+        @if(auth()->user()->hasRole('SuperAdmin'))
+        if (branchId) {
+            url += `&branch_id=${branchId}`;
+        }
+        @endif
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                // --- Gráfico de torta (estacionamientos) ---
+                if (chartPie) chartPie.destroy();
                 if (data.parking) {
                     const total = data.parking.ocupados + data.parking.disponibles;
                     const ocupados = data.parking.ocupados;
                     const disponibles = data.parking.disponibles;
 
                     const pieCtx = document.getElementById('chartParking').getContext('2d');
-                    new Chart(pieCtx, {
+                    chartPie = new Chart(pieCtx, {
                         type: 'doughnut',
                         data: {
                             labels: [
-                                `Ocupados\n(${((ocupados / total) * 100).toFixed(1)}%)`,
-                                `Disponibles\n(${((disponibles / total) * 100).toFixed(1)}%)`
+                                `Ocupados\n(${total > 0 ? ((ocupados / total) * 100).toFixed(1) : 0}%)`,
+                                `Disponibles\n(${total > 0 ? ((disponibles / total) * 100).toFixed(1) : 0}%)`
                             ],
                             datasets: [{
                                 label: 'Estacionamientos',
@@ -93,24 +118,47 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
                     });
-
-                    // Info adicional debajo del gráfico
                     document.getElementById('parkingInfo').innerHTML = `
                         <div class="mb-1">Ocupados: <span class="text-red-500 font-semibold">${ocupados}</span></div>
                         <div>Disponibles: <span class="text-blue-500 font-semibold">${disponibles}</span></div>
                     `;
+                } else {
+                    document.getElementById('parkingInfo').innerHTML = '';
                 }
             })
             .catch(err => console.error(err));
     }
 
-    // Cargar gráfico inicial
-    renderBarChart();
 
-    // Cambiar filtro
+    @if(auth()->user()->hasRole('SuperAdmin'))
+        let currentBranchIdIngresos = document.getElementById('branchSelect').value;
+        let currentBranchIdParking = document.getElementById('branchSelectParking').value;
+    @else
+        let currentBranchIdIngresos = null;
+        let currentBranchIdParking = null;
+    @endif
+
+    renderBarChart(document.getElementById('filterType').value, currentBranchIdIngresos);
+    renderParkingChart(currentBranchIdParking);
+
+    // Eventos para ingresos
     document.getElementById('filterType').addEventListener('change', function () {
-        renderBarChart(this.value);
+        renderBarChart(this.value, currentBranchIdIngresos);
     });
+    @if(auth()->user()->hasRole('SuperAdmin'))
+    document.getElementById('branchSelect').addEventListener('change', function () {
+        currentBranchIdIngresos = this.value;
+        renderBarChart(document.getElementById('filterType').value, currentBranchIdIngresos);
+    });
+    @endif
+
+    // Eventos para estacionamiento
+    @if(auth()->user()->hasRole('SuperAdmin'))
+    document.getElementById('branchSelectParking').addEventListener('change', function () {
+        currentBranchIdParking = this.value;
+        renderParkingChart(currentBranchIdParking);
+    });
+    @endif
 });
 </script>
 @endpush
@@ -119,13 +167,23 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="p-6">
     <div class="grid row gap-6 m-2">
         <!-- Card gráfico de barras -->
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="bg-white rounded-lg shadow p-4 mr-2 mb-2">
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-sm font-semibold">Ingresos</h3>
-                <select id="filterType" class="border border-gray-300 rounded text-sm px-2 py-1">
-                    <option value="daily">Diario</option>
-                    <option value="weekly">Semanal</option>
-                </select>
+                <div class="flex items-center gap-2">
+                    <select id="filterType" class="border border-gray-300 rounded text-sm px-2 py-1">
+                        <option value="daily">Diario</option>
+                        <option value="weekly">Semanal</option>
+                    </select>
+                    @if(auth()->user()->hasRole('SuperAdmin'))
+                        <span class="text-sm">Sucursal:</span>
+                        <select id="branchSelect" class="border border-gray-300 rounded text-sm px-2 py-1">
+                            @foreach(\App\Models\BranchOffice::all() as $branch)
+                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
+                            @endforeach
+                        </select>
+                    @endif
+                </div>
             </div>
             <div class="relative" style="height: 250px;">
                 <canvas id="chartTotalValue"></canvas>
@@ -133,14 +191,24 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
 
         <!-- Card gráfico de torta -->
-        <div class="bg-white rounded-lg shadow p-4 mx-2">
-            <h3 class="text-sm font-semibold mb-2">Disponibilidad Estacionamientos</h3>
+        <div class="bg-white rounded-lg shadow p-4 mb-2">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-sm font-semibold">Disponibilidad Estacionamientos</h3>
+                @if(auth()->user()->hasRole('SuperAdmin'))
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm">Sucursal:</span>
+                        <select id="branchSelectParking" class="border border-gray-300 rounded text-sm px-2 py-1">
+                            @foreach(\App\Models\BranchOffice::all() as $branch)
+                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+            </div>
             <div class="relative" style="height: 250px;">
                 <canvas id="chartParking"></canvas>
             </div>
-            <div id="parkingInfo" class="text-center text-sm mt-3 font-medium text-gray-700">
-
-            </div>
+            <div id="parkingInfo" class="text-center text-sm mt-3 font-medium text-gray-700"></div>
         </div>
     </div>
 </div>

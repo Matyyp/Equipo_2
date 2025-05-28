@@ -18,6 +18,7 @@ public function chartData(Request $request): JsonResponse
 {
     $filter = $request->get('filter', 'daily');
     $user = auth()->user();
+    $branchId = $request->get('branch_id');
 
     $query = DB::table('parking_registers as pr')
         ->join('parks as p', 'pr.id_park', '=', 'p.id')
@@ -26,7 +27,11 @@ public function chartData(Request $request): JsonResponse
         ->where('s.type_service', 'parking_daily')
         ->where('pr.status', 'paid');
 
-    if (!$user->hasRole('SuperAdmin')) {
+    if ($user->hasRole('SuperAdmin')) {
+        if ($branchId) {
+            $query->where('b.id_branch', $branchId);
+        }
+    } else {
         if (!$user->id_branch_office) {
             return response()->json([
                 'labels' => [],
@@ -37,7 +42,6 @@ public function chartData(Request $request): JsonResponse
                 ]
             ]);
         }
-
         $query->where('b.id_branch', $user->id_branch_office);
     }
 
@@ -67,13 +71,17 @@ public function chartData(Request $request): JsonResponse
         ->where('s.type_service', 'parking_daily')
         ->where('p.status', 'parked');
 
-    if (!$user->hasRole('SuperAdmin')) {
+    if ($user->hasRole('SuperAdmin')) {
+        if ($branchId) {
+            $activeQuery->where('s.id_branch_office', $branchId);
+        }
+    } else {
         $activeQuery->where('s.id_branch_office', $user->id_branch_office);
     }
 
     $activeCount = $activeQuery->count();
 
-    // 🔢 Cupos totales (puedes hacerlo dinámico por sucursal si lo deseas)
+    
     $totalSpots = 50;
     $availableCount = max(0, $totalSpots - $activeCount);
 
@@ -86,9 +94,4 @@ public function chartData(Request $request): JsonResponse
         ]
     ]);
 }
-
-
-
-
-
 }

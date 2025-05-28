@@ -55,4 +55,9 @@ class BranchOffice extends Model
         return $this->belongsTo(Business::class, 'id_business');
     }
 
+    public function costs()
+    {
+        return $this->hasMany(Cost::class, 'branch_office_id', 'id_branch');
+    }
+
 }
