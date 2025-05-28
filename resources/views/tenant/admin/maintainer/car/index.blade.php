@@ -33,7 +33,7 @@
                 <td>{{ $item['model'] }}</td>
                 <td class="text-center">
                   <a href="{{ route('autos.edit', ['auto' => $item['id']]) }}"
-                    class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                    class="btn btn-outline-warning btn-sm text-dark" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
                 </td>

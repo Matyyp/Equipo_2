@@ -33,10 +33,6 @@
       <div>
         <i class="fas fa-car mr-2"></i> Ingreso de Vehículo al Estacionamiento
       </div>
-      <a href="{{ route('estacionamiento.index') }}"
-          style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-          <i class="fas fa-arrow-left mr-1"></i> Volver al listado
-      </a>
     </div>
 
     <div class="card-body">
@@ -183,13 +179,13 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <button type="reset" class="btn btn-secondary">
-              <i class="fas fa-eraser mr-1"></i> Limpiar
-            </button>
+            <a href="{{ route('estacionamiento.index') }}" class="btn btn-secondary mr-1">
+                Cancelar
+            </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary" id="submit-btn">
-              <i class="fas fa-save mr-1"></i> Guardar
+                Guardar
             </button>
           </div>
         </div>

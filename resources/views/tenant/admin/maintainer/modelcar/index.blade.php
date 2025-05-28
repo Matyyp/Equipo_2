@@ -34,7 +34,7 @@
                 <td>{{ $model->name_model }}</td>
                 <td class="text-center">
                   <a href="{{ route('modelo.edit', $model->id_model) }}"
-                    class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                    class="btn btn-outline-warning btn-sm text-dark" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
                 </td>

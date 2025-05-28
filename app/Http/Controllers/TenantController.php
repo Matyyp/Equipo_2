@@ -4,12 +4,34 @@ namespace App\Http\Controllers;
 use App\Jobs\SetupTenantJob;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
+use Stancl\Tenancy\Tenancy;
+use App\Models\User;
 
 class TenantController extends Controller
 {
+public function dashboard()
+{
+    $tenants = Tenant::with('domains')->get();
+    $tenantData = [];
+
+    foreach ($tenants as $tenant) {
+        tenancy()->initialize($tenant);
+        
+        $tenantData[] = [
+            'id' => $tenant->id,
+            'domain' => $tenant->domains->first()->domain ?? 'Sin dominio',
+            'user_count' => User::count(),
+        ];
+        
+        tenancy()->end();
+    }
+
+    return view('central.dashboard', compact('tenantData'));
+}
+
     public function index()
     {
-        $tenants = Tenant::all();
+        $tenants = Tenant::with('domains')->paginate(10); // Pagina los resultados
         return view('central.tenants.index', compact('tenants'));
     }
 

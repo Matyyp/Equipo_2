@@ -50,13 +50,13 @@
         
         <div class="form-group row justify-content-end mt-4">
         <div class="col-auto">
-            <a href="{{ route('dueños.index') }}" class="btn btn-secondary" style="margin-right: 12px;">
-            <i class="fas fa-arrow-left mr-1"></i> Volver
+            <a href="{{ route('dueños.index') }}" class="btn btn-secondary mr-1" >
+            Cancelar
             </a>
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-primary" id="submit-btn">
-              <i class="fas fa-save me-1"></i> Actualizar
+              Actualizar
             </button>
         </div>
         </div>

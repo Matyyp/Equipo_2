@@ -40,12 +40,14 @@
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Guardar
-                </button>
-                <a href="{{ route('servicios.show', $sucursalId) }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Cancelar
+                <a href="{{ route('servicios.show', $sucursalId) }}" class="btn btn-secondary mr-1">
+                    Cancelar
                 </a>
+                
+                <button type="submit" class="btn btn-primary">
+                    Guardar
+                </button>
+                
             </div>
         </form>
 

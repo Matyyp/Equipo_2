@@ -31,12 +31,28 @@
                 <strong>Logo:</strong><br>
                 @if ($business?->logo)
                     <img src="{{ tenant_asset($business->logo) }}"
-                         alt="Logo del Negocio" class="img-thumbnail mt-2" width="150">
+                        alt="Logo del Negocio"
+                        class="img-thumbnail mt-2"
+                        style="width: 150px; height: auto;">
+
                 @else
                     <span class="text-muted">No hay logo disponible.</span>
                 @endif
             </div>
         </div>
+        <div class="col-md-6 mt-3">
+            <strong>Fondo de Iniciar sesión/ Registrarse :</strong><br>
+            @if ($business?->funds)
+                <img src="{{ tenant_asset($business->funds) }}"
+                    alt="Fondo del Login"
+                    class="img-thumbnail mt-2"
+                    style="width: 150px; height: auto;">
+
+            @else
+                <span class="text-muted">No hay fondo disponible.</span>
+            @endif
+        </div>
+
 
         {{-- Cuentas Bancarias --}}
         @if ($business?->business_bank && count($business->business_bank))

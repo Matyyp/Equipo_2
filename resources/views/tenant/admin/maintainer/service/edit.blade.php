@@ -53,13 +53,13 @@
         <!-- BOTONES -->
         <div class="form-group row justify-content-end mt-4">
           <div class="col-auto">
-            <a href="{{ route('servicios.show', $service->id_branch_office) }}" class="btn btn-secondary">
-              <i class="fas fa-arrow-left me-1"></i> Volver
+            <a href="{{ route('servicios.show', $service->id_branch_office) }}" class="btn btn-secondary mr-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary ">
-              <i class="fas fa-save me-1"></i> Actualizar
+              Actualizar
             </button>
           </div>
         </div>

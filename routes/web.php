@@ -27,10 +27,9 @@ foreach (config('tenancy.central_domains') as $domain) {
             return redirect()->route('dashboard');
         });
         
-        Route::get('/dashboard', function () {
-            return view('central.dashboard');
-        })->middleware(['auth', 'verified'])->name('dashboard');
-        
+        Route::get('/dashboard', [TenantController::class, 'dashboard'])
+        ->middleware(['auth', 'verified']); // nuevo nombre
+    
         Route::middleware('auth')->group(function () {
             Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
             Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

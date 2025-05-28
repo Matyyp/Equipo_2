@@ -42,7 +42,7 @@
                   <td>{{ $item->data_contact }}</td>
                   <td class="text-center">
                     <a href="{{ route('informacion_contacto.edit', $item->id_contact_information) }}"
-                       class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                       class="btn btn-outline-warning btn-sm text-dark" title="Editar">
                       <i class="fas fa-pen"></i>
                     </a>
                   </td>

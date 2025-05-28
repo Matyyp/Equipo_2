@@ -47,11 +47,11 @@
                 <td class="text-center">
                   @if ($isAvailable)
                     <a href="{{ route('servicios.edit', $service->id_service) }}"
-                      class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                      class="btn btn-outline-warning btn-sm text-dark" title="Editar">
                       <i class="fas fa-pen"></i>
                     </a>
                     <button onclick="desactivarServicio({{ $service->id_service }}, '{{ $service->name }}')"
-                            class="btn btn-sm btn-outline-danger" title="Desactivar">
+                            class="btn btn-sm btn-outline-danger text-dark" title="Desactivar">
                       <i class="fas fa-ban"></i>
                     </button>
                   @else
@@ -63,6 +63,18 @@
                 </td>
               </tr>
             @endforeach
+            <tr>
+              <td>Lavado</td>
+              <td>—</td>
+              <td>Lavados</td>
+              <td class="text-center">
+                <a href="{{ route('lavados.show', $sucursalId) }}"
+                  class="btn btn-outline-primary btn-sm text-dark" title="Ir a Lavado">
+                  <i class="fas fa-soap"></i> Lavado de auto
+                </a>
+              </td>
+            </tr>
+
           </tbody>
         </table>
       </div>

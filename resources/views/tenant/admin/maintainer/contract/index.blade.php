@@ -76,7 +76,7 @@
                 <td class="text-center">
                   @if($contrato)
                     <a href="{{ route('contratos.edit', $contrato['id_contract']) }}"
-                       class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                       class="btn btn-outline-warning btn-sm text-dark" title="Editar">
                       <i class="fas fa-pen"></i> Editar
                     </a>
                   @else

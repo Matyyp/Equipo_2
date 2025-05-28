@@ -56,13 +56,13 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('trabajadores.show', $user->id_branch_office) }}" class="btn btn-secondary mr-2">
-              <i class="fas fa-arrow-left mr-1"></i> Volver
+            <a href="{{ route('trabajadores.show', $user->id_branch_office) }}" class="btn btn-secondary mr-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save me-1"></i> Actualizar
+              Actualizar
             </button>
           </div>
         </div>

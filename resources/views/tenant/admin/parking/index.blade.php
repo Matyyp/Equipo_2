@@ -48,6 +48,104 @@
     font-size: 1.2rem;
     color: #28a745;
 }
+
+/* Estilos para los métodos de pago - Versión responsive */
+.payment-methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.payment-option {
+  flex: 1 1 calc(50% - 0.5rem);
+  min-width: 120px;
+}
+
+.payment-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.payment-option label {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 100%;
+  margin-bottom: 0;
+}
+
+.payment-option input:checked + label {
+  border-color: #4e73df;
+  background-color: #f8f9fc;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.25);
+}
+
+.payment-icon {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+}
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 767.98px) {
+  .payment-option {
+    flex: 1 1 100%;
+  }
+  
+  .payment-option label {
+    flex-direction: column;
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .payment-icon {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Efectos hover */
+.payment-option label:hover {
+  background-color: #f8f9fa;
+  border-color: #d1d3e2;
+}
+
+/* Colores más intensos para mejor visibilidad */
+.table-warning {
+    background-color: #fff3cd !important;
+    border-left: 3px solid #ffc107 !important;
+}
+
+.table-danger {
+    background-color: #f8d7da !important;
+    border-left: 3px solid #dc3545 !important;
+}
+
+/* Resaltar texto */
+.table.table-warning td,
+.table.table-danger td {
+    color: #212529;
+    font-weight: 500;
+}
+
+/* Opcional: hover effects */
+.table.table-warning:hover td {
+    background-color: #ffe69c !important;
+}
+
+.table.table-danger:hover td {
+    background-color: #f5b5bd !important;
+}
   </style>
 @endpush
 
@@ -169,7 +267,7 @@
       @csrf
       <input type="hidden" name="id_parking_register" id="checkout-id">
       <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
+        <div class="modal-header bg-secondary text-white">
           <h5 class="modal-title" id="checkoutModalLabel">
             <i class="fas fa-door-open mr-2"></i>Confirmar Check-Out
           </h5>
@@ -180,6 +278,7 @@
         
         <div class="modal-body">
           <div class="row">
+            <!-- Sección izquierda - Detalles del servicio -->
             <div class="col-md-8">
               <div class="card mb-4">
                 <div class="card-header bg-light">
@@ -196,7 +295,7 @@
                           <tr>
                             <th>Servicio</th>
                             <th class="text-right">Precio</th>
-                            <th class="text-right">Acciones</th>
+                            <th class="text-right">Estado</th>
                           </tr>
                         </thead>
                         <tbody id="services-list">
@@ -209,33 +308,89 @@
               </div>
             </div>
             
+            <!-- Sección derecha - Método de pago -->
             <div class="col-md-4">
-              <div class="card mb-4">
+              <div class="card h-100">
                 <div class="card-header bg-light">
                   <h6 class="mb-0">
-                    <i class="fas fa-money-bill-wave mr-2"></i>Pago
+                    <i class="fas fa-credit-card mr-2"></i>Método de Pago
                   </h6>
                 </div>
                 <div class="card-body">
-                  <div class="mb-3">
-                    <label for="checkout-total" class="font-weight-bold">Total a pagar:</label>
+                  <!-- Total a pagar -->
+                  <div class="form-group mb-3">
+                    <label class="font-weight-bold text-muted small">TOTAL A PAGAR</label>
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text">$</span>
+                        <span class="input-group-text bg-white font-weight-bold">$</span>
                       </div>
-                      <input type="text" id="checkout-total" class="form-control form-control-lg font-weight-bold text-success" readonly>
+                      <input type="text" 
+                             id="checkout-total" 
+                             class="form-control border-left-0 font-weight-bold text-black" 
+                             readonly
+                             value="0">
                     </div>
                   </div>
                   
+                  <!-- Métodos de pago -->
                   <div class="mb-3">
-                    <label for="payment-method" class="font-weight-bold">Método de pago:</label>
-                    <select name="type_payment" id="payment-method" class="form-control" required>
-                      <option value="">— Seleccione método —</option>
-                      <option value="efectivo">Efectivo</option>
-                      <option value="tarjeta">Tarjeta de Crédito/Débito</option>
-                      <option value="transferencia">Transferencia Bancaria</option>
-                      <option value="otro">Otro</option>
-                    </select>
+                    <label class="font-weight-bold text-muted small mb-2 d-block">SELECCIONE MÉTODO</label>
+                    <div class="payment-methods">
+                      <!-- Efectivo -->
+                      <div class="payment-option">
+                        <input type="radio" name="type_payment" id="payment-cash" value="efectivo" checked>
+                        <label for="payment-cash" class="d-flex align-items-center">
+                          <span class="payment-icon bg-success text-white">
+                            <i class="fas fa-money-bill-wave"></i>
+                          </span>
+                          <span class="font-weight-bold">Efectivo</span>
+                        </label>
+                      </div>
+                      
+                      <!-- Tarjeta Crédito -->
+                      <div class="payment-option">
+                        <input type="radio" name="type_payment" id="payment-credit" value="tarjeta_credito">
+                        <label for="payment-credit" class="d-flex align-items-center">
+                          <span class="payment-icon bg-primary text-white">
+                            <i class="fas fa-credit-card"></i>
+                          </span>
+                          <span class="font-weight-bold">Crédito</span>
+                        </label>
+                      </div>
+                      
+                      <!-- Tarjeta Débito -->
+                      <div class="payment-option">
+                        <input type="radio" name="type_payment" id="payment-debit" value="tarjeta_debito">
+                        <label for="payment-debit" class="d-flex align-items-center">
+                          <span class="payment-icon bg-info text-white">
+                            <i class="fas fa-credit-card"></i>
+                          </span>
+                          <span class="font-weight-bold">Débito</span>
+                        </label>
+                      </div>
+                      
+                      <!-- Transferencia -->
+                      <div class="payment-option">
+                        <input type="radio" name="type_payment" id="payment-transfer" value="transferencia">
+                        <label for="payment-transfer" class="d-flex align-items-center">
+                          <span class="payment-icon bg-warning text-white">
+                            <i class="fas fa-exchange-alt"></i>
+                          </span>
+                          <span class="font-weight-bold">Transferencia</span>
+                        </label>
+                      </div>
+                      
+                      <!-- Otro -->
+                      <div class="payment-option">
+                        <input type="radio" name="type_payment" id="payment-other" value="otro">
+                        <label for="payment-other" class="d-flex align-items-center">
+                          <span class="payment-icon bg-secondary text-white">
+                            <i class="fas fa-question-circle"></i>
+                          </span>
+                          <span class="font-weight-bold">Otro</span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -245,15 +400,15 @@
         
         <div class="modal-footer">
           <div id="renew-button-container" class="mr-auto" style="display: none;">
-            <button type="button" id="btn-renew" class="btn btn-success">
+            <button type="button" id="btn-renew" class="btn-outline-primary">
               <i class="fas fa-sync-alt mr-1"></i> Renovar Servicio
             </button>
           </div>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">
-            <i class="fas fa-times mr-1"></i> Cancelar
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+            Cancelar
           </button>
-          <button type="submit" class="btn btn-success">
-            <i class="fas fa-check-circle mr-1"></i> Confirmar Check-Out
+          <button type="submit" class="btn btn-outline-primary">
+            Confirmar Check-Out
           </button>
         </div>
       </div>
@@ -296,6 +451,34 @@ $(function () {
                 alert(`Error cargando datos: ${xhr.status} – ${thrown}`);
             }
         },
+        rowCallback: function(row, data, index) {
+            // Solo aplicamos a parking_annual
+            if (data.service_type === 'parking_annual' && data.end_date) {
+                // Parsear fecha en formato DD-MM-AAAA
+                const dateParts = data.end_date.split('-');
+                const endDate = new Date(
+                    parseInt(dateParts[2], 10),  // año
+                    parseInt(dateParts[1], 10) - 1,  // mes (0-based)
+                    parseInt(dateParts[0], 10)   // día
+                );
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // Calculamos la diferencia en días
+                const diffTime = endDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                
+                // Aplicamos clases según la diferencia
+                if (diffDays <= 0) {
+                    // Fecha vencida - rojo
+                    $(row).addClass('table-danger');
+                } else if (diffDays <= 5) {
+                    // Fecha próxima a vencer - amarillo
+                    $(row).addClass('table-warning');
+                }
+            }
+        },
         columns: [
             @role('SuperAdmin')
                 { data: 'branch_name', title: 'Sucursal' },
@@ -309,10 +492,33 @@ $(function () {
             { 
                 data: 'washed',
                 render: function(data) {
-                    return data ? '<span class="badge badge-success">Sí</span>' : '<span class="badge badge-secondary">No</span>';
+                    return data
+                    ? '<span class="badge bg-transparent text-success border border-success">Sí</span>'
+                    : '<span class="badge bg-transparent text-secondary border border-secondary">No</span>';
+
                 }
             },
-            { data: 'service_price' },
+            {
+                data: 'service_price',
+                render: function(data, type, row) {
+                    const typeMap = {
+                        'parking_daily': 'Estacionamiento Diario',
+                        'parking_annual': 'Estacionamiento Anual'
+                    };
+
+                    const rawValue = (row.service_type || '').toString().trim().toLowerCase();
+                    const serviceType = typeMap[rawValue] || 'Estacionamiento Desconocido';
+
+                    return `
+                        <div class="text-left">
+                            <div>$${data}</div>
+                            <span class="badge badge-sm bg-transparent text-success border-success" style="border: 1px solid; padding: 0.25em 0.5em;">
+                                ${serviceType}
+                            </span>
+                        </div>
+                    `;
+                }
+            },
             { 
                 data: 'total_formatted',
                 render: function(data, type, row) {
@@ -326,16 +532,16 @@ $(function () {
                 render: function(row) {
                     return `
                         <div >
-                            <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-sm btn-outline-secondary" title="Contrato">
+                            <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-sm btn-outline-secondary text-dark" title="Contrato">
                                 <i class="fas fa-file-contract"></i>
                             </a>
-                            <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-secondary" title="Ticket">
+                            <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-secondary text-dark" title="Ticket">
                                 <i class="fas fa-ticket-alt"></i>
                             </a>
-                            <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-secondary" title="Editar">
+                            <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-warning text-dark" title="Editar">
                                 <i class="fas fa-pen"></i>
                             </a>
-                            <button class="btn btn-sm btn-outline-primary btn-checkout" 
+                            <button class="btn btn-sm btn-outline-primary btn-checkout text-dark" 
                                 title="Check-Out"
                                 data-id="${row.id_parking_register}"
                                 data-total="${row.total_value}"
@@ -343,7 +549,7 @@ $(function () {
                                 data-row='${JSON.stringify(row)}'>
                                 <i class="fas fa-door-open"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-info btn-extra-services" 
+                            <button class="btn btn-sm btn-outline-info btn-extra-services text-dark" 
                                 title="Servicios Extra"
                                 data-id="${row.id_parking_register}"
                                 data-row='${JSON.stringify(row)}'>
@@ -517,7 +723,7 @@ $('#btn-renew').click(function() {
     if (!currentRowData) return;
     
     const registerId = currentRowData.id_parking_register;
-    const paymentMethod = $('#payment-method').val();
+    const paymentMethod = $('#payment-method-buttons input:checked').val();
     
     // Validar que se haya seleccionado un método de pago
     if (!paymentMethod) {
@@ -569,14 +775,19 @@ $('#btn-renew').click(function() {
         }
     });
 });
-// Deshabilitar botón de renovación si no hay método de pago seleccionado
-$('#payment-method').change(function() {
-    const paymentSelected = $(this).val() !== '';
-    $('#btn-renew').prop('disabled', !paymentSelected);
-});
 
-// Inicialmente deshabilitar el botón si no hay selección
-$('#btn-renew').prop('disabled', $('#payment-method').val() === '');
+// Asegurarse de que siempre haya un método seleccionado
+$('#payment-method-buttons input').on('click', function(e) {
+    if ($(this).is(':checked')) {
+        $('#payment-method-buttons label').removeClass('active');
+        $(this).closest('label').addClass('active');
+    } else {
+        // Previene que se deseleccione el último botón
+        e.preventDefault();
+    }
+});
+$('#payment-method-buttons label:first').addClass('active');
+$('#payment-method-buttons input:first').prop('checked', true);
 // Confirmar lavado
 $(document).on('click', '.btn-mark-washed', function() {
     const btn = $(this);
@@ -634,15 +845,20 @@ $(document).on('click', '.btn-mark-washed', function() {
     });
 
     // Manejar cambio de método de pago
-    $('#payment-method').change(function() {
-        if ($(this).val() === 'efectivo') {
+    $('#payment-method-buttons').on('change', function() {
+        const method = $(this).find('input:checked').val();
+        
+        // Mostrar/ocultar contenedor de efectivo si es necesario
+        if (method === 'efectivo') {
             $('#cash-container').removeClass('d-none');
             $('#cash-received').focus();
         } else {
             $('#cash-container').addClass('d-none');
         }
+        
+        // Habilitar botón de renovación (siempre habilitado ahora que hay selección forzada)
+        $('#btn-renew').prop('disabled', false);
     });
-
     // Script para servicios extras (se mantiene igual)
     let availableServices = [];
     let selectedServices = [];

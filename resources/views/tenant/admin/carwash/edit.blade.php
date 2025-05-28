@@ -43,11 +43,11 @@
 
         <div class="form-group d-flex justify-content-between">
           <a href="{{ route('lavados.show', $lavado->id_branch_office) }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-1"></i> Volver
+            Cancelar
           </a>
 
           <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save me-1"></i> Guardar Cambios
+            Guardar
           </button>
         </div>
       </form>

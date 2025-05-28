@@ -299,7 +299,7 @@
         <table style="width: 100%; border: none; text-align: left;">
             <tr>
                 <td style="width: 50%; vertical-align: top; border: none;">
-                    <img src="file://{{ $url_logo }}" alt="Logo Empresa" style="max-height: 200px;">
+                    <img src="{{ $url_logo }}" alt="Logo Empresa" style="max-height: 200px;">
                 </td>
                 <td style="width: 0%; vertical-align: top; border: none; text-align: right;">
                     <div style="height: 1px; background-color: black; width: 100%; margin: 6px 0;"></div>

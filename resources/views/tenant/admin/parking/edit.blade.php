@@ -144,13 +144,13 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('estacionamiento.index') }}" class="btn btn-secondary">
-              <i class="fas fa-arrow-left"></i> Volver
+            <a href="{{ route('estacionamiento.index') }}" class="btn btn-secondary mr-1">
+                Cancelar
             </a>
           </div>
           <div class="col-auto">
-            <button type="submit" class="btn btn-warning" id="submit-btn">
-              <i class="fas fa-save mr-1"></i> Actualizar
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+                Actualizar
             </button>
           </div>
         </div>

@@ -34,7 +34,7 @@
                 <td>{{ $brand->name_brand }}</td>
                 <td class="text-center">
                   <a href="{{ route('marca.edit', $brand->id_brand) }}"
-                    class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                    class="btn btn-outline-warning btn-sm text-dark" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
                 </td>

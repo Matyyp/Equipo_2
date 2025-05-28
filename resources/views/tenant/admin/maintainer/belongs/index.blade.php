@@ -34,7 +34,7 @@
                   <form action="{{ route('asociado.destroy', $item['id']) }}" method="POST" class="d-inline delete-form">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-outline-secondary btn-sm text-dark" title="Eliminar">
+                    <button type="submit" class="btn btn-outline-danger btn-sm text-dark" title="Eliminar">
                       <i class="fas fa-trash"></i>
                     </button>
                   </form>

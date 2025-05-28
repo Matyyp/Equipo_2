@@ -8,9 +8,9 @@
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-users mr-2"></i> Empleados asociados a la sucursal</div>
-        <a href="{{ route('sucursales.show', $sucursal->id_branch) }}"
-          style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-          <i class="fas fa-arrow-left mr-1"></i> Volver al listado de Sucursales
+        <a href="{{ route('trabajadores.create', ['id_sucursal' => $sucursal->id_branch]) }}"
+           style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+          <i class="fas fa-plus"></i> Agregar Trabajador
         </a>
     </div>
 
@@ -20,11 +20,6 @@
           <i class="fas fa-store-alt mr-1 text-muted"></i>
           Sucursal: <strong>{{ $sucursal->name_branch_offices }}</strong>
         </h5>
-
-        <a href="{{ route('trabajadores.create', ['id_sucursal' => $sucursal->id_branch]) }}"
-           style="background-color: transparent; border: 1px solid #28a745; color: #28a745; padding: 6px 12px; border-radius: 4px; font-size: 14px;">
-          <i class="fas fa-plus"></i> Agregar Trabajador
-        </a>
       </div>
 
       <div class="table-responsive">
@@ -41,6 +36,12 @@
           </thead>
         </table>
       </div>
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+        <a href="{{ route('sucursales.show', $sucursal->id_branch) }}"
+         style="background-color: transparent; border: 1px solid #6c757d; color: #6c757d; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+          <i class="fas fa-arrow-left mr-1"></i> Volver al listado de Sucursales
+        </a>
     </div>
   </div>
 </div>

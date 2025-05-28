@@ -48,7 +48,7 @@
 
                 <td class="text-center">
                   <a href="{{ route('reglas.edit', $rule->id_rule) }}"
-                    class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                    class="btn btn-outline-warning btn-sm text-dark" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
                 </td>

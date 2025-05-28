@@ -59,9 +59,9 @@
         <div class="invalid-feedback">{{ $message }}</div>
       @enderror
     </div>
-
+    <a href="{{ route('payment.index') }}" class="btn btn-secondary mr-1">Cancelar</a>
     <button type="submit" class="btn btn-success">Actualizar</button>
-    <a href="{{ route('payment.index') }}" class="btn btn-secondary">Cancelar</a>
+    
   </form>
 </div>
 @endsection

@@ -119,11 +119,11 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <button type="button" class="btn btn-secondary mr-1" data-dismiss="modal">
             Cancelar
           </button>
           <button type="submit" class="btn btn-success">
-            Guardar Pago
+            Guardar
           </button>
         </div>
       </div>

@@ -33,14 +33,14 @@
                 <td>{{ $isActivo ? '$' . number_format($service->price_net, 0, ',', '.') : '—' }}</td>
                 <td class="text-center">
                   @if ($isActivo)
-                    <a href="{{ route('lavados.edit', $service->id_service) }}" class="btn btn-warning btn-sm me-1">
-                      <i class="fas fa-edit me-1"></i> Editar
+                    <a href="{{ route('lavados.edit', $service->id_service) }}" class="btn btn-outline-warning btn-sm me-1 text-dark">
+                      <i class="fas fa-edit me-1"></i>
                     </a>
-                    <button onclick="desactivarLavado({{ $service->id_service }}, '{{ $service->name }}')" class="btn btn-danger btn-sm">
-                      <i class="fas fa-ban me-1"></i> Desactivar
+                    <button onclick="desactivarLavado({{ $service->id_service }}, '{{ $service->name }}')" class="btn btn-outline-danger btn-sm text-dark">
+                      <i class="fas fa-ban me-1"></i>
                     </button>
                   @else
-                    <button class="btn btn-success btn-sm" onclick="activarLavado('{{ $nombre }}')">
+                    <button class="btn btn-outline-success btn-sm" onclick="activarLavado('{{ $nombre }}')">
                       <i class="fas fa-plus me-1"></i> Activar
                     </button>
                   @endif
@@ -53,8 +53,8 @@
     </div>
 
     <div class="card-footer d-flex justify-content-end">
-      <a href="{{ route('sucursales.index') }}" class="btn btn-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Volver a Sucursales
+      <a href="{{ route('servicios.show' , $branchOfficeId) }}" class="btn btn-secondary">
+        Cancelar
       </a>
     </div>
   </div>

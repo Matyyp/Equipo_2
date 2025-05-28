@@ -41,19 +41,22 @@
                         <li class="nav-item">
                             <a href="{{ route('estacionamiento.index') }}"
                                class="nav-link {{ request()->routeIs('estacionamiento.index') ? 'active' : '' }}">
+                               <i class="fas fa-list nav-icon"></i>
                                 <p>Listado</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('estacionamiento.history') }}"
                                class="nav-link {{ request()->routeIs('estacionamiento.history') ? 'active' : '' }}">
+                               <i class="fas fa-history nav-icon"></i>
+                               
                                 <p>Historial</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('carwash.history') }}"
                                 class="nav-link {{ request()->routeIs('carwash.history') ? 'active' : '' }}">
-
+                                <i class="fas fa-soap nav-icon"></i>
                                 <p>Historial Lavado</p>
                             </a>
 
@@ -158,6 +161,7 @@
                                     </a>
                                 </li>
                                 @endrole
+                                @can('mantenedores.access')
                                 <li class="nav-item">
                                     <a href="{{ route('empresa.index') }}" class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
                                         <i class="fas fa-briefcase nav-icon"></i><p>Datos Empresa</p>
@@ -261,6 +265,7 @@
                                 </li>
                             </ul>
                         </li>
+                        @endcan
 
                     </ul>
                 </li>

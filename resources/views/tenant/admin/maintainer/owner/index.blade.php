@@ -35,11 +35,11 @@
                   <td>{{ $item->number_phone }}</td>
                   <td class="text-center">
                     <a href="{{ route('dueños.edit', $item->id_owner) }}"
-                      class="btn btn-outline-secondary btn-sm text-dark" title="Editar">
+                      class="btn btn-outline-warning btn-sm text-dark" title="Editar">
                       <i class="fas fa-pen"></i>
                     </a>
                     <a href="{{ route('asociado.show', $item->id_owner) }}"
-                      class="btn btn-outline-secondary btn-sm text-dark" title="Ver Autos">
+                      class="btn btn-outline-primary btn-sm text-dark" title="Ver Autos">
                       <i class="fas fa-car"></i>
                     </a>
                   </td>

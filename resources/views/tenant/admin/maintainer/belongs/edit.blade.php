@@ -50,12 +50,12 @@
         </div>
       </div>
         <div class="card-footer d-flex justify-content-end flex-wrap">
-          <a href="{{ route('dueños.index') }}" class="btn btn-outline-secondary mr-2">
-            <i class="fas fa-arrow-left mr-1"></i> Volver
+          <a href="{{ route('dueños.index') }}" class="btn btn-outline-secondary me-1">
+            Cancelar
           </a>
 
-          <button type="submit" id="submit-btn" class="btn btn-outline-success mr-2">
-            <i class="fas fa-plus mr-1"></i> Asociar Vehículos Seleccionados
+          <button type="submit" id="submit-btn" class="btn btn-outline-success">
+            Asociar Vehículos Seleccionados
           </button>
         </div>
     </form>

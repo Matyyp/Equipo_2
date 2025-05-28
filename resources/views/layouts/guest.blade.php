@@ -17,19 +17,25 @@
 <body class="font-sans text-gray-900 antialiased">
 
     {{-- Imagen de fondo con sombra/overlay --}}
-    <div class="min-h-screen bg-cover bg-center relative" style="background-image: url('{{ request()->getSchemeAndHttpHost() }}/img/fondo.png');">
+    <div class="min-h-screen bg-cover bg-center relative" style="background-image: url('{{ $tenantFunds ?? asset('central/fondo.png') }}');">
+
         {{-- Sombra oscura encima del fondo --}}
         <div class="absolute inset-0 bg-black bg-opacity-60"></div>
 
         <div class="relative z-10 min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-white" />
-                </a>
-            </div>
 
             {{-- Tarjeta del formulario --}}
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white/90 dark:bg-gray-800/80 shadow-lg overflow-hidden sm:rounded-lg backdrop-blur-md">
+
+                {{-- Solo mostrar logo si existe --}}
+                @if (!empty($tenantLogo))
+                    <div class="flex justify-center mb-4">
+                        <a href="/">
+                            <img src="{{ $tenantLogo }}" alt="Logo de la empresa" class="h-16 object-contain">
+                        </a>
+                    </div>
+                @endif
+
                 {{ $slot }}
             </div>
         </div>

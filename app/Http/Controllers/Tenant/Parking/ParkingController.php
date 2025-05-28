@@ -774,7 +774,8 @@ public function update(Request $request, $id)
             ->firstOrFail();
     
         $logo = Business::value('logo');
-        $logoPath = tenant_asset($logo);
+        $logoPath = storage_path('app/public/' . $logo);
+        $logoBase64 = 'data:'.mime_content_type($logoPath).';base64,'.base64_encode(file_get_contents($logoPath));
     
         // Datos de contacto
         $datosContacto = $parking->parking_register_generates
@@ -843,7 +844,7 @@ public function update(Request $request, $id)
             'valor_total'           => $parking->total_value,
             'km_exit'               => $parking->km_exit,
             'km_arrival'            => $parking->arrival_km,
-            'url_logo'              => $logoPath,
+            'url_logo'              => $logoBase64,
             'direccion_sucursal'    => $parking->parking_register_register->register_parking->parking_service->service_branch_office->street ?? 'No disponible',
             'valor_estacionamiento' => $parking->parking_register_register->register_parking->parking_service->price_net ?? 'No disponible',
             'dato_contacto'         => $parking->parking_register_register->register_parking->parking_service->service_branch_office->contact_info ?? 'No disponible',

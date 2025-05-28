@@ -33,13 +33,13 @@
       <div class="card-footer">
         <div class="form-group row justify-content-end mb-0">
           <div class="col-auto">
-            <a href="{{ route('region.index') }}" class="btn btn-secondary me-2">
-              <i class="fas fa-arrow-left me-1"></i> Volver
+            <a href="{{ route('region.index') }}" class="btn btn-secondary me-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save me-1"></i> Guardar
+              Guardar
             </button>
           </div>
         </div>

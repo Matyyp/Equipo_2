@@ -46,17 +46,28 @@
                  alt="Logo del Negocio" class="img-thumbnail" width="100">
           @endif
         </div>
+        
+        <div class="form-group mb-4">
+          <label for="funds" class="form-label">Fondo de pantalla del login (opcional)</label>
+          <input type="file" id="funds" name="funds" class="form-control" accept="image/*">
+          @if ($business->funds)
+            <p class="mt-3 mb-1">Fondo actual:</p>
+            <img src="{{ tenant_asset($business->funds) }}"
+                alt="Fondo del login" class="img-thumbnail" style="max-width: 300px;">
+          @endif
+        </div>
+
 
         {{-- Botones --}}
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('empresa.index') }}" class="btn btn-secondary me-2">
-              <i class="fas fa-arrow-left me-1"></i> Volver
+            <a href="{{ route('empresa.index') }}" class="btn btn-secondary me-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save me-1"></i> Guardar
+              Guardar
             </button>
           </div>
         </div>
