@@ -65,8 +65,7 @@ $(function(){
         data: 'estado',
         name: 'status',
         orderable: false,
-        searchable: false,
-        className: 'text-center'
+        searchable: false
       },
       {
         data: 'acciones',

@@ -32,7 +32,7 @@ class RentalCar extends Model
     }
     public function branchOffice()
     {
-        return $this->belongsTo(BranchOffice::class, 'branch_office_id', 'id_branch');
+        return $this->belongsTo(BranchOffice::class, 'branch_office_id', 'id_branch')->withoutGlobalScopes();
     }
     public function reservations()
     {

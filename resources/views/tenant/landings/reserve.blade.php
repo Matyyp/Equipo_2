@@ -117,13 +117,13 @@
           <input
             type="text"
             class="w-full border rounded p-2 bg-gray-100 cursor-not-allowed"
-            value="{{ $branches->get($selectedBranchId) }}"
+            value="{{ $branch->name_branch_offices }}"
             readonly
           >
           <input
             type="hidden"
             name="branch_office_id"
-            value="{{ $selectedBranchId }}"
+            value="{{ $branch->id_branch }}"
           >
         </div>
 

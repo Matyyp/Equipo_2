@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Transbank\Webpay\WebpayPlus;
 use Carbon\Carbon;
+use App\Mail\ReservationConfirmed;
+use Illuminate\Support\Facades\Mail;
 
 class TransbankController extends Controller
 {
@@ -110,10 +112,17 @@ class TransbankController extends Controller
                 'buy_order' => $response->getBuyOrder(),
             ]);
 
-            // Limpiar sesión
+            /// Limpiar sesión
             session()->forget(['reservation_data', 'webpay_token']);
 
-            $reservation->load(['payment', 'branchOffice']);
+            $reservation->load(['car.brand', 'car.model', 'branchOffice.business']);
+            $businessName = optional($reservation->branchOffice->business)->name_business ?? 'Nombre no disponible';
+
+            // Envio de correo
+            $user = Auth::user();
+            if ($user && $user->email) {
+                Mail::to($user->email)->send(new ReservationConfirmed($reservation, $payment, $businessName));
+            }
 
             return view('webpay.success', compact('reservation', 'payment'));
         }

@@ -67,8 +67,7 @@
           data: 'estado',
           name: 'is_active',
           orderable: false,
-          searchable: false,
-          className: 'text-center'
+          searchable: false
         },
         {
           data: 'sucursal',
