@@ -58,7 +58,6 @@ class BusinessController extends Controller
 
 
 
-
     /**
      * Display the specified resource.
      */
@@ -99,7 +98,6 @@ class BusinessController extends Controller
             'funds.mimes' => 'El fondo debe ser un archivo de tipo: jpg, jpeg, png o webp.',
             'funds.max' => 'El fondo no debe ser mayor a 3MB.',
         ]);
-
 
         $business = Business::findOrFail($id);
 

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AboutUs;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,9 +14,13 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RolePermissionSeeder::class,
-            //AdminUserSeeder::class,
+            AdminUserSeeder::class,
             InitialSetupSeeder::class,
-            
+            NavbarSeeder::class,
+            FooterSeeder::class,
+            AboutUsSeeder::class,
+            MapSeeder::class,
+            ServiceLandingSeeder::class,
         ]);
     }
 }

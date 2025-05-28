@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\RentalCar;
+use App\Models\Reservation;
+use App\Models\BranchOffice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LandingController extends Controller
 {
@@ -47,5 +50,13 @@ class LandingController extends Controller
 
         // Renderizamos sólo el partial que contiene el grid de tarjetas
         return view('tenant.landings._cars', compact('cars'))->render();
+    }
+
+    public function reserve(RentalCar $car)
+    {
+        $branches = BranchOffice::pluck('name_branch_offices','id_branch');
+        $selectedBranchId = $car->branch_office_id
+        ?? $branches->keys()->first();
+        return view('tenant.landings.reserve', compact('car','branches','selectedBranchId'));
     }
 }
