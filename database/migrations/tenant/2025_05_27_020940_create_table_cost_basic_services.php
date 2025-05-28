@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('branch_office_id');
             $table->string('name');
-            $table->decimal('value', 10, 2);
+            $table->integer('value');
             $table->date('date');
             $table->text('note')->nullable();
             $table->timestamps();

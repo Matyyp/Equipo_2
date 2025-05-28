@@ -33,7 +33,7 @@ class CostBasicServiceController extends Controller
             $cost = Cost::create([
                 'branch_office_id' => $request->branch_office_id,
                 'name'             => $request->name,    // Cambiado
-                'value'            => $request->value,   // Cambiado
+                'value'            => intval($request->value),   // Cambiado
                 'date'             => $request->date,    // Cambiado
                 'note'             => $request->note,    // Cambiado
             ]);
@@ -104,7 +104,7 @@ class CostBasicServiceController extends Controller
         $cost->update([
             'branch_office_id' => $request->branch_office_id,
             'name' => $request->name,
-            'value' => $request->value,
+            'value'=> intval($request->value),
             'date' => $request->date,
             'note' => $request->note,
         ]);

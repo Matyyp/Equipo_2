@@ -60,7 +60,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text">$</span>
               </div>
-              <input type="number" name="value" id="value" class="form-control @error('value') is-invalid @enderror" step="0.01" min="0" value="{{ old('value') }}" required>
+              <input type="number" name="value" id="value" class="form-control @error('value') is-invalid @enderror" step="1" min="0" value="{{ old('value') }}" required>
             </div>
             @error('value')
               <span class="invalid-feedback d-block">{{ $message }}</span>
