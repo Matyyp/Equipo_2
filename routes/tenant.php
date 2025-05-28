@@ -32,6 +32,7 @@ use App\Http\Controllers\RentalCarController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TransbankController;
+use App\Http\Controllers\RegisterRentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -176,7 +177,20 @@ Route::middleware([
         // Cancelar una reserva
         Route::post('reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])
             ->name('reservations.cancel');
+
+        //modulo de arriendos
+        Route::prefix('reservas')->name('reservas.')->group(function () {
+            Route::post('{reservation}/confirmar', [ReservationController::class, 'confirm'])->name('confirmar');
+            Route::post('{reservation}/cancelar', [ReservationController::class, 'cancel'])->name('cancelar');
+
+            Route::get('{reservation}/crear-registro-renta', [ReservationController::class, 'crearRegistroRenta'])->name('crearRegistroRenta');
+            Route::post('{reservation}/guardar-registro-renta', [ReservationController::class, 'guardarRegistroRenta'])->name('guardarRegistroRenta');
+        });
+
+        Route::get('registro-renta/data', [RegisterRentController::class, 'data'])->name('registro_renta.data');
+        Route::resource('registro-renta', RegisterRentController::class);
     });
+    
     
 
 
