@@ -34,30 +34,41 @@
 
         {{-- Permisos --}}
         <div class="form-group mb-4">
-          <label class="form-label">Permisos</label>
-          <div class="row">
-            @foreach($permissions as $perm)
-              <div class="col-md-4 mb-2">
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    name="permissions[]"
-                    id="perm_{{ $perm->id }}"
-                    value="{{ $perm->name }}"
-                    {{ in_array($perm->name, old('permissions', [])) ? 'checked' : '' }}
-                  >
-                  <label class="form-check-label" for="perm_{{ $perm->id }}">
-                    {{ $perm->name }}
-                  </label>
-                </div>
+          <label class="form-label fw-bold text-dark fs-5">Permisos</label>
+
+          @foreach($groupedPermissions as $group => $perms)
+            <div class="mb-4 p-3 border rounded shadow-sm bg-light">
+              <h6 class="text-primary fw-bold mb-3">
+                <i class="fas fa-folder me-1"></i> {{ $group }}
+              </h6>
+
+              <div class="row">
+                @foreach($perms as $permName => $label)
+                  <div class="col-md-4 mb-2">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="permissions[]"
+                        id="perm_{{ Str::slug($permName) }}"
+                        value="{{ $permName }}"
+                        {{ in_array($permName, old('permissions', $rolePermissions ?? [])) ? 'checked' : '' }}
+                      >
+                      <label class="form-check-label" for="perm_{{ Str::slug($permName) }}">
+                        {{ $label }}
+                      </label>
+                    </div>
+                  </div>
+                @endforeach
               </div>
-            @endforeach
-          </div>
+            </div>
+          @endforeach
+
           @error('permissions')
-            <div class="text-danger mt-1">{{ $message }}</div>
+            <div class="text-danger mt-2">{{ $message }}</div>
           @enderror
         </div>
+
 
         {{-- Botones --}}
         <div class="form-group row justify-content-end">

@@ -28,10 +28,15 @@
                     <i class="fas fa-bars"></i>
                 </a>
             </li>
+            
         </ul>
 
-        <ul class="navbar-nav mx-auto">
-            {{-- Opcional: búsqueda u otro contenido --}}
+        <ul class="navbar-nav align-items-center">
+            <li class="nav-item d-none d-sm-inline ml-3">
+                <span class="nav-link font-weight-bold">
+                    {{ $tenantCompanyName }} - {{ $tenantBranchName }}
+                </span>
+            </li>
         </ul>
 
         <ul class="navbar-nav ml-auto align-items-center">

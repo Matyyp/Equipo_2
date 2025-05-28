@@ -48,10 +48,7 @@ class ReservationController extends Controller
         ->addColumn('acciones', function($r) {
             if ($r->status === 'pending') {
                 $confirm = <<<HTML
-                <form action="{$this->url('reservations.confirm',$r)}" method="POST" class="d-inline">
-                <input type="hidden" name="_token" value="{$this->csrf()}">
-                <button class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-check"></i></button>
-                </form>
+                <a href="{$this->url('reservas.crearRegistroRenta', $r)}" class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-check"></i></a>
                 HTML;
                 $cancel = <<<HTML
                 <form action="{$this->url('reservations.cancel',$r)}" method="POST" class="d-inline ms-1">
@@ -74,11 +71,45 @@ class ReservationController extends Controller
         return route($route, $model);
     }
 
-    public function confirm(Reservation $reservation)
+    public function crearRegistroRenta(Reservation $reservation)
     {
-        $reservation->update(['status'=>'confirmed']);
-        return back()->with('success','Reserva confirmada y alquiler generado.');
+        return view('tenant.admin.reservations.register_rent_form', compact('reservation'));
     }
+
+    public function guardarRegistroRenta(Request $request, Reservation $reservation)
+    {
+        $data = $request->validate([
+            'return_in' => 'required|numeric',
+            'address' => 'required|string',
+            'driving_license' => 'required|string',
+            'class_licence' => 'required|string',
+            'expire' => 'required|date',
+            'observation' => 'nullable|string|max:500',
+            'guarantee' => 'required|numeric',
+            'departure_fuel' => 'required|in:vacío,1/4,1/2,3/4,lleno',
+            'km_exit' => 'required|integer',
+        ]);
+
+        $paymentAmount = $reservation->reservationPayment->amount ?? 0;
+
+        $data['reservation_id'] = $reservation->id;
+        $data['rental_car_id'] = $reservation->car_id;
+        $data['payment'] = $paymentAmount;
+        $data['start_date'] = $reservation->start_date;
+        $data['end_date'] = $reservation->end_date;
+
+        // Datos del cliente desde la reserva
+        $data['client_rut'] = $reservation->rut;
+        $data['client_name'] = $reservation->user->name;
+        $data['client_email'] = $reservation->user->email;
+
+        \App\Models\RegisterRent::create($data);
+
+        $reservation->update(['status' => 'confirmed']);
+
+        return redirect()->route('reservations.index')->with('success', 'Registro de arriendo creado y reserva confirmada.');
+    }
+
 
     public function cancel(Reservation $reservation)
     {

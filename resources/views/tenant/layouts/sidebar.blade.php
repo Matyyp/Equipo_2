@@ -96,6 +96,15 @@
                         <p>Listado de Reservas</p>
                     </a>
                     </li>
+                    <li class="nav-item">
+                    <a
+                        href="{{ route('registro-renta.index') }}"
+                        class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}"
+                    >
+                        <i class="fas fa-list nav-icon"></i>
+                        <p>Listado de Arriendos</p>
+                    </a>
+                    </li>
                 </ul>
                 </li>
                 @endcan

@@ -17,6 +17,7 @@ use App\Models\Business;
 use Illuminate\Support\Facades\Schema;
 
 
+
 class TenancyServiceProvider extends ServiceProvider
 {
     // By default, no namespace is used to support the callable array syntax.
@@ -121,8 +122,8 @@ class TenancyServiceProvider extends ServiceProvider
             $logoUrl         = null;
             $companyName     = null;
             $companyFunds    = null; // ← DECLARACIÓN AQUÍ
+            $branchName      = null;
 
-            // Si la tabla ni siquiera está migrada, salimos
             if (Schema::hasTable('businesses')) {
                 $business = Business::first();
 
@@ -134,12 +135,40 @@ class TenancyServiceProvider extends ServiceProvider
                     ? tenant_asset($business->funds)
                     : null;
 
+                    $host    = request()->getHost();
+                    $logoUrl = $business->logo
+                        ? tenant_asset($business->logo)
+                        : null;
+
+                    $companyName = $business->name_business;
                 }
+            }
+
+            // Diccionario de traducción
+            $replacements = [
+                'index' => 'Listado',
+                'create' => 'Crear',
+                'edit' => 'Editar',
+                'show' => 'Detalle',
+                // puedes agregar más términos aquí
+            ];
+
+            try {
+                $routeName = Route::currentRouteName(); // ej. "usuarios.index"
+
+                $branchName = $routeName ? collect(explode('.', $routeName))
+                    ->map(function ($segment) use ($replacements) {
+                        return $replacements[$segment] ?? ucfirst($segment);
+                    })
+                    ->implode(' > ') : 'Inicio';
+            } catch (\Throwable $e) {
+                $branchName = 'Inicio';
             }
 
             View::share('tenantLogo', $logoUrl);
             View::share('tenantCompanyName', $companyName);
             View::share('tenantFunds', $companyFunds); // ← YA NO LANZA ERROR
+            View::share('tenantBranchName', $branchName);
         });
 
     }

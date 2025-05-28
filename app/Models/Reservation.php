@@ -1,6 +1,5 @@
 <?php
 
-// app/Models/Reservation.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -29,7 +28,8 @@ class Reservation extends Model
 
     public function branchOffice()
     {
-        return $this->belongsTo(BranchOffice::class, 'branch_office_id','id_branch');
+        return $this->belongsTo(BranchOffice::class, 'branch_office_id', 'id_branch')
+                    ->withoutGlobalScopes();
     }
 
     public function rentRegister()
@@ -39,5 +39,9 @@ class Reservation extends Model
     public function payment()
     {
         return $this->hasOne(ReservationPayment::class, 'reservation_id');
+    }
+    public function reservationPayment()
+    {
+        return $this->hasOne(ReservationPayment::class);
     }
 }

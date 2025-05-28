@@ -22,6 +22,8 @@ class BranchOffice extends Model
 
     protected $primaryKey = 'id_branch';
 
+    protected $table = 'branch_offices';
+
     public $branchOfficeColumn = 'id_branch'; // IMPORTANTE: DEBE SER PUBLIC
 
     protected static function booted()

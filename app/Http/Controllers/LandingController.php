@@ -54,9 +54,12 @@ class LandingController extends Controller
 
     public function reserve(RentalCar $car)
     {
-        $branches = BranchOffice::pluck('name_branch_offices','id_branch');
-        $selectedBranchId = $car->branch_office_id
-        ?? $branches->keys()->first();
-        return view('tenant.landings.reserve', compact('car','branches','selectedBranchId'));
+        $branch = $car->branchOffice;
+
+        if (!$branch) {
+            abort(404, 'Sucursal no encontrada para este auto.');
+        }
+
+        return view('tenant.landings.reserve', compact('car', 'branch'));
     }
 }
