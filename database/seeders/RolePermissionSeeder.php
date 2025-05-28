@@ -24,6 +24,8 @@ class RolePermissionSeeder extends Seeder
             'ventas.access',
             'mantenimiento.access',
             'carwash.access',
+            'cost_basic_service.access',
+
             'landing.access',
 
         ] as $perm) {

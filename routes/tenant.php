@@ -27,6 +27,7 @@ use App\Http\Controllers\Tenant\Maintainers\PaymentRecordController;
 use App\Http\Controllers\Tenant\Maintainers\BankDetailController;
 use App\Http\Controllers\Tenant\Dashboard\DashboardController;
 use App\Http\Controllers\Tenant\CarWash\CarWashController;
+use App\Http\Controllers\Tenant\Cost\CostBasicServiceController;
 use App\Http\Controllers\Tenant\Maintainers\WorkerController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\RentalCarController;
@@ -181,6 +182,19 @@ Route::middleware([
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
     });
+    // Módulo Costos de Servicios Básicos 
+    Route::middleware(['auth', 'permission:cost_basic_service.access'])->group(function () {
+        Route::get('cost', [CostBasicServiceController::class, 'index'])->name('cost_basic_service.index');
+        Route::get('cost/ingresos/data', [CostBasicServiceController::class, 'ingresosData'])->name('cost_basic_service.ingresos.data');
+        Route::get('cost/create', [CostBasicServiceController::class, 'create'])->name('cost_basic_service.create');
+        Route::get('costos/show', [CostBasicServiceController::class, 'showPage'])->name('cost_basic_service.show');
+        Route::get('costos/data', [CostBasicServiceController::class, 'data'])->name('cost_basic_service.data');
+        Route::post('costos/store', [CostBasicServiceController::class, 'store'])->name('cost_basic_service.store');
+        Route::get('costos/{id}/edit', [CostBasicServiceController::class, 'edit'])->name('cost_basic_service.edit');
+        Route::put('costos/{id}', [CostBasicServiceController::class, 'update'])->name('cost_basic_service.update');
+        Route::delete('costos/{id}', [CostBasicServiceController::class, 'destroy']);
+    });
+
 
     //transbank
     Route::post('/webpay/init/{car}', [TransbankController::class, 'init'])->name('webpay.init');
