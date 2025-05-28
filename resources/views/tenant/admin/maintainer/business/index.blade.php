@@ -35,7 +35,7 @@
             <div class="col-md-6">
                 <strong>Logo:</strong><br>
                 @if ($business?->logo)
-                    <img src="/storage/tenants/{{ request()->getHost() }}/imagenes/{{ $business->logo }}"
+                    <img src="{{ tenant_asset($business->logo) }}"
                          alt="Logo del Negocio" class="img-thumbnail mt-2" width="150">
                 @else
                     <span class="text-muted">No hay logo disponible.</span>

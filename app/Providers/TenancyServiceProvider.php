@@ -128,7 +128,7 @@ class TenancyServiceProvider extends ServiceProvider
                 if ($business) {
                     $host    = request()->getHost();
                     $logoUrl = $business->logo
-                        ? asset("storage/tenants/{$host}/imagenes/{$business->logo}")
+                        ? tenant_asset($business->logo)
                         : null;
                     $companyName = $business->name_business;
                 }

@@ -32,6 +32,17 @@ use App\Http\Controllers\Tenant\Maintainers\WorkerController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\RentalCarController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\NavbarController;
+use App\Http\Controllers\FooterController;
+use App\Http\Controllers\VehicleTypeController;
+use App\Http\Controllers\AboutUsController;
+use App\Http\Controllers\MapController;
+use App\Http\Controllers\ServiceLandingController;
+use App\Http\Controllers\ContainerImageLandingController;
+
+
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\TransbankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +63,9 @@ Route::middleware([
 ])->group(function () {
     // Rutas de la landing page
     Route::get('/', function () {
+        return view('tenant.landings.welcomev2');
+    });
+    Route::get('/v1', function () {
         return view('tenant.landings.welcome');
     });
     Route::get('/available‐cars', [LandingController::class, 'availableCars'])
@@ -59,6 +73,12 @@ Route::middleware([
 
     Route::get('landings/available/cars', [LandingController::class, 'availableCarsPartial'])
      ->name('landings.available.partial');
+
+    Route::middleware('auth')->group(function() {
+        Route::get('cars/{car}/reserve', [LandingController::class,'reserve'])
+            ->name('cars.reserve');
+
+    });
 
     Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
         Route::get('/dashboard', function () {
@@ -169,14 +189,115 @@ Route::middleware([
         Route::delete('costos/{id}', [CostBasicServiceController::class, 'destroy']);
     });
 
+
+    //transbank
+    Route::post('/webpay/init/{car}', [TransbankController::class, 'init'])->name('webpay.init');
+    Route::get('/webpay/confirm', [TransbankController::class, 'confirm'])->name('webpay.confirm');
     
     // Modulo de reservas
     Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
         Route::get('rental-cars/data', [RentalCarController::class, 'data'])
         ->name('rental-cars.data');
         Route::resource('rental-cars', RentalCarController::class);
+        
+        // Endpoint DataTables
+        Route::get('reservations/data', [ReservationController::class, 'data'])
+            ->name('reservations.data');
+
+        // Listar todas las reservas web
+        Route::get('reservations', [ReservationController::class, 'index'])
+            ->name('reservations.index');
+
+        // Confirmar una reserva (genera rent_register)
+        Route::post('reservations/{reservation}/confirm', [ReservationController::class, 'confirm'])
+            ->name('reservations.confirm');
+
+        // Cancelar una reserva
+        Route::post('reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])
+            ->name('reservations.cancel');
     });
-    
+    //Landing
+    Route::middleware(['auth', 'permission:landing.access'])->group(function () {
+        Route::get('navbar/data', [NavbarController::class, 'data'])->name('landing.navbar.data');
+
+        Route::resource('navbar', NavbarController::class)->only(['index', 'edit', 'update'])->names([
+            'index' => 'landing.navbar.index',
+            'edit' => 'landing.navbar.edit',
+            'update' => 'landing.navbar.update',
+        ]);
+
+        Route::resource('footers', FooterController::class)->only(['index', 'edit', 'update'])->names([
+            'index' => 'landing.footer.index',
+            'edit' => 'landing.footer.edit',
+            'update' => 'landing.footer.update',
+        ]);
+
+        Route::get('hero/data', [App\Http\Controllers\HeroController::class, 'data'])->name('landing.hero.data');
+
+        Route::resource('hero', App\Http\Controllers\HeroController::class)->names([
+            'index' => 'landing.hero.index',
+            'create' => 'landing.hero.create',
+            'store' => 'landing.hero.store',
+            'edit' => 'landing.hero.edit',
+            'update' => 'landing.hero.update',
+            'destroy' => 'landing.hero.destroy',
+        ]);
+        Route::get('vehicle/data', [VehicleTypeController::class, 'data'])->name('landing.vehicle.data');
+
+        Route::resource('vehicle', VehicleTypeController::class)->names([
+            'index' => 'landing.vehicle.index',
+            'create' => 'landing.vehicle.create',
+            'store' => 'landing.vehicle.store',
+            'edit' => 'landing.vehicle.edit',
+            'update' => 'landing.vehicle.update',
+            'destroy' => 'landing.vehicle.destroy',
+        ]);
+        Route::get('quienes-somos/data', [AboutUsController::class, 'data'])->name('landing.quienes-somos.data');
+
+        Route::prefix('quienes-somos')->group(function () {
+            Route::get('/', [AboutUsController::class, 'index'])->name('landing.quienes-somos.index');
+            Route::get('/edit/{id}', [AboutUsController::class, 'edit'])->name('landing.quienes-somos.edit');
+            Route::put('/update/{id}', [AboutUsController::class, 'update'])->name('landing.quienes-somos.update');
+        });
+        Route::resource('map', MapController::class)->names([
+        'index' => 'landing.map.index',
+        'create' => 'landing.map.create',
+        'store' => 'landing.map.store',
+        'edit' => 'landing.map.edit',
+        'update' => 'landing.map.update',
+        'destroy' => 'landing.map.destroy',
+            ]);
+    // Rutas para Service Landing
+        Route::group(['prefix' => 'service'], function() {
+            Route::get('data', [ServiceLandingController::class, 'data'])->name('landing.service.data');
+            
+            Route::resource('/', ServiceLandingController::class)
+                ->parameters(['' => 'serviceLanding'])
+                ->names([
+                    'index' => 'landing.service.index',
+                    'create' => 'landing.service.create',
+                    'store' => 'landing.service.store',
+                    'edit' => 'landing.service.edit',
+                    'update' => 'landing.service.update',
+                    'destroy' => 'landing.service.destroy',
+                ]);
+        });
+
+    Route::get('container-image/data', [ContainerImageLandingController::class, 'data'])
+        ->name('landing.container-image.data');
+        // Ruta para DataTables
+        Route::get('map/data', [MapController::class, 'data'])->name('landing.map.data');
+        Route::resource('container-image', ContainerImageLandingController::class)->names([
+        'index' => 'landing.container-image.index',
+        'create' => 'landing.container-image.create',
+        'store' => 'landing.container-image.store',
+        'edit' => 'landing.container-image.edit',
+        'update' => 'landing.container-image.update',
+        'destroy' => 'landing.container-image.destroy',
+        ]);
+        // Agrega esta ruta adicional para DataTables
+
+    });
 
 
     // CRUD Usuarios

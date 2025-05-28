@@ -29,31 +29,27 @@ class BusinessController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name_business' => 'required|string|max:255',
-            'logo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo'          => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $tenantId = tenant()->id;
-        $domain = request()->getHost();
-        $filename = $request->file('logo')->hashName();
 
-        Storage::disk('tenants_public_shared')->putFileAs(
-            "{$domain}/imagenes",
-            $request->file('logo'),
-            $filename
-        );
+        $path = $request->file('logo')->store('logos', 'public');
 
 
-        business::create([
-            'name_business' => $request->name_business,
-            'logo' => $filename, 
+        $empresa = Business::create([
+            'name_business' => $data['name_business'],
+            'logo'          => $path, 
         ]);
 
         return redirect()->route('empresa.index');
     }
+
+
 
     /**
      * Display the specified resource.
@@ -75,33 +71,28 @@ class BusinessController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
     public function update(Request $request, string $id)
     {
         $request->validate([
             'name_business' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
-    
+
         $business = Business::findOrFail($id);
+
         $data = [
             'name_business' => $request->name_business,
         ];
-    
+
         if ($request->hasFile('logo')) {
-            $domain = request()->getHost();
-            $filename = $request->file('logo')->hashName();
-    
-            Storage::disk('tenants_public_shared')->putFileAs(
-                "{$domain}/imagenes",
-                $request->file('logo'),
-                $filename
-            );
-    
-            $data['logo'] = $filename;
+            // Guardar en carpeta 'logos' usando el disco 'public' (ya tenantizado por Tenancy)
+            $path = $request->file('logo')->store('logos', 'public');
+            $data['logo'] = $path; // Ej: logos/archivo.webp
         }
-    
+
         $business->update($data);
-    
+
         return redirect()->route('empresa.index');
     }
     

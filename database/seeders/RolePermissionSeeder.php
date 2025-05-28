@@ -26,6 +26,7 @@ class RolePermissionSeeder extends Seeder
             'carwash.access',
             'cost_basic_service.access',
 
+            'landing.access',
 
         ] as $perm) {
             Permission::firstOrCreate(['name' => $perm]);
