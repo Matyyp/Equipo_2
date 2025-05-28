@@ -22,7 +22,6 @@
         <table id="payment-table" class="table table-striped table-bordered w-100">
           <thead>
             <tr>
-              <th>Id</th>
               <th>Fecha</th>
               <th>Monto</th>
               <th>Tipo Pago</th>
@@ -53,7 +52,6 @@ $(document).ready(function () {
         serverSide: false,
         ajax: '{{ route("payment.index") }}',
         columns: [
-            { data: 'id_payment' },
             { data: 'payment_date' },
             { data: 'amount' },
             { data: 'type_payment' },

@@ -21,7 +21,7 @@
     <div class="card-header bg-secondary text-white">
       <div class="d-flex justify-content-between align-items-center flex-wrap w-100">
         <div class="d-flex align-items-center mb-2 mb-md-0">
-          <i class="fas fa-money-bill-wave me-2"></i>
+          <i class="fas fa-money-bill-wave mr-2"></i>
           <span class="fw-semibold h6 mb-0">Ingresos por Servicios Básicos</span>
         </div>
       </div>
