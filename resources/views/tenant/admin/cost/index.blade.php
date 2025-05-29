@@ -12,6 +12,30 @@
       pointer-events: none !important;
       background: transparent !important;
   }
+  table.dataTable td,
+    table.dataTable th {
+      border: none !important;
+    }
+
+    table.dataTable tbody tr {
+      border: none !important;
+    }
+
+    /* Agregar solo el borde superior e inferior a la tabla completa */
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .dataTables_paginate .pagination .page-item.active .page-link {
+      background-color: #17a2b8 !important; 
+      border-color: #17a2b8 !important; 
+    }
+    .dataTables_paginate .pagination .page-item.disabled .page-link {
+  background-color: #eeeeee;
+  color: #17a2b8 !important;
+  border-color: #eeeeee;
+}
 </style>
 @endpush
 
@@ -112,7 +136,7 @@
         </div>
       </div>
       <div class="table-responsive">
-        <table id="ingresos-table" class="table table-striped table-bordered nowrap w-100">
+        <table id="ingresos-table" class="table table-striped nowrap w-100">
           <thead>
             <tr>
               <th>Fuente</th>
