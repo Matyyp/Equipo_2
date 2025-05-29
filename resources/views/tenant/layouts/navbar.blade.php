@@ -2,8 +2,8 @@
     $navbar = \App\Models\Navbar::first();
 @endphp
 
-<!-- Barra superior -->
-<div class="hidden lg:flex text-sm px-6 py-2 flex-wrap justify-around items-center font-light"
+<!-- Barra superior visible solo en pantallas xl y superiores (≥1280px) -->
+<div class="hidden xl:flex text-sm px-6 py-2 items-center justify-around font-light"
      style="background-color: {{ $navbar->background_color_1 ?? '#000000' }}">
     <div class="flex flex-wrap gap-6 items-center text-[15px]">
         
@@ -66,8 +66,11 @@
                 </span>
             </div>
         @endif
+
     </div>
 </div>
+
+
 
 <!-- Navbar principal -->
 <nav class="px-6 py-4 relative z-50"
