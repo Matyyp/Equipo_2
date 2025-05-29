@@ -55,7 +55,22 @@ class ContractController extends Controller
             'branch_id' => 'required|exists:branch_offices,id_branch',
             'contact_information' => 'required|array|min:1',
             'rules' => 'required|array|min:1',
+        ], [
+            'contract_type.required' => 'Debe seleccionar un tipo de contrato.',
+            'contract_type.in' => 'El tipo de contrato seleccionado no es válido.',
+            
+            'branch_id.required' => 'Debe seleccionar una sucursal.',
+            'branch_id.exists' => 'La sucursal seleccionada no existe en el sistema.',
+            
+            'contact_information.required' => 'Debe seleccionar al menos un contacto.',
+            'contact_information.array' => 'El formato de los contactos no es válido.',
+            'contact_information.min' => 'Debe seleccionar al menos un contacto.',
+            
+            'rules.required' => 'Debe seleccionar al menos una regla.',
+            'rules.array' => 'El formato de las reglas no es válido.',
+            'rules.min' => 'Debe seleccionar al menos una regla.',
         ]);
+
 
         $existingContracts = Contract::where('id_branch_office', $request->branch_id)
             ->with([
@@ -225,7 +240,25 @@ class ContractController extends Controller
             'rules' => 'required|array|min:1',
             'important_note' => 'nullable|string|max:255',
             'expiration_date' => 'nullable|date'
+        ], [
+            // Contactos
+            'contact_information.required' => 'Debe seleccionar al menos un contacto.',
+            'contact_information.array' => 'El formato de los contactos no es válido.',
+            'contact_information.min' => 'Debe seleccionar al menos un contacto.',
+
+            // Reglas
+            'rules.required' => 'Debe seleccionar al menos una regla.',
+            'rules.array' => 'El formato de las reglas no es válido.',
+            'rules.min' => 'Debe seleccionar al menos una regla.',
+
+            // Nota
+            'important_note.string' => 'La nota importante debe ser un texto válido.',
+            'important_note.max' => 'La nota importante no debe exceder los 255 caracteres.',
+
+            // Fecha
+            'expiration_date.date' => 'La fecha de expiración debe tener un formato válido (AAAA-MM-DD).',
         ]);
+
     
         $contract = Contract::with([
             'contract_contract_parking.contract_parking_contract_annual',

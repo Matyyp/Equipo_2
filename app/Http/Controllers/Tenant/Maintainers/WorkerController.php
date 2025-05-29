@@ -97,12 +97,12 @@ class WorkerController extends Controller
                     $deleteUrl = route('trabajadores.destroy', $user->id);
 
                     return '
-                        <a href="' . $editUrl . '" class="btn btn-sm btn-warning me-1">
-                            <i class="fas fa-edit"></i>
-                        </a>
+                    <a href="' . $editUrl . '" class="btn btn-sm btn-outline-secondary me-1" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
                         <form action="' . $deleteUrl . '" method="POST" class="d-inline delete-form">
                             ' . csrf_field() . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-sm btn-danger">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </form>

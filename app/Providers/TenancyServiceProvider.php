@@ -121,12 +121,20 @@ class TenancyServiceProvider extends ServiceProvider
         $this->app['events']->listen(TenancyBootstrapped::class, function () {
             $logoUrl         = null;
             $companyName     = null;
+            $companyFunds    = null; // ← DECLARACIÓN AQUÍ
             $branchName      = null;
 
             if (Schema::hasTable('businesses')) {
                 $business = Business::first();
 
                 if ($business) {
+                    $host         = request()->getHost();
+                    $logoUrl      = $business->logo ? tenant_asset($business->logo) : null;
+                    $companyName  = $business->name_business;
+                    $companyFunds = $business->funds
+                    ? tenant_asset($business->funds)
+                    : null;
+
                     $host    = request()->getHost();
                     $logoUrl = $business->logo
                         ? tenant_asset($business->logo)
@@ -159,8 +167,10 @@ class TenancyServiceProvider extends ServiceProvider
 
             View::share('tenantLogo', $logoUrl);
             View::share('tenantCompanyName', $companyName);
+            View::share('tenantFunds', $companyFunds); // ← YA NO LANZA ERROR
             View::share('tenantBranchName', $branchName);
         });
+
     }
 
     protected function bootEvents()

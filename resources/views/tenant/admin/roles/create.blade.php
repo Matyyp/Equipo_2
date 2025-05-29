@@ -6,11 +6,10 @@
 @section('content')
 <div class="container-fluid">
   <div class="card shadow-sm">
-
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
-        <i class="fas fa-user-shield me-2"></i> Nuevo Rol
-      </h5>
+      <div>
+        <i class="fas fa-user-shield me-2"></i> Nuevo Rol 
+      </div>
     </div>
 
     <div class="card-body">

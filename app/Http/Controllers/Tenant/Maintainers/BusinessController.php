@@ -35,15 +35,22 @@ class BusinessController extends Controller
         $data = $request->validate([
             'name_business' => 'required|string|max:255',
             'logo'          => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'funds'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        // Guardar el logo
+        $logoPath = $request->file('logo')->store('logos', 'public');
 
-        $path = $request->file('logo')->store('logos', 'public');
+        // Guardar el fondo si se subió
+        $fundsPath = $request->hasFile('funds')
+            ? $request->file('funds')->store('backgrounds', 'public')
+            : null;
 
-
+        // Crear empresa
         $empresa = Business::create([
             'name_business' => $data['name_business'],
-            'logo'          => $path, 
+            'logo'          => $logoPath,
+            'funds'         => $fundsPath, 
         ]);
 
         return redirect()->route('empresa.index');
@@ -77,6 +84,19 @@ class BusinessController extends Controller
         $request->validate([
             'name_business' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'funds' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3000',
+        ], [
+            'name_business.required' => 'El nombre de la empresa es obligatorio.',
+            'name_business.string' => 'El nombre de la empresa debe ser una cadena de texto.',
+            'name_business.max' => 'El nombre de la empresa no debe superar los 255 caracteres.',
+
+            'logo.image' => 'El archivo del logo debe ser una imagen.',
+            'logo.mimes' => 'El logo debe ser un archivo de tipo: jpg, jpeg, png o webp.',
+            'logo.max' => 'El logo no debe ser mayor a 2MB.',
+
+            'funds.image' => 'El fondo debe ser una imagen.',
+            'funds.mimes' => 'El fondo debe ser un archivo de tipo: jpg, jpeg, png o webp.',
+            'funds.max' => 'El fondo no debe ser mayor a 3MB.',
         ]);
 
         $business = Business::findOrFail($id);
@@ -85,16 +105,23 @@ class BusinessController extends Controller
             'name_business' => $request->name_business,
         ];
 
+        // Si subieron nuevo logo
         if ($request->hasFile('logo')) {
-            // Guardar en carpeta 'logos' usando el disco 'public' (ya tenantizado por Tenancy)
             $path = $request->file('logo')->store('logos', 'public');
-            $data['logo'] = $path; // Ej: logos/archivo.webp
+            $data['logo'] = $path;
+        }
+
+        // Si subieron nuevo fondo (imagen de login)
+        if ($request->hasFile('funds')) {
+            $fundsPath = $request->file('funds')->store('backgrounds', 'public');
+            $data['funds'] = $fundsPath;
         }
 
         $business->update($data);
 
         return redirect()->route('empresa.index');
     }
+
     
 
     /**

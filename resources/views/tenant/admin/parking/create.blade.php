@@ -27,12 +27,14 @@
 @endpush
 
 @section('content')
-<div class="container px-3 px-md-5 mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-car me-2"></i>
-      <h5 class="mb-0">Ingreso de Vehículo al Estacionamiento</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div>
+        <i class="fas fa-car mr-2"></i> Ingreso de Vehículo al Estacionamiento
+      </div>
     </div>
+
     <div class="card-body">
       @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -70,39 +72,46 @@
       <form action="{{ route('estacionamiento.store') }}" method="POST" autocomplete="off" id="form-register">
         @csrf
 
-        <div class="form-group col-3">
-          <label for="plate">Patente</label>
-          <div class="input-group">
-            <input type="text" id="plate" name="plate" class="form-control" placeholder="Ej: AB123C" minlength="6" maxlength="6" pattern="[A-Z0-9]{6}" required>
-            <div class="input-group-append">
-              <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <div class="form-row">
+          <div class="form-group col-12 col-md-6">
+            <label for="plate">Patente</label>
+            <div class="input-group">
+              <input type="text" id="plate" name="plate" 
+                    class="form-control" 
+                    placeholder="Ej: AB123C" 
+                    minlength="6" maxlength="6" 
+                    pattern="[A-Z0-9]{6}" 
+                    required>
+              <span class="input-group-text">
+                <i class="fas fa-search"></i>
+              </span>
             </div>
-          </div>
-          <div id="plateAlert" class="mt-2"></div>
-          <div id="plateLoading" class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
+            <div id="plateAlert" class="mt-2"></div>
+            <div id="plateLoading" class="loading-spinner">
+              <i class="fas fa-spinner fa-spin"></i>
+            </div>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="name">Nombre</label>
-            <input type="text" id="name" name="name" class="form-control" required>
+            <input type="text" id="name" name="name" class="form-control" title="Debe ingresar el nombre del cliente" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="phone">Teléfono</label>
-            <input type="number" id="phone" name="phone" class="form-control" min="100000000" max="999999999" required>
+            <input type="text" id="phone" name="phone" class="form-control" pattern="^[0-9]{9}$" maxlength="9" inputmode="numeric" title="Debe ingresar exactamente 9 dígitos" required>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="start_date">Fecha de Inicio</label>
-            <input type="date" id="start_date" name="start_date" class="form-control" required>
+            <input type="date" id="start_date" name="start_date" class="form-control" title="Ingrese una fecha" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="end_date">Fecha de Término</label>
-            <input type="date" id="end_date" name="end_date" class="form-control" required>
+            <input type="date" id="end_date" name="end_date" class="form-control" title="Ingrese una fecha" required>
           </div>
         </div>
 
@@ -120,11 +129,11 @@
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="brand_name">Marca</label>
-            <input type="text" id="brand_name" name="brand_name" class="form-control" required>
+            <input type="text" id="brand_name" name="brand_name" class="form-control" title="Ingrese la Marca del vehículo" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="model_name">Modelo</label>
-            <input type="text" id="model_name" name="model_name" class="form-control" required>
+            <input type="text" id="model_name" name="model_name" class="form-control" title="Ingrese la Modelo del vehículo" required>
           </div>
         </div>
 
@@ -170,13 +179,13 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <button type="reset" class="btn btn-secondary">
-              <i class="fas fa-eraser mr-1"></i> Limpiar
-            </button>
+            <a href="{{ route('estacionamiento.index') }}" class="btn btn-secondary mr-1">
+                Cancelar
+            </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary" id="submit-btn">
-              <i class="fas fa-save mr-1"></i> Guardar
+                Guardar
             </button>
           </div>
         </div>
@@ -219,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
     modelInput.val('').prop('readonly', false);
   }
 
-  function searchByPlate(plate) {
+function searchByPlate(plate) {
     if (!plate) return;
     plateLoading.addClass('active');
     plateChecked = false;
@@ -235,15 +244,27 @@ document.addEventListener('DOMContentLoaded', () => {
             clearAssociatedFields();
             plateChecked = false;
           } else {
-            nameInput.val(response.name || '').prop('readonly', true);
-            phoneInput.val(response.phone || '').prop('readonly', true);
-            brandInput.val(response.brand || '').prop('readonly', true);
-            modelInput.val(response.model || '').prop('readonly', true);
-            showAlert('success', 'Vehículo disponible. Puede continuar con el ingreso.');
+            // Bloquear marca y modelo SIEMPRE que existan en la respuesta
+            if (response.brand || response.model) {
+              brandInput.val(response.brand || '').prop('readonly', true);
+              modelInput.val(response.model || '').prop('readonly', true);
+            }
+
+            // Bloquear nombre y teléfono SOLO si vienen en la respuesta
+            nameInput.val(response.name || '').prop('readonly', !!response.name);
+            phoneInput.val(response.phone || '').prop('readonly', !!response.phone);
+
+            // Mensaje según qué datos se encontraron
+            if (response.name && response.phone) {
+              showAlert('success', 'Vehículo y dueño registrados. Datos completos.');
+            } else if (response.brand || response.model) {
+              showAlert('info', 'Vehículo registrado. Complete los datos del dueño.');
+            }
+            
             plateChecked = true;
           }
         } else {
-          showAlert('warning', 'La patente no existe en los registros. Ingrese los datos manualmente.');
+          showAlert('warning', 'Patente no registrada. Ingrese todos los datos manualmente.');
           clearAssociatedFields();
           plateChecked = true;
         }
@@ -252,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         plateLoading.removeClass('active');
       }
     });
-  }
+}
 
   plateInput.on('input', function() {
     const plate = $(this).val().trim().toUpperCase();
@@ -260,6 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => searchByPlate(plate), 500);
   });
+
+  let nameAutofilled = false;
 
   phoneInput.on('input', function () {
     const phone = $(this).val().trim();
@@ -271,17 +294,32 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'GET',
         data: { phone },
         success: function (res) {
+          console.log('Respuesta:', res);
+
           if (res.found) {
-            showAlert('info', 'Este número ya está registrado a nombre de ' + res.name);
-            submitBtn.prop('disabled', true);
+            nameInput
+              .val(res.name || '')
+              .prop('readonly', true)
+              .addClass('from-autofill');
+            nameAutofilled = true;
           } else {
-            nameInput.val('');
-            submitBtn.prop('disabled', false);
+            // SOLO se borra si venía de autofill
+            if (nameInput.hasClass('from-autofill')) {
+              nameInput.val('');
+            }
+
+            nameInput
+              .prop('readonly', false)
+              .removeClass('from-autofill');
+
+            nameAutofilled = false;
           }
+
+          submitBtn.prop('disabled', false);
         },
-        error: function () {
-          showAlert('danger', 'Error al verificar el número. Intente de nuevo.');
-          submitBtn.prop('disabled', true);
+        error: function (err) {
+          console.error('ERROR AJAX:', err);
+          submitBtn.prop('disabled', false);
         }
       });
     } else {
@@ -289,6 +327,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Si el usuario escribe manualmente el nombre, ya no es autofill
+  nameInput.on('input', function () {
+    nameInput.removeClass('from-autofill');
+    nameAutofilled = false;
+  });
 $('#wash_service').on('change', function () {
   const checked = $(this).is(':checked');
   const $group = $('#wash-type-group');
@@ -322,33 +365,6 @@ $('#wash_service').on('change', function () {
     $select.empty();
   }
 });
-
-
-
-
-
-
-  $('#service_id').on('changed.bs.select', function () {
-    const serviceId = $(this).val();
-    if (!serviceId) return;
-    $.ajax({
-      url: contratoUrl,
-      method: 'GET',
-      data: { service_id: serviceId },
-      success: function (res) {
-        $('#contract-warning').remove();
-        if (!res.contract_exists) {
-          submitBtn.prop('disabled', true);
-          submitBtn.after('<div id="contract-warning" class="text-danger mt-2">Este servicio no tiene contrato activo.</div>');
-        } else {
-          submitBtn.prop('disabled', false);
-        }
-      },
-      error: function () {
-        alert('No se pudo verificar el contrato del servicio.');
-      }
-    });
-  });
 
   @role('SuperAdmin')
   $('#branch_office_id').on('changed.bs.select', function () {
@@ -398,6 +414,50 @@ $('#wash_service').on('change', function () {
 
   const today = new Date().toISOString().slice(0, 10);
   $('#start_date').attr('min', today);
+  $('#start_date').on('change', function() {
+    $('#end_date').attr('min', $(this).val());
+  });
+});
+
+$(document).ready(function() {
+  // Configuración inicial de fechas
+  const today = new Date().toISOString().slice(0, 10);
+  $('#start_date').attr('min', today);
+
+function handleAnnualParking() {
+    const startDate = $('#start_date').val();
+    const endDateInput = $('#end_date');
+    
+    if (startDate) {
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + 30);
+        const newEndDate = date.toISOString().split('T')[0];
+        
+        // Solo actualizamos si está vacío o si el valor actual es diferente al calculado
+        if (!endDateInput.val() || endDateInput.val() !== newEndDate) {
+            endDateInput.val(newEndDate);
+        }
+    }
+    
+    endDateInput.prop('readonly', true).css('background-color', '#f8f9fa');
+}
+
+// Manejador único para cambios de servicio
+$('#service_id').on('changed.bs.select', function() {
+    const selectedText = $(this).find('option:selected').text().toLowerCase();
+    const isAnnual = selectedText.includes('anual'); // Ajusta según tu naming
+
+    if (isAnnual) {
+        handleAnnualParking();
+        $('#start_date').off('change').on('change', handleAnnualParking);
+    } else {
+        // Solo quitamos el readonly y el estilo, pero no borramos el valor
+        $('#end_date').prop('readonly', false).css('background-color', '');
+        $('#start_date').off('change');
+    }
+});
+
+  // Actualizar fecha mínima de término cuando cambia la inicial
   $('#start_date').on('change', function() {
     $('#end_date').attr('min', $(this).val());
   });

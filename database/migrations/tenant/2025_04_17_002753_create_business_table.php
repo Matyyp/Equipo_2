@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_business');
             $table->string('name_business');
             $table->string('logo');
+            $table->string('funds')->nullable();
             $table->timestamps();
 
         });

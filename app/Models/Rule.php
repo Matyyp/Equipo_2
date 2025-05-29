@@ -16,6 +16,8 @@ class Rule extends Model
         'type_contract'
     ];
 
+    protected $primaryKey = 'id_rule'; 
+
     public function rule_contains()
     {
         return $this->hasMany(Contain::class, 'id_rule', 'id_rule');

@@ -24,7 +24,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Guardar</button>
-        <a href="{{ route('accesorio.index') }}" class="btn btn-secondary">Volver</a>
+        <a href="{{ route('accesorio.index') }}" class="btn btn-secondary">Ca</a>
     </form>
 </div>
 </body>

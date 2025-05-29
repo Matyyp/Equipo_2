@@ -14,6 +14,7 @@ class Business extends Model
     protected $fillable = [
         'name_business',
         'logo',
+        'funds',
     ];
 
     protected $primaryKey = 'id_business';

@@ -4,46 +4,47 @@
 @section('page_title', 'Listado de Marcas')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
-      <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center w-100">
         <span class="fw-semibold">
-          <i class="fas fa-tags me-2"></i>Listado de Marcas
+          <i class="fas fa-tags mr-2"></i>Listado de Marcas
         </span>
-        <a href="{{ route('marca.create') }}" class="btn btn-sm btn-success">
-          <i class="fas fa-plus-circle me-1"></i> Nueva Marca
+        <a href="{{ route('marca.create') }}"
+          style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+          <i class="fas fa-plus"></i> Nuevo
         </a>
       </div>
     </div>
 
+
     <div class="card-body">
-      @if ($data->count())
-        <div class="table-responsive">
-          <table id="brands-table" class="table table-striped table-bordered w-100">
-            <thead class="thead-light">
+      <div class="table-responsive">
+        <table id="brands-table" class="table table-striped table-bordered w-100">
+          <thead class="thead-light">
+            <tr>
+              <th>Nombre</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse ($data as $brand)
               <tr>
-                <th>Nombre</th>
-                <th class="text-center">Acciones</th>
+                <td>{{ $brand->name_brand }}</td>
+                <td class="text-center">
+                  <a href="{{ route('marca.edit', $brand->id_brand) }}"
+                    class="btn btn-outline-warning btn-sm text-dark" title="Editar">
+                    <i class="fas fa-pen"></i>
+                  </a>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @foreach ($data as $brand)
-                <tr>
-                  <td>{{ $brand->name_brand }}</td>
-                  <td class="text-center">
-                    <a href="{{ route('marca.edit', $brand->id_brand) }}" class="btn btn-sm btn-outline-info me-1">
-                      <i class="fas fa-edit"></i> Editar
-                    </a>
-                  </td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-      @else
-        <div class="alert alert-info">No hay marcas registradas.</div>
-      @endif
+            @empty
+              {{-- Dejar vacío para que DataTables muestre el mensaje automáticamente --}}
+            @endforelse
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

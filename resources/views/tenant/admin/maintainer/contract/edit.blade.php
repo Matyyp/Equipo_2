@@ -4,7 +4,7 @@
 @section('page_title', 'Editar Contrato')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
       <i class="fas fa-edit me-2"></i>Editar Contrato
@@ -61,8 +61,20 @@
           @foreach($contactInformation as $contact)
             <div class="form-check">
               <input type="checkbox" name="contact_information[]" value="{{ $contact->id_contact_information }}" class="form-check-input"
-                {{ in_array($contact->id_contact_information, $contactIds) ? 'checked' : '' }}>
-              <label class="form-check-label">{{ $contact->type_contact }}: {{ $contact->data_contact }}</label>
+                {{ in_array($contact->id_contact_information, $contactIds) ? 'checked' : '' }} data-type="{{ $contact->type_contact }}">
+              <label class="form-check-label">
+                {{
+                  match($contact->type_contact) {
+                    'email' => 'Correo Electrónico',
+                    'phone' => 'Teléfono Fijo',
+                    'mobile' => 'Teléfono Celular',
+                    'whatsapp' => 'WhatsApp',
+                    'website' => 'Sitio Web',
+                    'social' => 'Red Social',
+                    default => ucfirst($contact->type_contact)
+                  }
+                }}: {{ $contact->data_contact }}
+              </label>
             </div>
           @endforeach
         </div>
@@ -74,7 +86,16 @@
               <input type="checkbox" name="rules[]" value="{{ $rule->id_rule }}" class="form-check-input"
                 {{ in_array($rule->id_rule, $ruleIds) ? 'checked' : '' }}>
               <label class="form-check-label">
-                <strong>{{ ucfirst($rule->name) }}</strong><br>
+                <strong>
+                  {{
+                    match($rule->name) {
+                      'no_smoking' => 'Prohibido fumar',
+                      'return_clean' => 'Debe devolverse limpio',
+                      'no_pets' => 'No se permiten mascotas',
+                      default => ucfirst(str_replace('_', ' ', $rule->name))
+                    }
+                  }}
+                </strong><br>
                 <small class="text-muted">{{ $rule->description }}</small>
               </label>
             </div>
@@ -86,13 +107,13 @@
         <!-- BOTONES -->
         <div class="form-group row justify-content-end mt-4">
           <div class="col-auto">
-            <a href="{{ route('contratos.show', $contract->id_branch_office) }}" class="btn btn-secondary">
-              <i class="fas fa-arrow-left me-1"></i> Volver
+            <a href="{{ route('contratos.show', $contract->id_branch_office) }}" class="btn btn-secondary mr-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save me-1"></i> Actualizar
+              Actualizar
             </button>
           </div>
         </div>
@@ -102,3 +123,30 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form');
+    const checkboxes = document.querySelectorAll('input[name="contact_information[]"]');
+
+    form.addEventListener('submit', function(e) {
+      const grouped = {};
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          const type = cb.dataset.type;
+          grouped[type] = grouped[type] ? grouped[type] + 1 : 1;
+        }
+      });
+
+      for (const [type, count] of Object.entries(grouped)) {
+        if (count > 3) {
+          e.preventDefault();
+          alert(`Solo puedes seleccionar hasta 3 contactos del tipo: ${type}`);
+          return;
+        }
+      }
+    });
+  });
+</script>
+@endpush

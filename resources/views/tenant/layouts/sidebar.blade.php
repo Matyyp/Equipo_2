@@ -41,19 +41,22 @@
                         <li class="nav-item">
                             <a href="{{ route('estacionamiento.index') }}"
                                class="nav-link {{ request()->routeIs('estacionamiento.index') ? 'active' : '' }}">
+                               <i class="fas fa-list nav-icon"></i>
                                 <p>Listado</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('estacionamiento.history') }}"
                                class="nav-link {{ request()->routeIs('estacionamiento.history') ? 'active' : '' }}">
+                               <i class="fas fa-history nav-icon"></i>
+                               
                                 <p>Historial</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('carwash.history') }}"
                                 class="nav-link {{ request()->routeIs('carwash.history') ? 'active' : '' }}">
-
+                                <i class="fas fa-soap nav-icon"></i>
                                 <p>Historial Lavado</p>
                             </a>
 
@@ -188,7 +191,10 @@
                 <li class="nav-item has-treeview {{ request()->is('pagos*') || request()->is('analiticas*') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->is('pagos*') || request()->is('analiticas*') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-wallet"></i>
-                        <p>Ventas<i class="right fas fa-angle-left"></i></p>
+                        <p>
+                            Ventas
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
@@ -207,6 +213,7 @@
                         </li>
                     </ul>
                 </li>
+
                 @endcan
                 {{-- Costos de Servicios Básicos --}}
                 @can('cost_basic_service.access')
@@ -250,22 +257,21 @@
 
                 {{-- Administración --}}
                 @canany(['users.index','roles.index'])
-                <li class="nav-item has-treeview {{ request()->is('administracion*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('administracion*') ? 'active' : '' }}">
+                <li class="nav-item has-treeview 
+                    {{ request()->is('users*') || request()->is('roles*') || request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') || request()->is('region*') || request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') || request()->is('reglas*') || request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link 
+                        {{ request()->is('users*') || request()->is('roles*') || request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') || request()->is('region*') || request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') || request()->is('reglas*') || request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-cog"></i>
                         <p>Administración<i class="right fas fa-angle-left"></i></p>
                     </a>
+
                     <ul class="nav nav-treeview">
 
                         {{-- Configuración Interna --}}
-                        <li class="nav-item has-treeview
-                            {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ||
-                               request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ||
-                               request()->is('region*') || request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') ? 'menu-open' : '' }}">
-                            <a href="#" class="nav-link
-                                {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ||
-                                   request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') ||
-                                   request()->is('region*') || request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') ? 'active' : '' }}">
+                        <li class="nav-item has-treeview 
+                            {{ request()->is('users*') || request()->is('roles*') || request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') || request()->is('region*') || request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link 
+                                {{ request()->is('users*') || request()->is('roles*') || request()->is('empresa*') || request()->is('locacion*') || request()->is('sucursales*') || request()->is('region*') || request()->is('banco*') || request()->is('tipo_cuenta*') || request()->is('cuentas_bancarias*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-cogs"></i>
                                 <p>Configuración Interna<i class="right fas fa-angle-left"></i></p>
                             </a>
@@ -284,6 +290,7 @@
                                     </a>
                                 </li>
                                 @endrole
+                                @can('mantenedores.access')
                                 <li class="nav-item">
                                     <a href="{{ route('empresa.index') }}" class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
                                         <i class="fas fa-briefcase nav-icon"></i><p>Datos Empresa</p>
@@ -347,7 +354,7 @@
                         <li class="nav-item has-treeview {{ request()->is('reglas*') ? 'menu-open' : '' }}">
                             <a href="#" class="nav-link {{ request()->is('reglas*') ? 'active' : '' }}">
                                 <i class="fas fa-file-signature nav-icon"></i>
-                                <p>Configuracion contrato<i class="right fas fa-angle-left"></i></p>
+                                <p>Configuración Contrato<i class="right fas fa-angle-left"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
@@ -357,7 +364,6 @@
                                 </li>
                             </ul>
                         </li>
-
 
                         {{-- Configuración Auto --}}
                         <li class="nav-item has-treeview {{ request()->is('autos*') || request()->is('marca*') || request()->is('modelo*') || request()->is('dueños*') ? 'menu-open' : '' }}">
@@ -388,6 +394,7 @@
                                 </li>
                             </ul>
                         </li>
+                        @endcan
 
                     </ul>
                 </li>

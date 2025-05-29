@@ -4,11 +4,10 @@
 @section('page_title', 'Registrar Nueva Marca')
 
 @section('content')
-<div class="container px-3 px-md-5 mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-tag me-2"></i>
-      <h5 class="mb-0">Registrar Nueva Marca</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-tag mr-2"></i> Registro de Marca</div>
     </div>
 
     <div class="card-body">
@@ -36,13 +35,13 @@
         <!-- BOTONES -->
         <div class="form-group row justify-content-end mt-4">
           <div class="col-auto">
-            <a href="{{ route('marca.index') }}" class="btn btn-secondary mr-2">
-              <i class="fas fa-arrow-left mr-1"></i> Volver
+            <a href="{{ route('marca.index') }}" class="btn btn-secondary mr-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save mr-1"></i> Guardar
+             Guardar
             </button>
           </div>
         </div>

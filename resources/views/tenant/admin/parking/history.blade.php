@@ -47,16 +47,50 @@
 }
 
 </style>
+<style>
+     table.dataTable td,
+    table.dataTable th {
+      border: none !important;
+    }
+
+    table.dataTable tbody tr {
+      border: none !important;
+    }
+
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .dataTables_paginate .pagination .page-item.active a.page-link {
+      background-color: #17a2b8 !important; 
+      color:rgb(255, 255, 255) !important;
+      border-color: #17a2b8 !important; 
+    }
+
+  
+    .dataTables_paginate .pagination .page-item .page-link {
+      background-color: #eeeeee;
+      color: #17a2b8 !important;
+      border-color: #eeeeee;
+    }
+
+    .btn-outline-info.text-info:hover,
+    .btn-outline-info.text-info:focus {
+      color: #fff !important;
+    }
+    
+    
+</style>
 @endpush
 
 @section('content')
 <div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div>
-        <i class="fas fa-history"></i> Historial de Ingresos
-      </div>
+      <div><i class="fas fa-history mr-2"></i> Historial de Ingresos</div>
     </div>
+    
     <div class="card-body">
       <div class="table-responsive">
         <table id="history-table" class="table table-striped table-hover table-sm w-100 nowrap">
@@ -129,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
       { data: 'price', render: formatCLP },
       { data: 'total_value', render: formatCLP },
       {
-        data: 'id_parking_register', // 👈 asegúrate de que este campo venga del backend
+        data: 'id_parking_register', 
         orderable: false,
         searchable: false,
         render: function(id) {

@@ -8,11 +8,10 @@
 @endpush
 
 @section('content')
-<div class="container px-3 px-md-5 mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-edit me-2"></i>
-      <h5 class="mb-0">Editar Cuenta Bancaria</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-edit mr-2"></i> Editar Cuenta Bancaria</div>
     </div>
 
     <div class="card-body">
@@ -72,13 +71,13 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('cuentas_bancarias.index') }}" class="btn btn-secondary me-2">
-              <i class="fas fa-arrow-left me-1"></i> Volver
+            <a href="{{ route('cuentas_bancarias.index') }}" class="btn btn-secondary me-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save me-1"></i> Actualizar
+              Actualizar
             </button>
           </div>
         </div>

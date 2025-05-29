@@ -2,7 +2,7 @@
 @extends('tenant.layouts.admin')
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <h3>Pagos Pendientes</h3>
 
   <table class="table table-hover">
@@ -119,11 +119,11 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <button type="button" class="btn btn-secondary mr-1" data-dismiss="modal">
             Cancelar
           </button>
           <button type="submit" class="btn btn-success">
-            Guardar Pago
+            Guardar
           </button>
         </div>
       </div>

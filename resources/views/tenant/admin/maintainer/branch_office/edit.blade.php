@@ -9,10 +9,10 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <div class="card mb-4">
-    <div class="card-header bg-secondary text-white">
-      <i class="fas fa-pen me-2"></i>Editar Sucursal
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-edit mr-2"></i> Editar Sucursal</div>
     </div>
     <div class="card-body">
       @if ($errors->any())
@@ -34,16 +34,21 @@
             <label class="form-label">Nombre sucursal</label>
             <input type="text" name="name_branch_offices" class="form-control" value="{{ old('name_branch_offices', $branch->name_branch_offices) }}" required>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Horario</label>
-            <input type="text" name="schedule" class="form-control" value="{{ old('schedule', $branch->schedule) }}" required>
+          <div class="col-md-3">
+            <label class="form-label">Hora de apertura</label>
+            <input type="time" id="hora_apertura" class="form-control" required value="{{ explode(' - ', $branch->schedule)[0] }}">
           </div>
+          <div class="col-md-3">
+            <label class="form-label">Hora de cierre</label>
+            <input type="time" id="hora_cierre" class="form-control" required value="{{ explode(' - ', $branch->schedule)[1] ?? '' }}">
+          </div>
+          <input type="hidden" name="schedule" id="schedule" value="{{ old('schedule', $branch->schedule) }}">
         </div>
 
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Calle</label>
-            <input type="text" name="street" class="form-control" value="{{ old('street', $branch->street) }}" required>
+            <input type="text" name="street" class="form-control" value="{{ old('street', $branch->street) }}" required pattern="^.*\s\d{1,5}.*$" title="Debe incluir nombre de calle y número (ej: Calle Falsa 123)">
           </div>
 
           <div class="col-md-6">
@@ -88,16 +93,16 @@
         </div>
 
         <div class="form-group row justify-content-end mt-4">
-            <div class="col-auto">
-              <a href="{{ route('sucursales.show', $branch->id_branch) }}" class="btn btn-secondary mr-2">
-                <i class="fas fa-arrow-left mr-1"></i> Volver
-              </a>
-            </div>
-              <div class="col-auto">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save mr-1"></i> Guardar
-                </button>
-            </div>
+          <div class="col-auto">
+            <a href="{{ route('sucursales.show', $branch->id_branch) }}" class="btn btn-secondary mr-1">
+              Cancelar
+            </a>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary">
+              Guardar
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -139,6 +144,12 @@
         e.preventDefault();
         alert('Debe seleccionar una comuna válida para continuar.');
         communeSelect.focus();
+      }
+
+      const apertura = document.getElementById('hora_apertura').value;
+      const cierre = document.getElementById('hora_cierre').value;
+      if (apertura && cierre) {
+        document.getElementById('schedule').value = `${apertura} - ${cierre}`;
       }
     });
   });

@@ -8,28 +8,33 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
+  @if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+  @endif
+
   <div class="card">
-    <div class="card-header bg-secondary text-white">
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">
-          <i class="fas fa-university me-2"></i>Bancos
-        </span>
-        <a href="{{ route('banco.create') }}" class="btn btn-sm btn-success">
-          <i class="fas fa-plus-circle me-1"></i> Nuevo Banco
-        </a>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div>
+        <i class="fas fa-university mr-2"></i>Bancos
       </div>
+      <a href="{{ route('banco.create') }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+        <i class="fas fa-plus"></i> Nuevo
+      </a>
     </div>
 
     <div class="card-body">
-      <table id="banks-table" class="table table-striped table-bordered w-100">
-        <thead>
-          <tr>
-            <th>Nombre del Banco</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-      </table>
+      <div class="table-responsive">
+        <table id="banks-table" class="table table-striped table-bordered w-100">
+          <thead>
+            <tr>
+              <th>Nombre del Banco</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -44,11 +49,9 @@
     $('#banks-table').DataTable({
       processing: true,
       serverSide: true,
-      ajax: {
-        url: '{{ route("banco.data") }}'
-      },
+      ajax: '{{ route("banco.data") }}',
       columns: [
-        { data: 'name_bank',   name: 'name_bank' },
+        { data: 'name_bank', name: 'name_bank' },
         {
           data: 'action',
           name: 'action',
@@ -60,7 +63,8 @@
       order: [[0, 'asc']],
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-      }
+      },
+      responsive: true
     });
   });
   </script>

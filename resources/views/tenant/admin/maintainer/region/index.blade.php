@@ -9,17 +9,14 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white">
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="fw-semibold">
-          <i class="fas fa-map-marked-alt me-2"></i>Regiones
-        </span>
-        <a href="{{ route('region.create') }}" class="btn btn-sm btn-success">
-          <i class="fas fa-plus-circle me-1"></i> Nueva Región
-        </a>
-      </div>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-map-marker-alt mr-2"></i>Regiones registradas</div>
+      <a href="{{ route('region.create') }}"
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+        <i class="fas fa-plus"></i> Nuevo
+      </a>
     </div>
 
     <div class="card-body">
@@ -60,10 +57,11 @@
           className: 'text-center'
         }
       ],
-      order: [[1, 'asc']],
+      order: [[0, 'asc']],
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-      }
+      },
+      responsive: true
     });
   });
 </script>

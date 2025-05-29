@@ -4,11 +4,10 @@
 @section('page_title', 'Editar Región')
 
 @section('content')
-<div class="container px-3 px-md-5 mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-edit me-2"></i>
-      <h5 class="mb-0">Editar Región</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-edit mr-2"></i> Editar Región</div>
     </div>
 
     <form action="{{ route('region.update', $region->id) }}" method="POST">
@@ -35,13 +34,13 @@
       <div class="card-footer">
         <div class="form-group row justify-content-end mb-0">
           <div class="col-auto">
-            <a href="{{ route('region.index') }}" class="btn btn-secondary me-2">
-              <i class="fas fa-arrow-left me-1"></i> Volver
+            <a href="{{ route('region.index') }}" class="btn btn-secondary me-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save me-1"></i> Guardar
+               Guardar
             </button>
           </div>
         </div>

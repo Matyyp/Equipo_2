@@ -5,22 +5,17 @@
 
 @section('content')
 <div class="card">
-    <div class="card-header bg-secondary text-white">
-        <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="fas fa-building me-2"></i>Información General
-            </h5>
-
-            @if ($business)
-                <a href="{{ route('empresa.edit', $business->id_business) }}" class="btn btn-sm btn-outline-info me-1">
-                    <i class="fas fa-edit"></i> Editar Perfil
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-building mr-2"></i>Información general de la empresa</div>
+      @if ($business)
+                <a href="{{ route('empresa.edit', $business->id_business) }}"  style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+                    <i class="fas fa-pen"></i> Editar Perfil
                 </a>
             @else
-                <a href="{{ route('empresa.create') }}" class="btn btn-sm btn-success">
-                    <i class="fas fa-plus"></i> Ingresar Perfil de Empresa
+                <a href="{{ route('empresa.create') }}"  style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+                    <i class="fas fa-plus"></i> Ingresar datos
                 </a>
             @endif
-        </div>
     </div>
 
     <div class="card-body">
@@ -36,12 +31,28 @@
                 <strong>Logo:</strong><br>
                 @if ($business?->logo)
                     <img src="{{ tenant_asset($business->logo) }}"
-                         alt="Logo del Negocio" class="img-thumbnail mt-2" width="150">
+                        alt="Logo del Negocio"
+                        class="img-thumbnail mt-2"
+                        style="width: 150px; height: auto;">
+
                 @else
                     <span class="text-muted">No hay logo disponible.</span>
                 @endif
             </div>
         </div>
+        <div class="col-md-6 mt-3">
+            <strong>Fondo de Iniciar sesión/ Registrarse :</strong><br>
+            @if ($business?->funds)
+                <img src="{{ tenant_asset($business->funds) }}"
+                    alt="Fondo del Login"
+                    class="img-thumbnail mt-2"
+                    style="width: 150px; height: auto;">
+
+            @else
+                <span class="text-muted">No hay fondo disponible.</span>
+            @endif
+        </div>
+
 
         {{-- Cuentas Bancarias --}}
         @if ($business?->business_bank && count($business->business_bank))

@@ -8,14 +8,12 @@
 @endpush
 
 @section('content')
-<div class="container px-3 px-md-5 mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
-        <i class="fas fa-user-edit me-2"></i> Editar Usuario
-      </h5>
+      <div><i class="fas fa-user-edit mr-2"></i> Editar Usuario</div>
     </div>
-
+    
     <div class="card-body">
       <form action="{{ route('trabajadores.update', $user->id) }}" method="POST">
         @csrf
@@ -58,13 +56,13 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('trabajadores.show', $user->id_branch_office) }}" class="btn btn-secondary mr-2">
-              <i class="fas fa-arrow-left mr-1"></i> Volver
+            <a href="{{ route('trabajadores.show', $user->id_branch_office) }}" class="btn btn-secondary mr-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save me-1"></i> Actualizar
+              Actualizar
             </button>
           </div>
         </div>

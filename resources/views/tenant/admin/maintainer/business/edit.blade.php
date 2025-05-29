@@ -4,11 +4,10 @@
 @section('page_title', 'Editar Información del Negocio')
 
 @section('content')
-<div class="container px-3 px-md-5 mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex align-items-center">
-      <i class="fas fa-edit me-2"></i>
-      <h5 class="mb-0">Formulario de Edición</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-edit mr-2"></i> Editar Información de la empresa</div>
     </div>
 
     <div class="card-body">
@@ -43,21 +42,32 @@
           <input type="file" id="logo" name="logo" class="form-control" accept="image/*">
           @if ($business->logo)
             <p class="mt-3 mb-1">Logo actual:</p>
-            <img src="/storage/tenants/{{ request()->getHost() }}/imagenes/{{ $business->logo }}"
+            <img src="{{ tenant_asset($business->logo) }}"
                  alt="Logo del Negocio" class="img-thumbnail" width="100">
           @endif
         </div>
+        
+        <div class="form-group mb-4">
+          <label for="funds" class="form-label">Fondo de pantalla del login (opcional)</label>
+          <input type="file" id="funds" name="funds" class="form-control" accept="image/*">
+          @if ($business->funds)
+            <p class="mt-3 mb-1">Fondo actual:</p>
+            <img src="{{ tenant_asset($business->funds) }}"
+                alt="Fondo del login" class="img-thumbnail" style="max-width: 300px;">
+          @endif
+        </div>
+
 
         {{-- Botones --}}
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('empresa.index') }}" class="btn btn-secondary me-2">
-              <i class="fas fa-arrow-left me-1"></i> Volver
+            <a href="{{ route('empresa.index') }}" class="btn btn-secondary me-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save me-1"></i> Guardar
+              Guardar
             </button>
           </div>
         </div>

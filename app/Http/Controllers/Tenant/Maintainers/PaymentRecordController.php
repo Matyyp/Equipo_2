@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant\Maintainers;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentRecord;
 use App\Models\ParkingRegister;
+use App\Models\Business;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -109,43 +110,31 @@ class PaymentRecordController extends Controller
         //
     }
 
-public function downloadPdf($id)
-{
-    $record = PaymentRecord::with([
-        'voucher',
-        'service.branchOffice.business',
-        'parkingRegister'
-    ])->findOrFail($id);
+    public function downloadPdf($id)
+    {
+        $record = PaymentRecord::with([
+            'voucher',
+            'service.branchOffice.business',
+            'parkingRegister'
+        ])->findOrFail($id);
 
-    $isParking = in_array($record->service->type_service, [
-        'parking_daily',
-        'parking_annual',
-    ]);
+        $isParking = in_array($record->service->type_service, [
+            'parking_daily',
+            'parking_annual',
+        ]);
 
-    // Obtener el nombre del logo y dominio del tenant
-    $logoFile = optional($record->service->branchOffice->business)->logo;
-    $tenant = tenancy()->tenant;
-    $domain = \Stancl\Tenancy\Database\Models\Domain::where('tenant_id', $tenant->id)->first();
-    $tenantDomain = $domain?->domain; 
+        $logo = Business::value('logo');
+        $logoPath = storage_path('app/public/' . $logo);
+        $logoBase64 = 'data:'.mime_content_type($logoPath).';base64,'.base64_encode(file_get_contents($logoPath));
 
+        $pdf = Pdf::loadView('pdf.payment_record', [
+            'record'     => $record,
+            'isParking'  => $isParking,
+            'logoPath'   => $logoBase64 ,
+        ]);
 
-    $logoPath = null;
-    if ($logoFile && $tenantDomain) {
-        $fullPath = public_path("storage/tenants/{$tenantDomain}/imagenes/{$logoFile}");
-        if (file_exists($fullPath)) {
-            $logoPath = 'file://' . $fullPath;
-        }
+        return $pdf->download('boleta_pago.pdf');
     }
-
-
-    $pdf = Pdf::loadView('pdf.payment_record', [
-        'record'     => $record,
-        'isParking'  => $isParking,
-        'logoPath'   => $logoPath,
-    ]);
-
-    return $pdf->download('boleta_pago.pdf');
-}
 
 
 

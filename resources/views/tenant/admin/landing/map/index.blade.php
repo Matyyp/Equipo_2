@@ -144,13 +144,13 @@
               <!-- Acciones -->
               <td>
                 <div class="d-flex gap-1">
-                  <a href="{{ route('landing.map.edit', $map->id_map) }}" class="btn btn-outline-info btn-sm text-info" title="Editar">
+                  <a href="{{ route('landing.map.edit', $map->id_map) }}" class="btn btn-outline-info btn-sm text-info me-1" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
                   <form action="{{ route('landing.map.destroy', $map->id_map) }}" method="POST" class="delete-form">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-outline-info btn-sm text-info ml-1" title="Eliminar">
+                    <button type="submit" class="btn btn-outline-info btn-sm text-info me-1 ml-1" title="Eliminar">
                       <i class="fas fa-trash-alt"></i>
                     </button>
                   </form>
@@ -197,14 +197,14 @@
       border-color: #17a2b8 !important; 
     }
 
-
+  
     .dataTables_paginate .pagination .page-item .page-link {
       background-color: #eeeeee;
       color: #17a2b8 !important;
       border-color: #eeeeee;
     }
-
-  </style>
+    
+</style>
 @endpush
 
 @push('scripts')

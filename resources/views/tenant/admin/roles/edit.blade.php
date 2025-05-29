@@ -6,11 +6,10 @@
 @section('content')
 <div class="container-fluid">
   <div class="card shadow-sm">
-
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
+      <div>
         <i class="fas fa-user-cog me-2"></i> Permisos del Rol: <strong>{{ $role->name }}</strong>
-      </h5>
+      </div>
     </div>
 
     <div class="card-body">
@@ -58,13 +57,13 @@
         {{-- Botones --}}
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('roles.index') }}" class="btn btn-secondary me-2">
-              <i class="fas fa-arrow-left me-1"></i> Volver
+            <a href="{{ route('roles.index') }}" class="btn btn-secondary mr-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-success">
-              <i class="fas fa-save me-1"></i> Guardar cambios
+              Guardar
             </button>
           </div>
         </div>

@@ -1,4 +1,15 @@
 <x-guest-layout>
+    
+    <!-- Bienvenida -->
+    <div class="mb-6 text-center text-xl font-semibold text-gray-800 dark:text-gray-100">
+        @if (!empty($tenantCompanyName))
+            Bienvenido a {{ $tenantCompanyName }}
+        @else
+            Bienvenido
+        @endif
+    </div>
+
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

@@ -69,7 +69,7 @@ class BranchOfficeController extends Controller
             'name_branch_offices' => 'required|string|max:250',
             'id_location'         => 'required|exists:locations,id_location',
             'id_business'         => 'required|exists:businesses,id_business',
-            'phone'               => 'required|string|max:50',
+            'phone'               => ['required', 'regex:/^\+569\d{8}$/'],
             'email'               => 'required|email|max:100',
         ]);
 

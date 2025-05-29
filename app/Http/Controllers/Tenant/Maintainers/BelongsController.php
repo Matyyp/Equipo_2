@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant\Maintainers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Belong;
+use App\Models\Owner;
 use App\Models\Car;
 
 class BelongsController extends Controller
@@ -52,25 +53,32 @@ class BelongsController extends Controller
      */
     public function show(string $id)
     {
-        $datos = Belong::where('id_owner', $id)
-        ->with('belongs_owner', 'belongs_car', 'belongs_car',
-        'belongs_car.car_brand' , 'belongs_car.car_model')
-        ->get();
+        $owner = Owner::where('id_owner', $id)
+            ->with('owner_belongs', 'owner_belongs.belongs_car',
+                'owner_belongs.belongs_car.car_brand',
+                'owner_belongs.belongs_car.car_model')
+            ->first();
 
-        $datos = $datos->map(function ($owner) use ($id) {
+        $name = $owner->name ?? 'Sin nombre';
+
+        $datos = collect($owner->owner_belongs)->map(function ($belong) {
             return [
-                'id'=>$owner->id,
-                'id_owner' => $id,
-                'name' => optional($owner->belongs_owner)->name,
-                'id_car' => optional($owner->belongs_car)->id_car,
-                'patent' => optional($owner->belongs_car)->patent,
-                'brand' => optional(optional($owner->belongs_car)->car_brand)->name_brand,
-                'model' => optional(optional($owner->belongs_car)->car_model)->name_model,
+                'id' => $belong->id,
+                'name' => optional($belong->belongs_owner)->name, // redundante pero mantenido por consistencia
+                'id_car' => optional($belong->belongs_car)->id_car,
+                'patent' => optional($belong->belongs_car)->patent,
+                'brand' => optional(optional($belong->belongs_car)->car_brand)->name_brand,
+                'model' => optional(optional($belong->belongs_car)->car_model)->name_model,
             ];
         })->toArray();
-        
-        return view('tenant.admin.maintainer.belongs.index', ['datos' => $datos, 'id'=>$id]);
+
+        return view('tenant.admin.maintainer.belongs.index', [
+            'datos' => $datos,
+            'id' => $id,
+            'name' => $name,
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -82,6 +90,7 @@ class BelongsController extends Controller
         })
         ->with('car_brand', 'car_model')
         ->get();
+        $name = Owner::where('id_owner', $id)->value('name');
         $datos = $datos->map(function ($car) use ($id) {
             return [
                 'id_owner' => $id,
@@ -95,6 +104,7 @@ class BelongsController extends Controller
         return view('tenant.admin.maintainer.belongs.edit', [
             'datos' => $datos,
             'id'    => $id,
+            'name'  => $name
         ]);
     }
 

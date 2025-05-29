@@ -117,6 +117,7 @@ Route::middleware([
         Route::resource('asociado', BelongsController::class);
         Route::get('/verificar-sucursal', [BranchOfficeController::class, 'verificarSucursalExistente'])->name('sucursal.verificar');
         Route::resource('sucursales', BranchOfficeController::class);
+        Route::get('/servicios/create/{sucursalId}', [ServicioController::class, 'create'])->name('servicios.create');
         Route::resource('servicios', ServiceController::class);
         Route::patch('/servicios/{id}/disable', [ServiceController::class, 'disable'])->name('servicios.disable');
         Route::get('contratos/create/{branch}/{type}', [ContractController::class, 'create'])->name('contratos.create');
@@ -140,6 +141,12 @@ Route::middleware([
         Route::get('estacionamiento/check-contrato', [ParkingController::class, 'checkContrato'])->name('estacionamiento.checkContrato');
         Route::get('estacionamiento/data', [ParkingController::class, 'data'])
         ->name('estacionamiento.data');
+        Route::delete('estacionamiento/extra/{addon}', [ParkingController::class, 'removeAddon'])
+        ->name('estacionamiento.extra.remove');
+        Route::post('/estacionamiento/{id}/renew', [ParkingController::class, 'renew'])
+        ->name('estacionamiento.renew');
+        Route::get('estacionamiento/extra-services', [ParkingController::class, 'getExtraServices']);
+        Route::post('estacionamiento/{id}/update-extra-services', [ParkingController::class, 'updateExtraServices']);
         Route::get('estacionamiento/servicios-por-sucursal', [ParkingController::class, 'getServicesByBranch'])
         ->name('estacionamiento.getServicesByBranch');
         Route::get('estacionamiento/search', [ParkingController::class, 'search'])
@@ -155,7 +162,6 @@ Route::middleware([
 
         Route::resource('estacionamiento', ParkingController::class);
         Route::post('/estacionamiento/{parking}/checkout', [ParkingController::class, 'checkout'])->name('estacionamiento.checkout');
-        Route::resource('estacionamiento', ParkingController::class);
         Route::get('/payment/{id}/voucher', [PaymentRecordController::class, 'downloadPdf'])->name('payment.record');
 
     });

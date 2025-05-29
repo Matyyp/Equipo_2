@@ -9,7 +9,7 @@
 @endpush
 
 @section('content')
-<div class="container px-3 px-md-5 mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
       <i class="fas fa-edit mr-2"></i>Editar Ingreso
@@ -101,7 +101,7 @@
             <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
               <option value="">Seleccione un servicio</option>
               @foreach($parkingServices as $svc)
-                <option value="{{ $svc->id_service }}" {{ $svc->id_service == $service->id_service ? 'selected' : '' }}>
+                <option value="{{ $svc->id_service }}" {{ $svc->id_service == $service->id_service ? 'selected' : '' }} data-type-service="{{ $svc->type_service }}">
                   {{ $svc->name }}
                 </option>
               @endforeach
@@ -144,13 +144,13 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('estacionamiento.index') }}" class="btn btn-secondary">
-              <i class="fas fa-arrow-left"></i> Volver
+            <a href="{{ route('estacionamiento.index') }}" class="btn btn-secondary mr-1">
+                Cancelar
             </a>
           </div>
           <div class="col-auto">
-            <button type="submit" class="btn btn-warning" id="submit-btn">
-              <i class="fas fa-save mr-1"></i> Actualizar
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+                Actualizar
             </button>
           </div>
         </div>
@@ -167,11 +167,65 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1) Inicializar bootstrap-select
   $('.selectpicker').selectpicker();
 
-  // 2) Para SuperAdmin: recargar / marcar servicios según sucursal Y valor previo
+  // 2) Lógica para servicios anuales (igual que en created)
+  function handleAnnualParking() {
+    const startDate = $('#start_date').val();
+    const endDateInput = $('#end_date');
+    
+    if (startDate) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + 30);
+      endDateInput.val(date.toISOString().split('T')[0]);
+    }
+    
+    endDateInput.prop('readonly', true);
+  }
+    // Mejorar el manejo de fechas mínimas
+  const startDateInput = $('#start_date');
+  const endDateInput = $('#end_date');
+
+  // Establecer la fecha mínima de fin al cargar la página
+  if (startDateInput.val()) {
+    endDateInput.attr('min', startDateInput.val());
+  }
+
+  // Actualizar la fecha mínima de fin cuando cambia la fecha de inicio
+  startDateInput.on('change', function() {
+    const startDate = $(this).val();
+    endDateInput.attr('min', startDate);
+    
+    // Si la fecha de fin actual es anterior a la nueva fecha de inicio, actualizarla
+    if (endDateInput.val() && new Date(endDateInput.val()) < new Date(startDate)) {
+      endDateInput.val(startDate);
+    }
+  });
+
+  // Manejador para cambios de servicio
+  $('#service_id').on('changed.bs.select', function() {
+    const selectedOption = $(this).find('option:selected');
+    const serviceType = selectedOption.data('type-service');
+    const isAnnual = (serviceType === 'parking_annual');
+
+    if (isAnnual) {
+      handleAnnualParking();
+      $('#start_date').off('change').on('change', handleAnnualParking);
+    } else {
+      $('#end_date').prop('readonly', false).val('');
+      $('#start_date').off('change');
+    }
+  });
+
+  // Si el servicio actual es anual, configurar las fechas al cargar
+  @if($service->type_service === 'parking_annual')
+    handleAnnualParking();
+    $('#start_date').on('change', handleAnnualParking);
+  @endif
+
+  // 3) Para SuperAdmin: recargar servicios según sucursal
   @role('SuperAdmin')
-    const branchSelect   = $('#branch_office_id');
-    const serviceSelect  = $('#service_id');
-    const initialService = '{{ $service->id_service }}'; // valor que ya estaba seleccionado
+    const branchSelect = $('#branch_office_id');
+    const serviceSelect = $('#service_id');
+    const initialService = '{{ $service->id_service }}';
 
     function loadServices(branchId, selectedId = null) {
       if (!branchId) {
@@ -199,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             res.forEach(svc => {
               const sel = (svc.id_service == selectedId) ? 'selected' : '';
               serviceSelect.append(
-                `<option value="${svc.id_service}" ${sel}>${svc.name}</option>`
+                `<option value="${svc.id_service}" data-type-service="${svc.type_service}" ${sel}>${svc.name}</option>`
               );
             });
           }
@@ -211,58 +265,24 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Al cambiar la sucursal
     branchSelect.on('changed.bs.select', () => {
       loadServices(branchSelect.val(), null);
     });
 
-    // Al cargar la página, si había una sucursal + servicio previo, recarga y marca
     if (branchSelect.val()) {
       loadServices(branchSelect.val(), initialService);
     }
   @endrole
 
-  // 3) Verificación de contrato al cambiar servicio
-  $('#service_id').on('changed.bs.select', function() {
-    const sid = $(this).val();
-    $('#contract-warning').remove();
-    if (!sid) {
-      $('#submit-btn').prop('disabled', false);
-      return;
-    }
-    $.ajax({
-      url: '{{ route("estacionamiento.checkContrato") }}',
-      method: 'GET',
-      data: { service_id: sid },
-      success(res) {
-        if (!res.contract_exists) {
-          $('#submit-btn').prop('disabled', true);
-          $('#service-group').after(
-            '<div id="contract-warning" class="text-danger mt-2">Este servicio no tiene contrato activo.</div>'
-          );
-        } else {
-          $('#submit-btn').prop('disabled', false);
-        }
-      },
-      error() {
-        alert('Error al verificar el contrato del servicio.');
-      }
-    });
-  });
-  // Dispara verificación inicial si ya hay servicio seleccionado
-  if ($('#service_id').val()) {
-    $('#service_id').trigger('changed.bs.select');
-  }
-
   // 4) Validación de teléfono
-  const phoneUrl      = '{{ route("estacionamiento.searchPhone") }}';
-  const phoneInput    = document.getElementById('phone');
+  const phoneUrl = '{{ route("estacionamiento.searchPhone") }}';
+  const phoneInput = document.getElementById('phone');
   const originalPhone = document.getElementById('original_phone').value;
-  const form          = document.getElementById('edit-form');
-  const phoneError    = document.getElementById('phone-error');
-  let phoneValid      = true;
+  const form = document.getElementById('edit-form');
+  const phoneError = document.getElementById('phone-error');
+  let phoneValid = true;
 
-  phoneInput.addEventListener('input', function () {
+  phoneInput.addEventListener('input', function() {
     const newPhone = this.value.trim();
     phoneError.textContent = '';
     this.classList.remove('is-invalid');
@@ -286,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', function(e) {
     if (!phoneValid) {
       e.preventDefault();
       phoneInput.focus();
@@ -295,8 +315,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 5) Carga dinámica de tipos de lavado
   const $checkbox = $('#wash_service');
-  const $group    = $('#wash-type-group');
-  const $select   = $('#wash_type');
+  const $group = $('#wash-type-group');
+  const $select = $('#wash_type');
   let selectedBranchId = $('#branch_office_id').val();
 
   function loadLavados(branchId, selectedId = null) {
@@ -318,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  $checkbox.on('change', function () {
+  $checkbox.on('change', function() {
     const checked = $(this).is(':checked');
     selectedBranchId = $('#branch_office_id').val();
 
@@ -341,18 +361,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLavados(selectedBranchId, '{{ $lavadoAsignado }}');
   }
 
-  $('#branch_office_id').on('changed.bs.select', function () {
+  $('#branch_office_id').on('changed.bs.select', function() {
     selectedBranchId = $(this).val();
     if ($checkbox.is(':checked') && selectedBranchId) {
       loadLavados(selectedBranchId);
     }
-  });
-
-  // 6) Control de fechas mínimas
-  const today = new Date().toISOString().slice(0, 10);
-  $('#start_date').attr('min', today);
-  $('#start_date').on('change', function() {
-    $('#end_date').attr('min', $(this).val());
   });
 });
 </script>

@@ -9,11 +9,12 @@
 @endpush
 
 @section('content')
-<div class="container mt-5">
+<div class="container-fluid">
   <div class="card mb-4">
-    <div class="card-header bg-secondary text-white">
-      <i class="fas fa-store me-2"></i>Registro de Nueva Sucursal
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-store mr-2"></i> Registro de Nueva Sucursal</div>
     </div>
+    
     <div class="card-body">
       @if ($errors->any())
         <div class="alert alert-danger">
@@ -28,23 +29,37 @@
       <form action="{{ route('sucursales.store') }}" method="POST" autocomplete="off" id="sucursal-form">
         @csrf
 
+        {{-- Fila 1: Nombre y Horario --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Nombre sucursal</label>
             <input type="text" name="name_branch_offices" class="form-control" value="{{ old('name_branch_offices') }}" required>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Horario</label>
-            <input type="text" name="schedule" class="form-control" value="{{ old('schedule') }}" required>
+          <div class="col-md-3">
+            <label class="form-label">Hora de apertura</label>
+            <input type="time" id="hora_apertura" class="form-control" required>
           </div>
+          <div class="col-md-3">
+            <label class="form-label">Hora de cierre</label>
+            <input type="time" id="hora_cierre" class="form-control" required>
+          </div>
+          <input type="hidden" name="schedule" id="schedule">
         </div>
 
+        {{-- Fila 2: Dirección y Región --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Calle</label>
-            <input type="text" name="street" id="street-input" class="form-control" value="{{ old('street') }}" required>
-          </div>
+            <input type="text"
+              name="street"
+              id="street-input"
+              class="form-control"
+              value="{{ old('street') }}"
+              required
+              pattern="^.*\s\d{1,5}.*$"
+              title="Debe incluir nombre de calle y número (ej: Calle Falsa 123)">
 
+          </div>
           <div class="col-md-6">
             <label class="form-label">Región</label>
             <select id="region-select" class="selectpicker form-control" data-live-search="true" required>
@@ -56,6 +71,7 @@
           </div>
         </div>
 
+        {{-- Fila 3: Comuna y Teléfono --}}
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Comuna</label>
@@ -68,36 +84,44 @@
               @endforeach
             </select>
           </div>
-
-          {{-- Nuevos campos de información de contacto --}}
-        <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Teléfono de contacto</label>
-            <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" placeholder="Ej: +56 9 1234 5678">
+            <input type="text"
+              name="phone"
+              class="form-control"
+              value="{{ old('phone') }}"
+              placeholder="Ej: +56912345678"
+              required
+              pattern="^\+569\d{8}$"
+              title="Debe ingresar un número válido: +569 seguido de 8 dígitos (ej: +56912345678)">
           </div>
+        </div>
+
+        {{-- Fila 4: Correo electrónico --}}
+        <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Correo electrónico</label>
             <input type="email" name="email" class="form-control" value="{{ old('email') }}" placeholder="Ej: correo@ejemplo.com">
           </div>
         </div>
 
-          <input type="hidden" name="id_business" value="{{ $business->id_business }}">
-        </div>
+        <input type="hidden" name="id_business" value="{{ $business->id_business }}">
 
         {{-- ALERTA de sucursal existente --}}
         <div id="alerta-sucursal" class="alert alert-warning d-none">
           ⚠️ Ya existe una sucursal registrada con esta dirección, región y comuna.
         </div>
 
+        {{-- Botones --}}
         <div class="form-group row justify-content-end mt-4">
           <div class="col-auto">
-            <a href="{{ route('sucursales.index') }}" class="btn btn-secondary mr-2">
-              <i class="fas fa-arrow-left mr-1"></i> Volver
+            <a href="{{ route('sucursales.index') }}" class="btn btn-secondary mr-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" id="btn-guardar" class="btn btn-primary">
-              <i class="fas fa-save mr-1"></i> Guardar
+              Guardar
             </button>
           </div>
         </div>
@@ -132,7 +156,7 @@
 
       communeSelect.value = '';
       $('.selectpicker').selectpicker('refresh');
-      checkSucursalExistente(); // Verificar al cambiar región
+      checkSucursalExistente();
     }
 
     const checkSucursalExistente = () => {
@@ -161,8 +185,16 @@
     regionSelect.addEventListener('change', updateComunaOptions);
     communeSelect.addEventListener('change', checkSucursalExistente);
     streetInput.addEventListener('blur', checkSucursalExistente);
+    updateComunaOptions();
 
-    updateComunaOptions(); // Inicializa al cargar
+    document.getElementById('sucursal-form').addEventListener('submit', function (e) {
+      const apertura = document.getElementById('hora_apertura').value;
+      const cierre = document.getElementById('hora_cierre').value;
+
+      if (apertura && cierre) {
+        document.getElementById('schedule').value = `${apertura} - ${cierre}`;
+      }
+    });
   });
 </script>
 @endpush

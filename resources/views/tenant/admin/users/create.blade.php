@@ -11,9 +11,9 @@
 <div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
-        <i class="fas fa-user-plus me-2"></i> Crear Nuevo Usuario
-      </h5>
+      <div>
+        <i class="fas fa-user-plus mr-2"></i> Crear Nuevo Usuario 
+      </div>
     </div>
 
     <div class="card-body">
@@ -68,13 +68,13 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('users.index') }}" class="btn btn-secondary mr-2">
-              <i class="fas fa-arrow-left mr-1"></i> Volver
+            <a href="{{ route('users.index') }}" class="btn btn-secondary mr-1">
+              Cancelar
             </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save me-1"></i> Guardar
+              Guardar
             </button>
           </div>
         </div>
