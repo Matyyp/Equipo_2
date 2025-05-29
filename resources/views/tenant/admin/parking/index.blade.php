@@ -14,6 +14,7 @@
         background: transparent !important;
     }
 /* Estilos para mejorar la apariencia */
+
 /* Estilos para el select y la lista */
 #serviceSelect {
     width: 100%;
@@ -147,6 +148,39 @@
     background-color: #f5b5bd !important;
 }
   </style>
+  <style>
+     table.dataTable td,
+    table.dataTable th {
+      border: none !important;
+    }
+
+    table.dataTable tbody tr {
+      border: none !important;
+    }
+
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .dataTables_paginate .pagination .page-item.active a.page-link {
+      background-color: #17a2b8 !important; 
+      color:rgb(255, 255, 255) !important;
+      border-color: #17a2b8 !important; 
+    }
+
+  
+    .dataTables_paginate .pagination .page-item .page-link {
+      background-color: #eeeeee;
+      color: #17a2b8 !important;
+      border-color: #eeeeee;
+    }
+    .btn-outline-info.text-info:hover,
+    .btn-outline-info.text-info:focus {
+      color: #fff !important;
+    }
+    
+</style>
 @endpush
 
 @section('content')
@@ -532,16 +566,16 @@ $(function () {
                 render: function(row) {
                     return `
                         <div >
-                            <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-sm btn-outline-secondary text-dark" title="Contrato">
+                            <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-sm btn-outline-info text-info" title="Contrato">
                                 <i class="fas fa-file-contract"></i>
                             </a>
-                            <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-secondary text-dark" title="Ticket">
+                            <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-info text-info" title="Ticket">
                                 <i class="fas fa-ticket-alt"></i>
                             </a>
-                            <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-warning text-dark" title="Editar">
+                            <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-info text-info" title="Editar">
                                 <i class="fas fa-pen"></i>
                             </a>
-                            <button class="btn btn-sm btn-outline-primary btn-checkout text-dark" 
+                            <button class="btn btn-sm btn-outline-info btn-checkout text-info" 
                                 title="Check-Out"
                                 data-id="${row.id_parking_register}"
                                 data-total="${row.total_value}"
@@ -549,7 +583,7 @@ $(function () {
                                 data-row='${JSON.stringify(row)}'>
                                 <i class="fas fa-door-open"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-info btn-extra-services text-dark" 
+                            <button class="btn btn-sm btn-outline-info btn-extra-services text-info" 
                                 title="Servicios Extra"
                                 data-id="${row.id_parking_register}"
                                 data-row='${JSON.stringify(row)}'>
@@ -717,32 +751,41 @@ $(function () {
     });
 
 
-// Manejar clic en botón de renovación
-// Manejar clic en botón de renovación
-$('#btn-renew').click(function() {
-    if (!currentRowData) return;
+// Manejar clic en botón de renovación - Versión corregida
+$('#btn-renew').click(function(e) {
+    e.preventDefault(); // Prevenir el comportamiento por defecto
+    e.stopPropagation(); // Evitar que el evento se propague
+    
+    if (!currentRowData) {
+        toastr.error('No se encontraron datos del registro actual');
+        return;
+    }
     
     const registerId = currentRowData.id_parking_register;
-    const paymentMethod = $('#payment-method-buttons input:checked').val();
+    const paymentMethod = $('input[name="type_payment"]:checked').val();
     
-    // Validar que se haya seleccionado un método de pago
+    // Validación del método de pago
     if (!paymentMethod) {
-        toastr.error('Debe seleccionar un método de pago antes de renovar');
-        $('#payment-method').focus();
+        toastr.error('Debe seleccionar un método de pago');
         return;
     }
     
     Swal.fire({
         title: '¿Renovar servicio anual?',
-        text: 'Esta acción creará una nueva estadía con las mismas características por 30 días más',
+        text: 'Esta acción extenderá el servicio por 30 días adicionales',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#6c757d',
         confirmButtonText: 'Sí, renovar',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        backdrop: true,
+        allowOutsideClick: false
     }).then((result) => {
         if (result.isConfirmed) {
+            const $btn = $(this);
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Procesando...');
+            
             $.ajax({
                 url: `/estacionamiento/${registerId}/renew`,
                 method: 'POST',
@@ -750,26 +793,36 @@ $('#btn-renew').click(function() {
                     _token: $('meta[name="csrf-token"]').attr('content'),
                     payment_method: paymentMethod
                 },
-                beforeSend: function() {
-                    $('#btn-renew').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Procesando...');
-                },
                 success: function(response) {
+                    // Cerrar ambos modales
                     $('#checkoutModal').modal('hide');
+                    
+                    // Mostrar confirmación
                     Swal.fire({
                         title: '¡Renovación exitosa!',
                         text: response.message,
-                        icon: 'success'
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
                     }).then(() => {
-                        table.ajax.reload();
+                        // Recargar la tabla
+                        $('#parking-table').DataTable().ajax.reload(null, false);
                     });
                 },
                 error: function(xhr) {
+                    let errorMsg = 'Error al renovar el servicio';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    
                     Swal.fire({
                         title: 'Error',
-                        text: xhr.responseJSON?.message || 'Ocurrió un error al renovar',
-                        icon: 'error'
+                        text: errorMsg,
+                        icon: 'error',
+                        confirmButtonText: 'Entendido'
                     });
-                    $('#btn-renew').prop('disabled', false).html('<i class="fas fa-sync-alt mr-1"></i> Renovar Servicio');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html('<i class="fas fa-sync-alt mr-1"></i> Renovar Servicio');
                 }
             });
         }

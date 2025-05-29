@@ -16,6 +16,41 @@
     margin-right: 8px;
   }
 </style>
+<style>
+     table.dataTable td,
+    table.dataTable th {
+      border: none !important;
+    }
+
+    table.dataTable tbody tr {
+      border: none !important;
+    }
+
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .dataTables_paginate .pagination .page-item.active a.page-link {
+      background-color: #17a2b8 !important; 
+      color:rgb(255, 255, 255) !important;
+      border-color: #17a2b8 !important; 
+    }
+
+  
+    .dataTables_paginate .pagination .page-item .page-link {
+      background-color: #eeeeee;
+      color: #17a2b8 !important;
+      border-color: #eeeeee;
+    }
+
+    .btn-outline-info.text-info:hover,
+    .btn-outline-info.text-info:focus {
+      color: #fff !important;
+    }
+    
+    
+</style>
 @endpush
 
 @section('content')
@@ -27,7 +62,7 @@
     
     <div class="card-body">
       <div class="table-responsive">
-        <table id="history-table" class="table table-bordered table-striped table-hover table-sm w-100 nowrap">
+        <table id="history-table" class="table  table-striped table-hover table-sm w-100 nowrap">
           <thead class="thead-light">
             <tr>
               @role('SuperAdmin')
@@ -102,10 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
         searchable: false,
         render: function(id) {
           return `
-            <a href="/contrato/${id}/print" target="_blank" class="btn btn-outline-secondary btn-sm text-dark" title="Contrato">
+            <a href="/contrato/${id}/print" target="_blank" class="btn btn-outline-info btn-sm text-info" title="Contrato">
               <i class="fas fa-file-contract"></i>
             </a>
-            <a href="/ticket/${id}/print" class="btn btn-outline-secondary btn-sm text-dark" title="Ticket">
+            <a href="/ticket/${id}/print" class="btn btn-outline-info btn-sm text-info" title="Ticket">
               <i class="fas fa-ticket-alt"></i>
             </a>
           `;

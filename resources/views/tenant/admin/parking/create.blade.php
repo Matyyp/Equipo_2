@@ -424,33 +424,38 @@ $(document).ready(function() {
   const today = new Date().toISOString().slice(0, 10);
   $('#start_date').attr('min', today);
 
-  // Función para calcular y bloquear fechas anuales
-  function handleAnnualParking() {
+function handleAnnualParking() {
     const startDate = $('#start_date').val();
     const endDateInput = $('#end_date');
     
     if (startDate) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + 30);
-      endDateInput.val(date.toISOString().split('T')[0]);
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + 30);
+        const newEndDate = date.toISOString().split('T')[0];
+        
+        // Solo actualizamos si está vacío o si el valor actual es diferente al calculado
+        if (!endDateInput.val() || endDateInput.val() !== newEndDate) {
+            endDateInput.val(newEndDate);
+        }
     }
     
     endDateInput.prop('readonly', true).css('background-color', '#f8f9fa');
-  }
+}
 
-  // Manejador único para cambios de servicio
-  $('#service_id').on('changed.bs.select', function() {
+// Manejador único para cambios de servicio
+$('#service_id').on('changed.bs.select', function() {
     const selectedText = $(this).find('option:selected').text().toLowerCase();
     const isAnnual = selectedText.includes('anual'); // Ajusta según tu naming
 
     if (isAnnual) {
-      handleAnnualParking();
-      $('#start_date').off('change').on('change', handleAnnualParking);
+        handleAnnualParking();
+        $('#start_date').off('change').on('change', handleAnnualParking);
     } else {
-      $('#end_date').prop('readonly', false).css('background-color', '').val('');
-      $('#start_date').off('change');
+        // Solo quitamos el readonly y el estilo, pero no borramos el valor
+        $('#end_date').prop('readonly', false).css('background-color', '');
+        $('#start_date').off('change');
     }
-  });
+});
 
   // Actualizar fecha mínima de término cuando cambia la inicial
   $('#start_date').on('change', function() {

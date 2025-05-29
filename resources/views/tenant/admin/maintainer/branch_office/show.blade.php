@@ -2,6 +2,43 @@
 
 @section('title', 'Sucursal: ' . $sucursal->name_branch_offices)
 @section('page_title', 'Detalle de la Sucursal')
+@push('styles')
+<style>
+     table.dataTable td,
+    table.dataTable th {
+      border: none !important;
+    }
+
+    table.dataTable tbody tr {
+      border: none !important;
+    }
+
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .dataTables_paginate .pagination .page-item.active a.page-link {
+      background-color: #17a2b8 !important; 
+      color:rgb(255, 255, 255) !important;
+      border-color: #17a2b8 !important; 
+    }
+
+  
+    .dataTables_paginate .pagination .page-item .page-link {
+      background-color: #eeeeee;
+      color: #17a2b8 !important;
+      border-color: #eeeeee;
+    }
+    
+    .btn-outline-info.text-info:hover,
+    .btn-outline-info.text-info:focus {
+      color: #fff !important;
+    }
+    
+    
+</style>
+@endpush
 
 @section('content')
 <div class="container-fluid">
@@ -24,28 +61,28 @@
       <hr>
 
     <div class="d-flex flex-wrap justify-content-center mt-4">
-      <a href="{{ route('sucursales.edit', $sucursal->id_branch) }}" class="btn btn-outline-warning text-dark btn-lg rounded mx-2 mb-2">
+      <a href="{{ route('sucursales.edit', $sucursal->id_branch) }}" class="btn btn-outline-info text-info btn-lg rounded mx-2 mb-2">
         <i class="fas fa-pen"></i> Editar
       </a>
 
       <form action="{{ route('sucursales.destroy', $sucursal->id_branch) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas desactivar esta sucursal?');" class="mx-2 mb-2">
           @csrf
           @method('DELETE')
-          <button type="submit" class="btn btn-outline-danger text-dark btn-lg rounded">
+          <button type="submit" class="btn btn-outline-info text-info btn-lg rounded">
               <i class="fas fa-ban"></i> Desactivar
           </button>
       </form>
 
-      <a href="{{ route('servicios.show', $sucursal->id_branch) }}" class="btn btn-outline-primary text-dark btn-lg rounded mx-2 mb-2">
+      <a href="{{ route('servicios.show', $sucursal->id_branch) }}" class="btn btn-outline-info text-info btn-lg rounded mx-2 mb-2">
         <i class="fas fa-concierge-bell"></i> Servicios
       </a>
-      <a href="{{ route('contratos.show', $sucursal->id_branch) }}" class="btn btn-outline-secondary text-dark btn-lg rounded mx-2 mb-2">
+      <a href="{{ route('contratos.show', $sucursal->id_branch) }}" class="btn btn-outline-info text-info btn-lg rounded mx-2 mb-2">
         <i class="fas fa-file-contract"></i> Contratos
       </a>
-      <a href="{{ url('informacion_contacto/' . $sucursal->id_branch) }}" class="btn btn-outline-secondary text-dark btn-lg rounded mx-2 mb-2">
+      <a href="{{ url('informacion_contacto/' . $sucursal->id_branch) }}" class="btn btn-outline-info text-infobtn-lg rounded mx-2 mb-2">
         <i class="fas fa-address-book"></i> Información de Contacto
       </a>
-      <a href="{{ url('trabajadores/' . $sucursal->id_branch) }}" class="btn btn-outline-success text-dark btn-lg rounded mx-2 mb-2">
+      <a href="{{ url('trabajadores/' . $sucursal->id_branch) }}" class="btn btn-outline-info text-info btn-lg rounded mx-2 mb-2">
         <i class="fas fa-users"></i> Trabajadores
       </a>
 

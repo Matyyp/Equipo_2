@@ -1,4 +1,4 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside class="main-sidebar sidebar-dark-info elevation-4">
     {{-- Brand --}}
     <a href="{{ route('dashboard') }}"
        class="brand-link d-flex justify-content-center align-items-center">

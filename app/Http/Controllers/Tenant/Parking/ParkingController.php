@@ -711,6 +711,7 @@ public function update(Request $request, $id)
                     'park_parking.parking_service.service_branch_office',
                     'park_parking.parking_register.register_parking_register',
                 ])
+                ->orderBy('id', 'desc')
                 ->get();
 
             $rows = $parks->map(function ($park) use ($user) {
