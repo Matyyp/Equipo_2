@@ -2,7 +2,14 @@
 
 @section('title', 'Listado de Contratos')
 @section('page_title', 'Contratos por Sucursal')
-
+@push('styles')
+<style>
+  .btn-outline-info.text-info:hover,
+.btn-outline-info.text-info:focus {
+  color: #fff !important;
+}
+</style>
+@endpush
 @section('content')
 <div class="container-fluid">
   <div class="card shadow-sm">
@@ -76,7 +83,7 @@
                 <td class="text-center">
                   @if($contrato)
                     <a href="{{ route('contratos.edit', $contrato['id_contract']) }}"
-                       class="btn btn-outline-warning btn-sm text-dark" title="Editar">
+                       class="btn btn-outline-info btn-sm text-info" title="Editar">
                       <i class="fas fa-pen"></i> Editar
                     </a>
                   @else

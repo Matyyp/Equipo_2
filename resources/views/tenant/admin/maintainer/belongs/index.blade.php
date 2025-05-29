@@ -1,7 +1,16 @@
 @extends('tenant.layouts.admin')
 
 @section('title', 'Autos del Propietario')
+@push('styles')
 
+<style>
+   
+  .btn-outline-info.text-info:hover,
+.btn-outline-info.text-info:focus {
+  color: #fff !important;
+}
+</style>
+@endpush
 @section('content')
 <div class="container-fluid">
   <div class="card shadow-sm">
@@ -34,7 +43,7 @@
                   <form action="{{ route('asociado.destroy', $item['id']) }}" method="POST" class="d-inline delete-form">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger btn-sm text-dark" title="Eliminar">
+                    <button type="submit" class="btn btn-outline-info btn-sm text-info" title="Eliminar">
                       <i class="fas fa-trash"></i>
                     </button>
                   </form>

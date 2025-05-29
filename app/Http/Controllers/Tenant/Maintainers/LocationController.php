@@ -27,7 +27,7 @@ class LocationController extends Controller
                     $deleteUrl = route('locacion.destroy', $location->id_location);
                 
                     return '
-                        <a href="' . $editUrl . '" class="btn btn-outline-warning btn-sm text-dark" title="Editar">
+                        <a href="' . $editUrl . '" class="btn btn-outline-info btn-sm text-info" title="Editar">
                         <i class="fas fa-pen"></i>
                         </a>
                     ';

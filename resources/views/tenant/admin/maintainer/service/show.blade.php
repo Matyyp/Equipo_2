@@ -53,11 +53,11 @@
                 <td class="text-center">
                   @if ($isAvailable)
                     <a href="{{ route('servicios.edit', $service->id_service) }}"
-                      class="btn btn-outline-warning btn-sm text-dark" title="Editar">
+                      class="btn btn-outline-info btn-sm text-info" title="Editar">
                       <i class="fas fa-pen"></i>
                     </a>
                     <button onclick="desactivarServicio({{ $service->id_service }}, '{{ $service->name }}')"
-                            class="btn btn-sm btn-outline-danger text-dark" title="Desactivar">
+                            class="btn btn-outline-info btn-sm text-info" title="Desactivar">
                       <i class="fas fa-ban"></i>
                     </button>
                   @else

@@ -6,6 +6,40 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+    table.dataTable td,
+    table.dataTable th {
+      border: none !important;
+    }
+
+    table.dataTable tbody tr {
+      border: none !important;
+    }
+
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .dataTables_paginate .pagination .page-item.active a.page-link {
+      background-color: #17a2b8 !important; 
+      color:rgb(255, 255, 255) !important;
+      border-color: #17a2b8 !important; 
+    }
+
+
+    .dataTables_paginate .pagination .page-item .page-link {
+      background-color: #eeeeee;
+      color: #17a2b8 !important;
+      border-color: #eeeeee;
+    }
+  .btn-outline-info.text-info:hover,
+.btn-outline-info.text-info:focus {
+  color: #fff !important;
+}
+</style>
+
 @endpush
 
 @section('content')
@@ -21,7 +55,7 @@
 
     <div class="card-body">
       <div class="table-responsive">
-        <table id="regions-table" class="table table-striped table-bordered w-100">
+        <table id="regions-table" class="table table-striped w-100">
           <thead class="thead-light">
             <tr>
               <th>Nombre Región</th>
