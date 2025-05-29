@@ -4,7 +4,7 @@
 @section('page_title', 'Crear Auto de Arriendo')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
       <h5 class="mb-0">Nuevo Auto de Arriendo</h5>
@@ -185,8 +185,8 @@
         </div>
 
         <div class="d-flex justify-content-end">
-          <a href="{{ route('rental-cars.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Guardar</button>
+          <a href="{{ route('rental-cars.index') }}" class="btn btn-secondary me-1">Cancelar</a>
+          <button type="submit" class="btn btn-primary ml-1">Guardar</button>
         </div>
       </form>
     </div>

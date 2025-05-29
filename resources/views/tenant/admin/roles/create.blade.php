@@ -74,13 +74,13 @@
         {{-- Botones --}}
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('roles.index') }}" class="btn btn-secondary mr-2">
-              <i class="fas fa-arrow-left mr-1"></i> Volver
+            <a href="{{ route('roles.index') }}" class="btn btn-secondary ">
+              Volver
             </a>
           </div>
           <div class="col-auto">
-            <button type="submit" class="btn btn-success">
-              <i class="fas fa-save me-1"></i> Crear Rol
+            <button type="submit" class="btn btn-primary">
+               Crear Rol
             </button>
           </div>
         </div>

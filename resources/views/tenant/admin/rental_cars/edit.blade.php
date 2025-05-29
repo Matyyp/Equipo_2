@@ -221,7 +221,7 @@
 
         <div class="d-flex justify-content-end">
           <a href="{{ route('rental-cars.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Actualizar</button>
+          <button type="submit" class="btn btn-primary ml-1">Actualizar</button>
         </div>
       </form>
     </div>
