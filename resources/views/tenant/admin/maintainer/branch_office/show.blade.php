@@ -79,7 +79,7 @@
       <a href="{{ route('contratos.show', $sucursal->id_branch) }}" class="btn btn-outline-info text-info btn-lg rounded mx-2 mb-2">
         <i class="fas fa-file-contract"></i> Contratos
       </a>
-      <a href="{{ url('informacion_contacto/' . $sucursal->id_branch) }}" class="btn btn-outline-info text-infobtn-lg rounded mx-2 mb-2">
+      <a href="{{ url('informacion_contacto/' . $sucursal->id_branch) }}" class="btn btn-outline-info text-info btn-lg rounded mx-2 mb-2">
         <i class="fas fa-address-book"></i> Información de Contacto
       </a>
       <a href="{{ url('trabajadores/' . $sucursal->id_branch) }}" class="btn btn-outline-info text-info btn-lg rounded mx-2 mb-2">

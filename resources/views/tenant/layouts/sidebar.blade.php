@@ -102,88 +102,7 @@
                     </ul>
                 </li>
                 @endcan
-                @can('landing.access')
-                <li class="nav-item has-treeview 
-                    {{ request()->is('navbar*') || 
-                    request()->is('footers*') || 
-                    request()->is('hero*') || 
-                    request()->is('vehicle*') || 
-                    request()->is('quienes-somos*') || 
-                    request()->is('map*') || 
-                    request()->is('service*') || 
-                    request()->is('container-image*') 
-                    ? 'menu-open' : '' }}">
-                    
-                    <a href="#" class="nav-link 
-                        {{ request()->is('navbar*') || 
-                        request()->is('footers*') || 
-                        request()->is('hero*') || 
-                        request()->is('vehicle*') || 
-                        request()->is('quienes-somos*') || 
-                        request()->is('map*') || 
-                        request()->is('service*') || 
-                        request()->is('container-image*') 
-                        ? 'active' : '' }}">
-                        
-                        <i class="nav-icon fas fa-globe"></i>
-                        <p>
-                            Contenido Landing
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('landing.navbar.index') }}" class="nav-link {{ request()->routeIs('landing.navbar.*') ? 'active' : '' }}">
-                                <i class="fas fa-align-justify nav-icon"></i>
-                                <p>Barra de Navegación</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('landing.footer.index') }}" class="nav-link {{ request()->routeIs('landing.footer.*') ? 'active' : '' }}">
-                                <i class="fas fa-window-minimize nav-icon"></i>
-                                <p>Pie de Página</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('landing.hero.index') }}" class="nav-link {{ request()->routeIs('landing.hero.*') ? 'active' : '' }}">
-                                <i class="fas fa-photo-video nav-icon"></i>
-                                <p>Sección Hero (Principal)</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('landing.vehicle.index') }}" class="nav-link {{ request()->routeIs('landing.vehicle.*') ? 'active' : '' }}">
-                                <i class="fas fa-car-alt nav-icon"></i>
-                                <p>Vehículos Destacados</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('landing.quienes-somos.index') }}" class="nav-link {{ request()->routeIs('landing.quienes-somos.*') ? 'active' : '' }}">
-                                <i class="fas fa-users nav-icon"></i>
-                                <p>Quiénes Somos</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('landing.map.index') }}" class="nav-link {{ request()->routeIs('landing.map.*') ? 'active' : '' }}">
-                                <i class="fas fa-map-marked-alt nav-icon"></i>
-                                <p>Mapa y Contactos</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('landing.service.index') }}" class="nav-link {{ request()->routeIs('landing.service.*') ? 'active' : '' }}">
-                                <i class="fas fa-concierge-bell nav-icon"></i>
-                                <p>Servicios</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('landing.container-image.index') }}" class="nav-link {{ request()->routeIs('landing.container-image.*') ? 'active' : '' }}">
-                                <i class="fas fa-images nav-icon"></i>
-                                <p>Carrusel de Imágenes</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                @endcan
-
+               
 
 
                 {{-- Ventas --}}
@@ -267,6 +186,88 @@
                     <ul class="nav nav-treeview"></ul>
                 </li>
                 @endcan
+                 @can('landing.access')
+                <li class="nav-item has-treeview 
+                    {{ request()->is('navbar*') || 
+                    request()->is('footers*') || 
+                    request()->is('hero*') || 
+                    request()->is('vehicle*') || 
+                    request()->is('quienes-somos*') || 
+                    request()->is('map*') || 
+                    request()->is('service*') || 
+                    request()->is('container-image*') 
+                    ? 'menu-open' : '' }}">
+                    
+                    <a href="#" class="nav-link 
+                        {{ request()->is('navbar*') || 
+                        request()->is('footers*') || 
+                        request()->is('hero*') || 
+                        request()->is('vehicle*') || 
+                        request()->is('quienes-somos*') || 
+                        request()->is('map*') || 
+                        request()->is('service*') || 
+                        request()->is('container-image*') 
+                        ? 'active' : '' }}">
+                        
+                        <i class="nav-icon fas fa-globe"></i>
+                        <p>
+                            Contenido Página
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('landing.navbar.index') }}" class="nav-link {{ request()->routeIs('landing.navbar.*') ? 'active' : '' }}">
+                                <i class="fas fa-align-justify nav-icon"></i>
+                                <p>Barra de Navegación</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('landing.footer.index') }}" class="nav-link {{ request()->routeIs('landing.footer.*') ? 'active' : '' }}">
+                                <i class="fas fa-window-minimize nav-icon"></i>
+                                <p>Pie de Página</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('landing.hero.index') }}" class="nav-link {{ request()->routeIs('landing.hero.*') ? 'active' : '' }}">
+                                <i class="fas fa-photo-video nav-icon"></i>
+                                <p>Sección Hero (Principal)</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('landing.vehicle.index') }}" class="nav-link {{ request()->routeIs('landing.vehicle.*') ? 'active' : '' }}">
+                                <i class="fas fa-car-alt nav-icon"></i>
+                                <p>Vehículos Destacados</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('landing.quienes-somos.index') }}" class="nav-link {{ request()->routeIs('landing.quienes-somos.*') ? 'active' : '' }}">
+                                <i class="fas fa-users nav-icon"></i>
+                                <p>Quiénes Somos</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('landing.map.index') }}" class="nav-link {{ request()->routeIs('landing.map.*') ? 'active' : '' }}">
+                                <i class="fas fa-map-marked-alt nav-icon"></i>
+                                <p>Mapa y Contactos</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('landing.service.index') }}" class="nav-link {{ request()->routeIs('landing.service.*') ? 'active' : '' }}">
+                                <i class="fas fa-concierge-bell nav-icon"></i>
+                                <p>Servicios</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('landing.container-image.index') }}" class="nav-link {{ request()->routeIs('landing.container-image.*') ? 'active' : '' }}">
+                                <i class="fas fa-images nav-icon"></i>
+                                <p>Carrusel de Imágenes</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @endcan
+
 
                 {{-- Administración --}}
                 @canany(['users.index','roles.index'])
