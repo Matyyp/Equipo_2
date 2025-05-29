@@ -58,7 +58,7 @@
 
     <div class="card-body">
       <div class="table-responsive">
-        <table id="reservations-table" class="table table-striped table-hover table-sm w-100 dt-responsive nowrap">
+        <table id="reservations-table" class="table table-striped w-100">
           <thead class="thead-light">
             <tr>
               <th class="control"></th>

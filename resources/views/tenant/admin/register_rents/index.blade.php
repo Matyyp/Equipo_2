@@ -48,13 +48,13 @@
     <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
-  <div class="card shadow-sm">
+  <div class="card ">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-file-signature"></i> Registros de Arriendo</div>
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        <table id="rents-table" class="table table-striped table-hover table-sm nowrap w-100">
+        <table id="rents-table" class="table table-striped w-100">
           <thead>
             <tr>
               <th>RUT</th>
