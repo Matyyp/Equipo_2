@@ -135,7 +135,7 @@
               </td>
 
               <td>
-                <a href="{{ route('landing.navbar.edit', $navbar) }}" class="btn btn-outline-warning btn-sm text-dark me-1" title="Editar">
+                <a href="{{ route('landing.navbar.edit', $navbar) }}" class="btn btn-outline-info btn-sm text-info" title="Editar">
                   <i class="fas fa-pen"></i>
                 </a>
               </td>

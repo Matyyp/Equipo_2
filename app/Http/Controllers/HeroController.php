@@ -63,10 +63,10 @@ public function data(Request $request)
             $method = method_field('DELETE');
 
             return <<<HTML
-                <a href="{$edit}" class="btn btn-outline-warning btn-sm text-dark me-1"><i class="fas fa-pen"></i></a>
-                <form action="{$delete}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar Hero?')">
+                <a href="{$edit}" class="btn btn-outline-info btn-sm text-info me-1"><i class="fas fa-pen"></i></a>
+                <form action="{$delete}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Estás Seguro de Eliminar este Hero?')">
                     {$csrf}{$method}
-                    <button class="btn btn-outline-danger btn-sm text-dark"><i class="fas fa-trash"></i></button>
+                    <button class="btn btn-outline-info btn-sm text-info"><i class="fas fa-trash"></i></button>
                 </form>
             HTML;
         })

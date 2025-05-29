@@ -64,7 +64,7 @@
                 </td>
 
                 <td class="text-center">
-                  <a href="{{ route('landing.footer.edit', $footer->id) }}" class="btn btn-outline-warning btn-sm text-dark me-1" title="Editar">
+                  <a href="{{ route('landing.footer.edit', $footer->id) }}" class="btn btn-outline-info btn-sm text-info me-1" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
 

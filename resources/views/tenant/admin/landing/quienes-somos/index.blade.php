@@ -100,7 +100,7 @@
               
               <!-- Acciones -->
               <td>
-                <a href="{{ route('landing.quienes-somos.edit', $aboutUs) }}" class="btn btn-outline-warning btn-sm text-dark" title="Editar">
+                <a href="{{ route('landing.quienes-somos.edit', $aboutUs) }}" class="btn btn-outline-info btn-sm text-info" title="Editar">
                   <i class="fas fa-pen"></i>
                 </a>
               </td>
