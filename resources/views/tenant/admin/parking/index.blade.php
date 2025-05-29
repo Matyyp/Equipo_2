@@ -252,7 +252,7 @@
 <div class="modal fade" id="extraServicesModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
+      <div class="modal-header bg-secondary text-white">
         <h5 class="modal-title">Servicios Adicionales</h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -282,7 +282,7 @@
           <!-- Total -->
           <div class="text-right border-top pt-2">
             <span class="font-weight-bold">Total adicional:</span>
-            <span id="extraServicesTotal" class="font-weight-bold text-success ml-2">$0</span>
+            <span id="extraServicesTotal" class="font-weight-bold text-secondary ml-2">$0</span>
           </div>
         </form>
       </div>
@@ -434,14 +434,14 @@
         
         <div class="modal-footer">
           <div id="renew-button-container" class="mr-auto" style="display: none;">
-            <button type="button" id="btn-renew" class="btn-outline-primary">
+            <button type="button" id="btn-renew" class="btn-primary">
               <i class="fas fa-sync-alt mr-1"></i> Renovar Servicio
             </button>
           </div>
-          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
             Cancelar
           </button>
-          <button type="submit" class="btn btn-outline-primary">
+          <button type="submit" class="btn btn-primary">
             Confirmar Check-Out
           </button>
         </div>
