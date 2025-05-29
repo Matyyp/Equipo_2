@@ -28,7 +28,7 @@
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        <table id="history-table" class="table table-bordered table-striped table-hover table-sm w-100 nowrap">
+        <table id="history-table" class="table table-striped table-hover table-sm w-100 nowrap">
           <thead class="thead-light">
             <tr>
               @role('SuperAdmin')

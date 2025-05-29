@@ -25,7 +25,7 @@ class RegisterRentController extends Controller
             })
             ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
             ->addColumn('acciones', function ($r) {
-                return '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-secondary btn-sm text-dark me-1" title="Ver">
+                return '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Ver">
                     <i class="fas fa-eye"></i>
                 </a>';
             })

@@ -9,8 +9,8 @@
         <a href="/estacionamiento/create" class="text-decoration-none">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <i class="fas fa-car fa-2x mb-2 text-primary"></i>
-                    <h5 class="card-title">Ingresar Vehículo</h5>
+                    <i class="fas fa-car fa-2x mb-2 text-info"></i>
+                    <h5 class="card-title text-info">Ingresar Vehículo</h5>
                 </div>
             </div>
         </a>
@@ -39,8 +39,8 @@
         <a href="analiticas" class="text-decoration-none">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <i class="fas fa-dollar-sign fa-2x mb-2"></i>
-                    <h5 class="card-title">Ganancias</h5>
+                    <i class="fas fa-dollar-sign fa-2x mb-2 text-info"></i>
+                    <h5 class="card-title text-info">Ganancias</h5>
                 </div>
             </div>
         </a>

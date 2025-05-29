@@ -1,4 +1,4 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside class="main-sidebar sidebar-dark-info elevation-4">
     {{-- Brand --}}
     <a href="{{ route('dashboard') }}"
        class="brand-link d-flex justify-content-center align-items-center">
@@ -56,69 +56,63 @@
 
                 {{-- Reservas --}}
                 @can('reservas.access')
-                <li class="nav-item has-treeview {{ request()->is('reservations*') ? 'menu-open' : '' }}">
-                <a href="#" class="nav-link {{ request()->is('reservations*') ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-calendar-days"></i>
-                    <p>
-                    Reservas
-                    <i class="right fas fa-angle-left"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                    {{-- Autos de Arriendo --}}
-                    <li class="nav-item">
-                    <a
-                        href="{{ route('rental-cars.index') }}"
-                        class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}"
-                    >
-                        <i class="fas fa-car nav-icon"></i>
-                        <p>Autos de Arriendo</p>
+                <li class="nav-item has-treeview {{ request()->is('reservations*') || request()->is('rental-cars*') || request()->is('registro-renta*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('reservations*') || request()->is('rental-cars*') || request()->is('registro-renta*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-calendar-days"></i>
+                        <p>Reservas<i class="right fas fa-angle-left"></i></p>
                     </a>
-                    </li>
-                    {{-- Listado de Reservas Web --}}
-                    <li class="nav-item">
-                    <a
-                        href="{{ route('reservations.index') }}"
-                        class="nav-link {{ request()->routeIs('reservations.*') ? 'active' : '' }}"
-                    >
-                        <i class="fas fa-list nav-icon"></i>
-                        <p>Listado de Reservas</p>
-                    </a>
-                    </li>
-                    <li class="nav-item">
-                    <a
-                        href="{{ route('registro-renta.index') }}"
-                        class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}"
-                    >
-                        <i class="fas fa-list nav-icon"></i>
-                        <p>Listado de Arriendos</p>
-                    </a>
-                    </li>
-                </ul>
+                    <ul class="nav nav-treeview">
+                        {{-- Autos de Arriendo --}}
+                        <li class="nav-item">
+                            <a href="{{ route('rental-cars.index') }}"
+                            class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}">
+                                <i class="fas fa-car nav-icon"></i>
+                                <p>Autos de Arriendo</p>
+                            </a>
+                        </li>
+                        
+                        {{-- Listado de Reservas Web --}}
+                        <li class="nav-item">
+                            <a href="{{ route('reservations.index') }}"
+                            class="nav-link {{ request()->routeIs('reservations.*') ? 'active' : '' }}">
+                                <i class="fas fa-list nav-icon"></i>
+                                <p>Listado de Reservas</p>
+                            </a>
+                        </li>
+                        
+                        {{-- Listado de Arriendos --}}
+                        <li class="nav-item">
+                            <a href="{{ route('registro-renta.index') }}"
+                            class="nav-link {{ request()->routeIs('registro-renta.*') ? 'active' : '' }}">
+                                <i class="fas fa-list nav-icon"></i>
+                                <p>Listado de Arriendos</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 @endcan
 
 
                 {{-- Ventas --}}
                 @can('ventas.access')
-                <li class="nav-item has-treeview {{ request()->is('ventas*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('ventas*') ? 'active' : '' }}">
+                <li class="nav-item has-treeview {{ request()->is('pagos*') || request()->is('analiticas*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('pagos*') || request()->is('analiticas*') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-wallet"></i>
                         <p>Ventas<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('payment.index') }}"
-                               class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('payment.*') ? 'active' : '' }}">
                                 <i class="fas fa-store nav-icon"></i>
                                 <p>Pagos</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('analiticas') }}"
-                               class="nav-link {{ request()->routeIs('analiticas') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('analiticas*') ? 'active' : '' }}">
                                 <i class="fas fa-chart-simple nav-icon"></i>
-                                <p>Analiticas</p>
+                                <p>Analíticas</p>
                             </a>
                         </li>
                     </ul>

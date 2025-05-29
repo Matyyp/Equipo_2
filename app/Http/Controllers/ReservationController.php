@@ -48,12 +48,12 @@ class ReservationController extends Controller
         ->addColumn('acciones', function($r) {
             if ($r->status === 'pending') {
                 $confirm = <<<HTML
-                <a href="{$this->url('reservas.crearRegistroRenta', $r)}" class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-check"></i></a>
+                <a href="{$this->url('reservas.crearRegistroRenta', $r)}" class="btn btn-outline-info btn-sm text-info"><i class="fas fa-check"></i></a>
                 HTML;
                 $cancel = <<<HTML
                 <form action="{$this->url('reservations.cancel',$r)}" method="POST" class="d-inline ms-1">
                 <input type="hidden" name="_token" value="{$this->csrf()}">
-                <button class="btn btn-outline-secondary btn-sm text-dark"><i class="fas fa-times"></i></button>
+                <button class="btn btn-outline-info btn-sm text-info"><i class="fas fa-times"></i></button>
                 </form>
                 HTML;
                 return $confirm.$cancel;

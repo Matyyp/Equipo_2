@@ -6,6 +6,40 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css"/>
+
+ <style>
+    table.dataTable td,
+    table.dataTable th {
+      border: none !important;
+    }
+
+    table.dataTable tbody tr {
+      border: none !important;
+    }
+
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .dataTables_paginate .pagination .page-item.active a.page-link {
+      background-color: #17a2b8 !important; 
+      color:rgb(255, 255, 255) !important;
+      border-color: #17a2b8 !important; 
+    }
+
+
+    .dataTables_paginate .pagination .page-item .page-link {
+      background-color: #eeeeee;
+      color: #17a2b8 !important;
+      border-color: #eeeeee;
+    }
+
+    .btn-outline-info.text-info:hover,
+    .btn-outline-info.text-info:focus {
+      color: #fff !important;
+    }
+  </style>
 @endpush
 
 @section('content')
@@ -14,12 +48,12 @@
     <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
-  <div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white">
-      <h5 class="mb-0">Reservas Web</h5>
+  <div class="card">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <div><i class="fas fa-file mr-2"></i>Reservas Web</div>
     </div>
     <div class="card-body">
-      <table id="reservations-table" class="table table-striped table-bordered w-100">
+      <table id="reservations-table" class="table table-striped w-100">
         <thead>
           <tr>
             <th>RUT</th>
@@ -77,7 +111,7 @@ $(function(){
     ],
     order: [[4, 'desc']],
     language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
-    responsive: true,
+    responsive: true
   });
 });
 </script>
