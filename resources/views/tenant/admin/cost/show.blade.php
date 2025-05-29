@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css" />
   <style>
-    table.dataTable td,
+  table.dataTable td,
     table.dataTable th {
       border: none !important;
     }
@@ -16,21 +16,24 @@
       border: none !important;
     }
 
-    /* Agregar solo el borde superior e inferior a la tabla completa */
     table.dataTable {
       border-top: 2px solid #dee2e6;
       border-bottom: 2px solid #dee2e6;
     }
 
-    .dataTables_paginate .pagination .page-item.active .page-link {
+    .dataTables_paginate .pagination .page-item.active a.page-link {
       background-color: #17a2b8 !important; 
+      color:rgb(255, 255, 255) !important;
       border-color: #17a2b8 !important; 
     }
-    .dataTables_paginate .pagination .page-item.disabled .page-link {
-  background-color: #eeeeee;
-  color: #17a2b8 !important;
-  border-color: #eeeeee;
-}
+
+
+    .dataTables_paginate .pagination .page-item .page-link {
+      background-color: #eeeeee;
+      color: #17a2b8 !important;
+      border-color: #eeeeee;
+    }
+
 .btn-outline-info.text-info:hover,
 .btn-outline-info.text-info:focus {
   color: #fff !important;
