@@ -274,43 +274,48 @@
 
 <div class="page-break"></div>
 
-<div style="position: relative; min-height: 1000px;">
+<div style="position: relative; min-height: 100vh; padding-bottom: 150px;"> <!-- Añadido padding-bottom para el footer -->
 
-    <div style="border: 1px solid black; padding: 10px; font-size: 12px; text-align: justify; text-transform: uppercase;">
+    <!-- Nota importante -->
+    <div style="border: 1px solid black; padding: 10px; font-size: 12px; text-align: justify; text-transform: uppercase; margin-bottom: 15px;">
         <span style="color: red; font-weight: bold;">NOTA IMPORTANTE:</span>
         "Toda garantía por daños que pueda producirse mientras el vehículo indicado precedentemente, esté en el recinto Calle {{ $direccion_sucursal }}, se perderá en forma inmediata, desde el momento en que el dueño o titular del vehículo en custodia privada, facilite dicho vehículo a un tercero, siendo este familiar, amigo u otra condición"
     </div>
 
-    <div style="font-weight: bold; text-transform: uppercase; font-size: 14px; margin-top: 10px; text-align: center;">
+    <!-- Título normas -->
+    <div style="font-weight: bold; text-transform: uppercase; font-size: 14px; margin: 15px 0; text-align: center;">
         PARA MEJOR ENTENDIMIENTO, SE DEBERÁ OBSERVAR LAS SIGUIENTES NORMAS
     </div>
 
-    <div style="height: 2px; background-color: black; width: 100%; margin: 4px 0;"></div>
+    <div style="height: 2px; background-color: black; width: 100%; margin: 10px 0;"></div>
 
-    <div style="font-size: 13px; margin-top: 10px; text-transform: uppercase; font-weight: bold;">
+    <!-- Lista de reglas mejorada -->
+    <div style="font-size: 12px; margin-top: 10px;">
         @foreach($reglas as $i => $regla)
-            <p>{{ $i + 1 }}. {{ $regla->description }}</p>
+            <div style="margin-bottom: 8px; page-break-inside: avoid;">
+                <strong>{{ $i + 1 }}.</strong> {{ $regla->description }}
+            </div>
         @endforeach
     </div>
 
+    <!-- Footer (manteniendo tu estructura actual) -->
     <div style="position: absolute; bottom: 20px; width: 100%; font-size: 12px;">
         <div style="height: 2px; background-color: black; width: 100%; margin: 10px 0;"></div>
-
+        
         <table style="width: 100%; border: none; text-align: left;">
             <tr>
                 <td style="width: 50%; vertical-align: top; border: none;">
-                    <img src="{{ $url_logo }}" alt="Logo Empresa" style="max-height: 200px;">
+                    <img src="{{ $url_logo }}" alt="Logo Empresa" style="max-height: 80px;">
                 </td>
-                <td style="width: 0%; vertical-align: top; border: none; text-align: right;">
+                <td style="width: 50%; vertical-align: top; border: none; text-align: right;">
                     <div style="height: 1px; background-color: black; width: 100%; margin: 6px 0;"></div>
                     <div style="margin-top: 6px; font-weight: bold;">DIRECCIÓN DE SUCURSAL</div>
                     <div style="margin-top: 4px;">{{ $direccion_sucursal }}</div>
                     <div style="height: 1px; background-color: black; width: 100%; margin: 6px 0;"></div>
                     <div style="margin-top: 6px; font-weight: bold;">Datos de contacto</div>
                     @foreach($datos_contacto as $contacto)
-                    <p>{{ $contacto['tipo'] }}: {{ $contacto['dato'] }}</p>
+                    <p style="margin: 4px 0;">{{ $contacto['tipo'] }}: {{ $contacto['dato'] }}</p>
                     @endforeach
-
                 </td>
             </tr>
         </table>
