@@ -2,7 +2,18 @@
 
 @section('title', 'Lavado de Autos')
 @section('page_title', 'Tipos de Lavado por Sucursal')
-
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css" />
+<style>
+    .btn-outline-info.text-info:hover,
+    .btn-outline-info.text-info:focus {
+      color: #fff !important;
+    }
+    
+    
+</style>
+@endpush
 @section('content')
 <div class="container mt-4">
   <div class="card shadow-sm">
@@ -33,10 +44,10 @@
                 <td>{{ $isActivo ? '$' . number_format($service->price_net, 0, ',', '.') : '—' }}</td>
                 <td class="text-center">
                   @if ($isActivo)
-                    <a href="{{ route('lavados.edit', $service->id_service) }}" class="btn btn-outline-warning btn-sm me-1 text-dark">
+                    <a href="{{ route('lavados.edit', $service->id_service) }}" class="btn btn-outline-info btn-sm text-info me-1">
                       <i class="fas fa-edit me-1"></i>
                     </a>
-                    <button onclick="desactivarLavado({{ $service->id_service }}, '{{ $service->name }}')" class="btn btn-outline-danger btn-sm text-dark">
+                    <button onclick="desactivarLavado({{ $service->id_service }}, '{{ $service->name }}')" class="btn btn-outline-info btn-sm text-info">
                       <i class="fas fa-ban me-1"></i>
                     </button>
                   @else

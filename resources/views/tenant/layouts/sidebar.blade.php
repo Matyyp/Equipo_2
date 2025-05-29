@@ -215,34 +215,47 @@
                 </li>
 
                 @endcan
-                {{-- Costos de Servicios Básicos --}}
-                @can('cost_basic_service.access')
-                <li class="nav-item has-treeview {{ request()->is('costos*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('costos*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-money-bill-wave"></i>
-                        <p>
-                            Costos y Servicios
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('cost_basic_service.index') }}" 
-                               class="nav-link {{ request()->is('costos*') ? 'active' : '' }}">
-                               <i class="fa-solid fa-money-bill"></i>
-                               <p>Ingresos</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('cost_basic_service.show') }}" 
-                               class="nav-link {{ request()->routeIs('cost_basic_service.show') ? 'active' : '' }}">
-                               <i class="fa-solid fa-bag-shopping"></i>
-                               <p>Costos</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                @endcan
+{{-- Costos de Servicios Básicos --}}
+@can('cost_basic_service.access')
+<li class="nav-item has-treeview 
+    {{ 
+        request()->is('cost') ||
+        request()->routeIs('cost_basic_service.index') ||
+        request()->routeIs('cost_basic_service.show') ||
+        request()->routeIs('cost_basic_service.create') ||
+        request()->routeIs('cost_basic_service.edit') 
+        ? 'menu-open' : '' 
+    }}">
+    <a href="#" class="nav-link 
+        {{ 
+            request()->is('cost') ||
+            request()->routeIs('cost_basic_service.index') ||
+            request()->routeIs('cost_basic_service.show') ||
+            request()->routeIs('cost_basic_service.create') ||
+            request()->routeIs('cost_basic_service.edit') 
+            ? 'active' : '' 
+        }}">
+        <i class="nav-icon fas fa-money-bill-wave"></i>
+        <p>Costos y Servicios<i class="right fas fa-angle-left"></i></p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('cost_basic_service.index') }}" 
+               class="nav-link {{ request()->routeIs('cost_basic_service.index') ? 'active' : '' }}">
+               <i class="fa-solid fa-money-bill"></i>
+               <p>Ingresos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('cost_basic_service.show') }}" 
+               class="nav-link {{ request()->routeIs('cost_basic_service.show') ? 'active' : '' }}">
+               <i class="fa-solid fa-bag-shopping"></i>
+               <p>Costos</p>
+            </a>
+        </li>
+    </ul>
+</li>
+@endcan
 
                 {{-- Mantenciones --}}
                 @can('mantenimiento.access')

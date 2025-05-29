@@ -5,6 +5,12 @@
 
 @push('styles')
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
+<style>
+  .btn-outline-info.text-info:hover,
+.btn-outline-info.text-info:focus {
+  color: #fff !important;
+}
+</style>
 @endpush
 
 @section('content')
@@ -69,7 +75,7 @@
               <td>Lavados</td>
               <td class="text-center">
                 <a href="{{ route('lavados.show', $sucursalId) }}"
-                  class="btn btn-outline-primary btn-sm text-dark" title="Ir a Lavado">
+                  class="btn btn-outline-info btn-sm text-info" title="Ir a Lavado">
                   <i class="fas fa-soap"></i> Lavado de auto
                 </a>
               </td>

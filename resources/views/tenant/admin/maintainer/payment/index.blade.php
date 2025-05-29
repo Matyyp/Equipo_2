@@ -60,7 +60,6 @@
         <table id="payment-table" class="table table-striped table-hover table-sm w-100 nowrap">
           <thead class="thead">
             <tr>
-              <th>Id</th>
               <th>Fecha</th>
               <th>Monto</th>
               <th>Tipo Pago</th>
@@ -100,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
     serverSide: false,
     ajax: '{{ route("payment.index") }}',
     columns: [
-      { data: 'id_payment', title: 'Id' },
       { data: 'payment_date', title: 'Fecha', render: formatDate },
       { data: 'amount', title: 'Monto', render: formatCLP },
       { data: 'type_payment', title: 'Tipo Pago' },
