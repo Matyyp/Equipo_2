@@ -32,8 +32,8 @@
 
                 {{-- Estacionamiento --}}
                 @can('estacionamiento.access')
-                <li class="nav-item has-treeview {{ request()->is('estacionamiento*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('estacionamiento*') ? 'active' : '' }}">
+                <li class="nav-item has-treeview {{ request()->is('estacionamiento*') || request()->routeIs('carwash.history') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('estacionamiento*') || request()->routeIs('carwash.history') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-square-parking"></i>
                         <p>Estacionamiento<i class="right fas fa-angle-left"></i></p>
                     </a>
