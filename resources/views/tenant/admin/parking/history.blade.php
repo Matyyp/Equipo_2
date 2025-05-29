@@ -62,7 +62,7 @@
     
     <div class="card-body">
       <div class="table-responsive">
-        <table id="history-table" class="table  table-striped table-hover table-sm w-100 nowrap">
+        <table id="history-table" class="table table-striped w-100">
           <thead class="thead-light">
             <tr>
               @role('SuperAdmin')

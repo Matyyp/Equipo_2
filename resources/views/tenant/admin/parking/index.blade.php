@@ -527,8 +527,8 @@ $(function () {
                 data: 'washed',
                 render: function(data) {
                     return data
-                    ? '<span class="badge bg-transparent text-success border border-success">Sí</span>'
-                    : '<span class="badge bg-transparent text-secondary border border-secondary">No</span>';
+                    ? '<span class="badge bg-transparent text-success border border-success px-3 py-2 rounded ">Sí</span>'
+                    : '<span class="badge bg-transparent text-secondary border border-secondary px-3 py-2 rounded">No</span>';
 
                 }
             },
