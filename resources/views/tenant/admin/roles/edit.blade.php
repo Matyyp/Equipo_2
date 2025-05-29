@@ -23,7 +23,7 @@
 
           @foreach($groupedPermissions as $group => $perms)
             <div class="mb-4 p-3 border rounded shadow-sm bg-light">
-              <h6 class="text-primary fw-bold mb-3">
+              <h6 class="text-info fw-bold mb-3">
                 <i class="fas fa-folder me-1"></i> {{ $group }}
               </h6>
 
@@ -57,12 +57,12 @@
         {{-- Botones --}}
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <a href="{{ route('roles.index') }}" class="btn btn-secondary mr-1">
+            <a href="{{ route('roles.index') }}" class="btn btn-secondary">
               Cancelar
             </a>
           </div>
           <div class="col-auto">
-            <button type="submit" class="btn btn-success">
+            <button type="submit" class="btn btn-primary">
               Guardar
             </button>
           </div>

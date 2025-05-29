@@ -15,14 +15,19 @@ return [
     ],
     'Estacionamiento' => [
         'estacionamiento.access' => 'Acceso a estacionamiento',
+        'carwash.access' => 'Acceso a lavado de autos',
     ],
     'Reservas' => [
         'reservas.access' => 'Acceso a reservas',
     ],
     'Ventas' => [
         'ventas.access' => 'Acceso a ventas',
+        'cost_basic_service.access' => 'Acceso a costos de servicio básico',
     ],
     'Mantenimiento' => [
         'mantenimiento.access' => 'Acceso a mantenimiento',
+    ],
+    'Configuración Página' => [
+        'landing.access' => 'Acceso a configuración de la página de inicio',
     ],
 ];
