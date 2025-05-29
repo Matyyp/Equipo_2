@@ -2,8 +2,8 @@
     $navbar = \App\Models\Navbar::first();
 @endphp
 
-<!-- Barra superior visible solo en pantallas xl y superiores (≥1280px) -->
-<div class="hidden xl:flex text-sm px-6 py-2 items-center justify-around font-light"
+<!-- Barra superior -->
+<div class="hidden lg:flex text-sm px-6 py-2 flex-wrap justify-around items-center font-light"
      style="background-color: {{ $navbar->background_color_1 ?? '#000000' }}">
     <div class="flex flex-wrap gap-6 items-center text-[15px]">
         
@@ -66,11 +66,8 @@
                 </span>
             </div>
         @endif
-
     </div>
 </div>
-
-
 
 <!-- Navbar principal -->
 <nav class="px-6 py-4 relative z-50"
@@ -148,7 +145,7 @@
             {{-- Quiénes somos --}}
             @if ($navbar->about_us_active)
             <li class="w-full md:w-auto">
-                <a href="#quienes-somos" class="block w-full text-left px-4 py-2 hover:text-orange-400">
+                <a href="#about-us" class="block w-full text-left px-4 py-2 hover:text-orange-400">
                     {{ $navbar->about_us }}
                 </a>
             </li>

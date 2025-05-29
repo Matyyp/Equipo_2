@@ -1,8 +1,26 @@
 @php
     $aboutUs = \App\Models\AboutUs::first();
     $videos = $aboutUs->video_links ? array_filter(explode(',', $aboutUs->video_links)) : [];
+
+    // Obtener la URL del primer video en formato embed
+    $firstVideo = '';
+    if (count($videos) > 0) {
+        $first = trim($videos[0]);
+        if (str_contains($first, 'youtube.com')) {
+            if (str_contains($first, 'embed')) {
+                $firstVideo = $first;
+            } else {
+                parse_str(parse_url($first, PHP_URL_QUERY), $params);
+                $videoId = $params['v'] ?? '';
+                $firstVideo = $videoId ? "https://www.youtube.com/embed/{$videoId}" : '';
+            }
+        } else {
+            $firstVideo = $first;
+        }
+    }
+
     $showSection = $aboutUs->top_text_active || $aboutUs->main_title_active || 
-                  $aboutUs->secondary_text_active || $aboutUs->tertiary_text_active;
+                   $aboutUs->secondary_text_active || $aboutUs->tertiary_text_active;
 @endphp
 
 @if($showSection)
@@ -16,7 +34,6 @@
             @foreach($videos as $index => $video)
               @php
                 $video = trim($video);
-                // Extraer el ID del video de YouTube si es una URL completa
                 if (str_contains($video, 'youtube.com')) {
                     if (str_contains($video, 'embed')) {
                         $embedUrl = $video;
@@ -31,15 +48,15 @@
               @endphp
               <button onclick="setVideo('{{ $embedUrl }}')" 
                       class="px-4 py-2 rounded-xl text-sm font-semibold shadow-md transition duration-300"
-                      style="background-color: {{ $aboutUs->video_card_color }}; color: {{ $aboutUs->card_text_color }}">
+                      style="background-color: {{ $aboutUs->video_card_color }}; color: {{ $aboutUs->card_text_color }};">
                 Video {{ $index + 1 }}
               </button>
             @endforeach
           </div>
           
           <!-- Contenedor del iframe del video -->
-          <div class="aspect-video rounded-2xl overflow-hidden shadow-xl border-4" style="border-color: {{ $aboutUs->video_card_color }}; background-color: {{ $aboutUs->video_card_color }}">
-            <iframe id="videoFrame" src="{{ count($videos) > 0 ? $videos[0] : '' }}" frameborder="0"
+          <div class="aspect-video rounded-2xl overflow-hidden shadow-xl border-4" style="border-color: {{ $aboutUs->video_card_color }}; background-color: {{ $aboutUs->video_card_color }};">
+            <iframe id="videoFrame" src="{{ $firstVideo }}" frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
               class="w-full h-full"></iframe>
           </div>
@@ -48,7 +65,7 @@
 
       <!-- Sección de texto -->
       <div data-aos="fade-left" class="flex items-center">
-        <div class="rounded-2xl shadow-lg p-8 space-y-5 w-full" style="background-color: {{ $aboutUs->card_color }}; color: {{ $aboutUs->card_text_color }}">
+        <div class="rounded-2xl shadow-lg p-8 space-y-5 w-full" style="background-color: {{ $aboutUs->card_color }}; color: {{ $aboutUs->card_text_color }};">
           @if($aboutUs->top_text_active && $aboutUs->top_text)
             <p class="uppercase text-sm opacity-80 tracking-wider">{{ $aboutUs->top_text }}</p>
           @endif
@@ -68,7 +85,7 @@
           @if($aboutUs->button_active && $aboutUs->button_text)
             <a href="{{ $aboutUs->button_link ?: '#' }}" 
                class="mt-4 px-6 py-2 rounded-xl font-semibold shadow-md inline-block transition duration-300"
-               style="background-color: {{ $aboutUs->button_color }}; color: {{ $aboutUs->button_text_color }}">
+               style="background-color: {{ $aboutUs->button_color }}; color: {{ $aboutUs->button_text_color }};">
               {{ $aboutUs->button_text }} →
             </a>
           @endif
@@ -78,8 +95,8 @@
   </section>
 
   <script>
-  function setVideo(url) {
-    document.getElementById('videoFrame').src = url;
-  }
+    function setVideo(url) {
+      document.getElementById('videoFrame').src = url;
+    }
   </script>
 @endif
