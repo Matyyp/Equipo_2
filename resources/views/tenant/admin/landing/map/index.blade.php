@@ -19,7 +19,7 @@
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        <table id="map-table" class="table table-striped table-bordered w-100">
+        <table id="map-table" class="table table-striped w-100">
           <thead>
             <tr>
               <th>Título</th>
@@ -144,13 +144,13 @@
               <!-- Acciones -->
               <td>
                 <div class="d-flex gap-1">
-                  <a href="{{ route('landing.map.edit', $map->id_map) }}" class="btn btn-outline-warning btn-sm text-dark me-1" title="Editar">
+                  <a href="{{ route('landing.map.edit', $map->id_map) }}" class="btn btn-outline-info btn-sm text-info" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
                   <form action="{{ route('landing.map.destroy', $map->id_map) }}" method="POST" class="delete-form">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger btn-sm text-dark me-1 ml-1" title="Eliminar">
+                    <button type="submit" class="btn btn-outline-info btn-sm text-info ml-1" title="Eliminar">
                       <i class="fas fa-trash-alt"></i>
                     </button>
                   </form>
@@ -176,6 +176,35 @@
     vertical-align: middle;
   }
 </style>
+<style>
+     table.dataTable td,
+    table.dataTable th {
+      border: none !important;
+    }
+
+    table.dataTable tbody tr {
+      border: none !important;
+    }
+
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .dataTables_paginate .pagination .page-item.active a.page-link {
+      background-color: #17a2b8 !important; 
+      color:rgb(255, 255, 255) !important;
+      border-color: #17a2b8 !important; 
+    }
+
+
+    .dataTables_paginate .pagination .page-item .page-link {
+      background-color: #eeeeee;
+      color: #17a2b8 !important;
+      border-color: #eeeeee;
+    }
+
+  </style>
 @endpush
 
 @push('scripts')
