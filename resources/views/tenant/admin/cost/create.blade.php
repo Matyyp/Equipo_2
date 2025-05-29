@@ -85,9 +85,9 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <button type="reset" class="btn btn-secondary">
+            <a href="{{ route('cost_basic_service.show') }}" class="btn btn-secondary">
               <i class="mr-1"></i> Cancelar
-            </button>
+            </a>
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary" id="submit-btn">

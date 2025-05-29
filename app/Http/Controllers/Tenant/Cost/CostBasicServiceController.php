@@ -74,8 +74,8 @@ class CostBasicServiceController extends Controller
                 return $row->branchOffice ? $row->branchOffice->name_branch_offices : '';
             })
             ->addColumn('actions', function($row) {
-        $editBtn = '<a href="' . route('cost_basic_service.edit', $row->id) . '" class="btn btn-outline-warning btn-sm text-dark me-1" title="Editar"><i class="fas fa-edit"></i></a>';
-        $deleteBtn = '<button class="btn btn-outline-danger btn-sm text-dark me-1 btn-delete " data-id="'.$row->id.'" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
+        $editBtn = '<a href="' . route('cost_basic_service.edit', $row->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Editar"><i class="fas fa-edit"></i></a>';
+        $deleteBtn = '<button class="btn btn-outline-info btn-sm text-info me-1 btn-delete " data-id="'.$row->id.'" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
         return $editBtn.' '.$deleteBtn;
     })
             ->rawColumns(['actions'])

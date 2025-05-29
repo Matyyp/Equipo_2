@@ -13,6 +13,42 @@
   .card-header i {
     margin-right: 8px;
   }
+  table.dataTable td,
+    table.dataTable th {
+      border: none !important;
+    }
+
+    table.dataTable tbody tr {
+      border: none !important;
+    }
+
+    /* Agregar solo el borde superior e inferior a la tabla completa */
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    /* Agregar solo el borde superior e inferior a la tabla completa */
+     /* Agregar solo el borde superior e inferior a la tabla completa */
+    table.dataTable {
+      border-top: 2px solid #dee2e6;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .dataTables_paginate .pagination .page-item.active .page-link {
+      background-color: #17a2b8 !important; 
+      border-color: #17a2b8 !important; 
+    }
+    .dataTables_paginate .pagination .page-item.disabled .page-link {
+  background-color: #eeeeee;
+  color: #17a2b8 !important;
+  border-color: #eeeeee;
+}
+/* Cambia el texto a blanco al pasar el mouse por el botón de marcar lavado */
+.btn-outline-info.text-info:hover, 
+.btn-outline-info.text-info:focus {
+  color: #fff !important;
+}
 </style>
 @endpush
 
@@ -26,7 +62,7 @@
 
     <div class="card-body">
       <div class="table-responsive">
-        <table id="wash-history-table" class="table table-striped table-bordered nowrap w-100">
+        <table id="wash-history-table" class="table table-striped nowrap w-100">
           <thead>
             <tr>
               @role('SuperAdmin')
@@ -97,7 +133,7 @@
           render: function(id, type, row) {
             if (row.washed === 'No') {
               return `
-                <button class="btn btn-outline-secondary btn-sm text-dark me-1 marcar-lavado" data-id="${id}">
+                <button class="btn btn-outline-info btn-sm text-info me-1 marcar-lavado" data-id="${id}">
                   <i class="fas fa-check"></i> Marcar como Lavado
                 </button>
               `;
@@ -119,10 +155,9 @@
 
       Swal.fire({
         title: '¿Marcar como lavado?',
-        text: 'Esta acción actualizará el estado del registro.',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Sí, marcar',
+        confirmButtonText: 'Aceptar',
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#dc3545',
