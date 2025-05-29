@@ -18,7 +18,7 @@
                 <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
                     @if($key % 2 == 0 && $hasImage)
                         <!-- Imagen a la izquierda para elementos impares (índice 0-based) -->
-                        <div data-aos="fade-right" class="overflow-hidden rounded-2xl shadow-xl border-4 border-blue-200">
+                        <div data-aos="fade-right" class="overflow-hidden rounded-2xl shadow-xl border-4" style="border-color: {{ $service->card_background_color }};">
                             <img src="{{ tenant_asset($service->image->path) }}" alt="{{ $service->title }}" class="w-full h-full object-cover">
                         </div>
                     @endif
@@ -43,7 +43,7 @@
 
                     @if($key % 2 != 0 && $hasImage)
                         <!-- Imagen a la derecha para elementos pares (índice 0-based) -->
-                        <div data-aos="fade-left" class="overflow-hidden rounded-2xl shadow-xl border-4 border-orange-300">
+                        <div data-aos="fade-left" class="overflow-hidden rounded-2xl shadow-xl border-4" style="border-color: {{ $service->card_background_color }};">
                             <img src="{{ tenant_asset($service->image->path) }}" alt="{{ $service->title }}" class="w-full h-full object-cover">
                         </div>
                     @endif

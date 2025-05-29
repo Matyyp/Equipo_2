@@ -33,20 +33,21 @@
                style="background-color: {{ $map->color_tarjeta }}; color: {{ $map->color_texto_tarjeta }}">
             
             @if($map->titulo_active)
-              <p class="uppercase text-sm opacity-80">Sucursal</p>
-              <h2 class="text-2xl font-bold">{{ $map->titulo }}</h2>
+              <p class="uppercase text-sm opacity-80">{{ $map->titulo }}</p>
+              
+            @endif
+            @if($map->ciudad_active)
+             <h2 class="text-2xl font-bold">{{ $map->ciudad }}</h2> 
             @endif
             
-            @if($map->direccion_active || $map->ciudad_active)
+            @if($map->direccion_active)
               <p class="text-sm opacity-80">
                 @if($map->direccion_active) {{ $map->direccion }} @endif
-                @if($map->direccion_active && $map->ciudad_active) — @endif
-                @if($map->ciudad_active) {{ $map->ciudad }} @endif
               </p>
             @endif
             
             @if($map->contactos_active && $map->contactos)
-              <div class="border-t pt-4 space-y-2" style="border-color: {{ $map->color_texto_tarjeta }}; opacity: 0.2">
+              <div class="border-t pt-4 space-y-2" style="border-color: {{ $map->color_texto_tarjeta }}">
                 <p class="font-semibold text-sm" style="color: {{ $map->boton_color }}">CONTACTOS</p>
                 @foreach(explode(',', $map->contactos) as $contacto)
                   <p>{{ trim($contacto) }}</p>
@@ -55,7 +56,7 @@
             @endif
             
             @if($map->horario_active && $map->horario)
-              <div class="flex items-start gap-2 text-sm p-3 rounded-lg" style="background-color: {{ $map->color_mapa }}; opacity: 0.8">
+              <div class="flex items-start gap-2 text-sm p-3 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" strokeLinejoin="round" stroke-width="2"
                         d="M8 7V3m8 4V3m-9 4h10M5 11h14M5 15h14M5 19h14" />
