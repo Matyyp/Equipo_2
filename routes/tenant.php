@@ -66,6 +66,10 @@ Route::middleware([
     Route::get('/', function () {
         return view('tenant.landings.welcomev2');
     });
+    Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])
+        ->name('contrato.print')
+        ->middleware('signed');
+
     Route::get('/v1', function () {
         return view('tenant.landings.welcome');
     });
@@ -155,10 +159,11 @@ Route::middleware([
         ->name('estacionamiento.searchPhone');
         Route::get('estacionamiento/history', [ParkingController::class, 'history'])
         ->name('estacionamiento.history');
-        Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])
-        ->name('contrato.print');
         Route::get('/ticket/{parking}/print', [ParkingController::class, 'printTicket'])
-        ->name('contrato.print');
+        ->name('ticket.print');
+        Route::get('parking/{parking}/send-whatsapp', [ParkingController::class, 'sendContractWhatsApp'])
+        ->name('parking.send_whatsapp');
+
 
         Route::resource('estacionamiento', ParkingController::class);
         Route::post('/estacionamiento/{parking}/checkout', [ParkingController::class, 'checkout'])->name('estacionamiento.checkout');

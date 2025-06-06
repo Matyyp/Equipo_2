@@ -521,7 +521,44 @@ $(function () {
             { data: 'patent' },
             { data: 'brand_model' },
             { data: 'start_date' },
-            { data: 'end_date' },
+            {
+    data: 'end_date',
+    render: function(date, type, row) {
+        const formattedDate = date || '-';
+        let reminderButton = '';
+        
+        // Solo para parking_annual
+        if (row.service_type === 'parking_annual' && date) {
+            const [day, month, year] = date.split('-');
+            const endDate = new Date(`${year}-${month}-${day}`);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const diffDays = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays <= 5) { // Mostrar si faltan 5 días o menos
+                const isExpired = diffDays <= 0;
+                reminderButton = `
+                    <div class="mt-1">
+                        <button class="btn btn-xs ${isExpired ? 'btn-danger' : 'btn-warning'} btn-reminder w-100"
+                            data-id="${row.id_parking_register}"
+                            data-whatsapp="${row.whatsapp_payment_reminder_url}">
+                            <i class="fas ${isExpired ? 'fa-exclamation-triangle' : 'fa-bell'} mr-1"></i>
+                            ${isExpired ? '¡Vencido!' : `Recordatorio (${diffDays}d)`}
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        return `
+            <div>
+                <div>${formattedDate}</div>
+                ${reminderButton}
+            </div>
+        `;
+    }
+},
             { data: 'days' },
             { 
                 data: 'washed',
@@ -566,7 +603,7 @@ $(function () {
                 render: function(row) {
                     return `
                         <div >
-                            <a href="/contrato/${row.id_parking_register}/print" target="_blank" class="btn btn-sm btn-outline-info text-info" title="Contrato">
+                            <a href="${row.contract_url }" target="_blank" class="btn btn-sm btn-outline-info text-info" title="Contrato">
                                 <i class="fas fa-file-contract"></i>
                             </a>
                             <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-info text-info" title="Ticket">
@@ -589,6 +626,14 @@ $(function () {
                                 data-row='${JSON.stringify(row)}'>
                                 <i class="fas fa-plus-circle"></i>
                             </button>
+                            <button 
+                                onclick="window.open('${row.whatsapp_url || '#'}', '_blank')" 
+                                class="btn btn-sm btn-outline-info btn-extra-services text-info" 
+                                ${row.whatsapp_url ? '' : 'disabled'}>
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+
+
                         </div>
                     `;
                 }
@@ -1121,5 +1166,14 @@ function updateCheckoutTotal(total) {
         .trim()
     );
 }
+$('#parking-table').on('click', '.btn-reminder', function() {
+    const whatsappUrl = $(this).data('whatsapp');
+    if (whatsappUrl) {
+        window.open(whatsappUrl, '_blank');
+        // No cambia el estado del botón después de enviar
+    } else {
+        console.error('No hay URL de WhatsApp para este registro');
+    }
+});
 </script>
 @endpush
