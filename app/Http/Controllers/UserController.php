@@ -52,7 +52,7 @@ class UserController extends Controller
                 $protectedUserIds = [1];
 
                 if (in_array($user->id, $protectedUserIds)) {
-                    return '<span class="text-muted">Protegido</span>';
+                    return '<span class="text-info">Protegido</span>';
                 }
 
                 $buttons = '<div class="w-100 text-center">';
@@ -60,7 +60,7 @@ class UserController extends Controller
                 if (auth()->user()->can('users.edit')) {
                     $buttons .= '
                         <a href="' . route('users.edit', $user) . '" 
-                        class="btn btn-outline-secondary btn-sm text-dark me-1" title="Editar">
+                        class="btn btn-outline-info btn-sm text-info me-1" title="Editar">
                             <i class="fas fa-pen"></i>
                         </a>
                     ';
@@ -74,7 +74,7 @@ class UserController extends Controller
                             style="display:inline">
                             ' . csrf_field() . method_field('DELETE') . '
                             <button type="submit" 
-                                class="btn btn-outline-secondary btn-sm text-dark" title="Eliminar">
+                                class="btn btn-outline-info btn-sm text-info" title="Eliminar">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>

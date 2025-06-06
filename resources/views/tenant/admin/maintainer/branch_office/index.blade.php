@@ -86,7 +86,7 @@
                 </td>
                 <td class="text-center">
                   <a href="{{ route('sucursales.show', $branch['id']) }}"
-                    class="btn btn-outline-secondary btn-sm text-dark" title="Configuración">
+                    class="btn btn-outline-info btn-sm text-info" title="Configuración">
                     <i class="fas fa-cog"></i>
                   </a>
                 </td>

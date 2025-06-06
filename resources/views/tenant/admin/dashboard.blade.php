@@ -9,38 +9,44 @@
         <a href="/estacionamiento/create" class="text-decoration-none">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <i class="fas fa-car fa-2x mb-2 text-primary"></i>
-                    <h5 class="card-title">Ingresar Vehículo</h5>
+                    <i class="fas fa-car fa-2x mb-2 text-info"></i>
+                    <h5 class="card-title text-info">Ingresar Vehículo</h5>
                 </div>
             </div>
         </a>
     </div>
 
-    {{-- Card 2: en proceso --}}
+    {{-- Card 2 --}}
     <div class="col-6 col-md-3 mb-4">
-        <div class="card shadow-sm h-100 text-center text-secondary">
-            <div class="card-body d-flex flex-column justify-content-center">
-                <span class="badge bg-secondary">En proceso</span>
+        <a href="/reservations" class="text-decoration-none">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <i class="fas fa-calendar-days fa-2x mb-2 text-info"></i>
+                    <h5 class="card-title text-info">Reservaciones</h5>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 
-    {{-- Card 3: en proceso --}}
+    {{-- Card 3 --}}
     <div class="col-6 col-md-3 mb-4">
-        <div class="card shadow-sm h-100 text-center text-secondary">
-            <div class="card-body d-flex flex-column justify-content-center">
-                <span class="badge bg-secondary">En proceso</span>
+        <a href="/analiticas" class="text-decoration-none">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <i class="fas fa-chart-simple fa-2x mb-2 text-info"></i>
+                    <h5 class="card-title text-info">Analiticas</h5>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 
     {{-- Card 4 --}}
     <div class="col-6 col-md-3 mb-4">
-        <a href="analiticas" class="text-decoration-none">
+        <a href="/cost" class="text-decoration-none">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <i class="fas fa-dollar-sign fa-2x mb-2"></i>
-                    <h5 class="card-title">Ganancias</h5>
+                    <i class="fas fa-dollar-sign fa-2x mb-2 text-info"></i>
+                    <h5 class="card-title text-info">Ganancias</h5>
                 </div>
             </div>
         </a>

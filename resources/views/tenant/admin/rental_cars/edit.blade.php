@@ -152,16 +152,19 @@
         {{-- Precio por día --}}
         <div class="mb-3">
           <label for="price_per_day" class="form-label">Precio (por día)</label>
-          <input
-            type="number"
-            name="price_per_day"
-            id="price_per_day"
-            class="form-control @error('price_per_day') is-invalid @enderror"
-            min="0"
-            step="0.01"
-            value="{{ old('price_per_day', $rentalCar->price_per_day ?? '') }}"
-            required
-          >
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input
+              type="number"
+              name="price_per_day"
+              id="price_per_day"
+              class="form-control @error('price_per_day') is-invalid @enderror"
+              min="0"
+              step="0.01"
+              value="{{ old('price_per_day', number_format($rentalCar->price_per_day ?? '', 0, ',', '.')) }}"
+              required
+            >
+          </div>
           @error('price_per_day')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
@@ -221,7 +224,7 @@
 
         <div class="d-flex justify-content-end">
           <a href="{{ route('rental-cars.index') }}" class="btn btn-secondary me-2">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Actualizar</button>
+          <button type="submit" class="btn btn-primary ml-1">Actualizar</button>
         </div>
       </form>
     </div>

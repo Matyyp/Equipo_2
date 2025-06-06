@@ -13,18 +13,6 @@
         <i class="fas fa-car mr-2 fa-lg"></i>
         <h5 class="mb-0">Detalle Auto</h5>
       </div>
-      <div class="ml-auto">
-        <a href="{{ route('rental-cars.edit', $rentalCar) }}"
-           class="btn btn-outline-light btn-sm me-2"
-           title="Editar">
-          <i class="fas fa-edit"></i>
-        </a>
-        <a href="{{ route('rental-cars.index') }}"
-           class="btn btn-outline-light btn-sm"
-           title="Volver">
-          <i class="fas fa-arrow-left"></i>
-        </a>
-      </div>
     </div>
 
     <div class="card-body">
@@ -42,9 +30,9 @@
         <dt class="col-sm-3">Estado</dt>
         <dd class="col-sm-9">
           @if($rentalCar->is_active)
-            <span class="badge bg-success">Activo</span>
+            <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
           @else
-            <span class="badge bg-secondary">Inactivo</span>
+            <span class="border border-secondary text-secondary px-2 py-1 rounded">Inactivo</span>
           @endif
         </dd>
 
@@ -67,7 +55,7 @@
 
         <dt class="col-sm-3">Precio/Día</dt>
         <dd class="col-sm-9">
-          ${{ number_format($rentalCar->price_per_day, 2, ',', '.') }}
+          ${{ number_format($rentalCar->price_per_day, 0, ',', '.') }}
         </dd>
       </dl>
     </div>
@@ -99,5 +87,7 @@
       No hay imágenes disponibles para este auto.
     </div>
   @endif
-</div>
+  <div class="d-flex justify-content-end">
+    <a href="{{ route('rental-cars.index') }}" class="btn btn-secondary me-2">Volver</a>
+  </div>
 @endsection

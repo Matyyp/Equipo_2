@@ -5,6 +5,12 @@
 
 @push('styles')
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
+<style>
+  .btn-outline-info.text-info:hover,
+.btn-outline-info.text-info:focus {
+  color: #fff !important;
+}
+</style>
 @endpush
 
 @section('content')
@@ -47,11 +53,11 @@
                 <td class="text-center">
                   @if ($isAvailable)
                     <a href="{{ route('servicios.edit', $service->id_service) }}"
-                      class="btn btn-outline-warning btn-sm text-dark" title="Editar">
+                      class="btn btn-outline-info btn-sm text-info" title="Editar">
                       <i class="fas fa-pen"></i>
                     </a>
                     <button onclick="desactivarServicio({{ $service->id_service }}, '{{ $service->name }}')"
-                            class="btn btn-sm btn-outline-danger text-dark" title="Desactivar">
+                            class="btn btn-outline-info btn-sm text-info" title="Desactivar">
                       <i class="fas fa-ban"></i>
                     </button>
                   @else
@@ -69,7 +75,7 @@
               <td>Lavados</td>
               <td class="text-center">
                 <a href="{{ route('lavados.show', $sucursalId) }}"
-                  class="btn btn-outline-primary btn-sm text-dark" title="Ir a Lavado">
+                  class="btn btn-outline-info btn-sm text-info" title="Ir a Lavado">
                   <i class="fas fa-soap"></i> Lavado de auto
                 </a>
               </td>

@@ -32,8 +32,8 @@
 
                 {{-- Estacionamiento --}}
                 @can('estacionamiento.access')
-                <li class="nav-item has-treeview {{ request()->is('estacionamiento*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('estacionamiento*') ? 'active' : '' }}">
+                <li class="nav-item has-treeview {{ request()->is('estacionamiento*') || request()->routeIs('carwash.history') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('estacionamiento*') || request()->routeIs('carwash.history') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-square-parking"></i>
                         <p>Estacionamiento<i class="right fas fa-angle-left"></i></p>
                     </a>
@@ -67,45 +67,39 @@
 
                 {{-- Reservas --}}
                 @can('reservas.access')
-                <li class="nav-item has-treeview {{ request()->is('reservations*') ? 'menu-open' : '' }}">
-                <a href="#" class="nav-link {{ request()->is('reservations*') ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-calendar-days"></i>
-                    <p>
-                    Reservas
-                    <i class="right fas fa-angle-left"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                    {{-- Autos de Arriendo --}}
-                    <li class="nav-item">
-                    <a
-                        href="{{ route('rental-cars.index') }}"
-                        class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}"
-                    >
-                        <i class="fas fa-car nav-icon"></i>
-                        <p>Autos de Arriendo</p>
+                <li class="nav-item has-treeview {{ request()->is('reservations*') || request()->is('rental-cars*') || request()->is('registro-renta*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('reservations*') || request()->is('rental-cars*') || request()->is('registro-renta*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-calendar-days"></i>
+                        <p>Reservas<i class="right fas fa-angle-left"></i></p>
                     </a>
-                    </li>
-                    {{-- Listado de Reservas Web --}}
-                    <li class="nav-item">
-                    <a
-                        href="{{ route('reservations.index') }}"
-                        class="nav-link {{ request()->routeIs('reservations.*') ? 'active' : '' }}"
-                    >
-                        <i class="fas fa-list nav-icon"></i>
-                        <p>Listado de Reservas</p>
-                    </a>
-                    </li>
-                    <li class="nav-item">
-                    <a
-                        href="{{ route('registro-renta.index') }}"
-                        class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}"
-                    >
-                        <i class="fas fa-list nav-icon"></i>
-                        <p>Listado de Arriendos</p>
-                    </a>
-                    </li>
-                </ul>
+                    <ul class="nav nav-treeview">
+                        {{-- Autos de Arriendo --}}
+                        <li class="nav-item">
+                            <a href="{{ route('rental-cars.index') }}"
+                            class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}">
+                                <i class="fas fa-car nav-icon"></i>
+                                <p>Autos de Arriendo</p>
+                            </a>
+                        </li>
+                        
+                        {{-- Listado de Reservas Web --}}
+                        <li class="nav-item">
+                            <a href="{{ route('reservations.index') }}"
+                            class="nav-link {{ request()->routeIs('reservations.*') ? 'active' : '' }}">
+                                <i class="fas fa-list nav-icon"></i>
+                                <p>Listado de Reservas</p>
+                            </a>
+                        </li>
+                        
+                        {{-- Listado de Arriendos --}}
+                        <li class="nav-item">
+                            <a href="{{ route('registro-renta.index') }}"
+                            class="nav-link {{ request()->routeIs('registro-renta.*') ? 'active' : '' }}">
+                                <i class="fas fa-list nav-icon"></i>
+                                <p>Listado de Arriendos</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 @endcan
                
@@ -113,10 +107,8 @@
 
                 {{-- Ventas --}}
                 @can('ventas.access')
-                <li class="nav-item has-treeview 
-                    {{ request()->is('pagos*') || request()->is('analiticas*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link 
-                        {{ request()->is('pagos*') || request()->is('analiticas*') ? 'active' : '' }}">
+                <li class="nav-item has-treeview {{ request()->is('pagos*') || request()->is('analiticas*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('pagos*') || request()->is('analiticas*') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-wallet"></i>
                         <p>
                             Ventas
@@ -126,14 +118,14 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('payment.index') }}"
-                            class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('payment.*') ? 'active' : '' }}">
                                 <i class="fas fa-store nav-icon"></i>
                                 <p>Pagos</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('analiticas') }}"
-                            class="nav-link {{ request()->routeIs('analiticas') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('analiticas*') ? 'active' : '' }}">
                                 <i class="fas fa-chart-simple nav-icon"></i>
                                 <p>Analíticas</p>
                             </a>
@@ -142,34 +134,47 @@
                 </li>
 
                 @endcan
-                {{-- Costos de Servicios Básicos --}}
-                @can('cost_basic_service.access')
-                <li class="nav-item has-treeview {{ request()->is('costos*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('costos*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-money-bill-wave"></i>
-                        <p>
-                            Costos y Servicios
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('cost_basic_service.index') }}" 
-                               class="nav-link {{ request()->is('costos*') ? 'active' : '' }}">
-                               <i class="fa-solid fa-money-bill"></i>
-                               <p>Ingresos</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('cost_basic_service.show') }}" 
-                               class="nav-link {{ request()->routeIs('cost_basic_service.show') ? 'active' : '' }}">
-                               <i class="fa-solid fa-bag-shopping"></i>
-                               <p>Costos</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                @endcan
+{{-- Costos de Servicios Básicos --}}
+@can('cost_basic_service.access')
+<li class="nav-item has-treeview 
+    {{ 
+        request()->is('cost') ||
+        request()->routeIs('cost_basic_service.index') ||
+        request()->routeIs('cost_basic_service.show') ||
+        request()->routeIs('cost_basic_service.create') ||
+        request()->routeIs('cost_basic_service.edit') 
+        ? 'menu-open' : '' 
+    }}">
+    <a href="#" class="nav-link 
+        {{ 
+            request()->is('cost') ||
+            request()->routeIs('cost_basic_service.index') ||
+            request()->routeIs('cost_basic_service.show') ||
+            request()->routeIs('cost_basic_service.create') ||
+            request()->routeIs('cost_basic_service.edit') 
+            ? 'active' : '' 
+        }}">
+        <i class="nav-icon fas fa-money-bill-wave"></i>
+        <p>Costos y Servicios<i class="right fas fa-angle-left"></i></p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('cost_basic_service.index') }}" 
+               class="nav-link {{ request()->routeIs('cost_basic_service.index') ? 'active' : '' }}">
+               <i class="fa-solid fa-money-bill"></i>
+               <p>Ingresos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('cost_basic_service.show') }}" 
+               class="nav-link {{ request()->routeIs('cost_basic_service.show') ? 'active' : '' }}">
+               <i class="fa-solid fa-bag-shopping"></i>
+               <p>Costos</p>
+            </a>
+        </li>
+    </ul>
+</li>
+@endcan
 
                 {{-- Mantenciones --}}
                 @can('mantenimiento.access')

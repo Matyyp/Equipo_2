@@ -145,7 +145,7 @@
             {{-- Quiénes somos --}}
             @if ($navbar->about_us_active)
             <li class="w-full md:w-auto">
-                <a href="#quienes-somos" class="block w-full text-left px-4 py-2 hover:text-orange-400">
+                <a href="#about-us" class="block w-full text-left px-4 py-2 hover:text-orange-400">
                     {{ $navbar->about_us }}
                 </a>
             </li>

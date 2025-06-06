@@ -31,7 +31,7 @@ class RentalCarController extends Controller
                     : '<span class="border border-secondary text-secondary px-2 py-1 rounded">Inactivo</span>';
             })
             ->addColumn('sucursal', fn($c) => optional($c->branchOffice)->name_branch_offices ?: '—')
-            ->addColumn('price', fn($c) => '$'.number_format($c->price_per_day, 2, ',', '.'))
+            ->addColumn('price', fn($c) => '$'.number_format($c->price_per_day, 0, ',', '.'))
             ->addColumn('acciones', function($c) {
                 $v = route('rental-cars.show',   $c);
                 $e = route('rental-cars.edit',   $c);
@@ -40,15 +40,15 @@ class RentalCarController extends Controller
                 $method = method_field('DELETE');
 
                 return <<<HTML
-                <a href="{$v}" class="btn btn-outline-secondary btn-sm text-dark me-1" title="Ver">
+                <a href="{$v}" class="btn btn-outline-info btn-sm text-info" title="Ver">
                     <i class="fas fa-eye"></i>
                 </a>
-                <a href="{$e}" class="btn btn-outline-secondary btn-sm text-dark me-1" title="Editar">
+                <a href="{$e}" class="btn btn-outline-info btn-sm text-info" title="Editar">
                     <i class="fas fa-pen"></i>
                 </a>
                 <form action="{$d}" method="POST" style="display:inline" onsubmit="return confirm('¿Eliminar?')">
                     {$token}{$method}
-                    <button class="btn btn-outline-secondary btn-sm text-dark" title="Eliminar">
+                    <button class="btn btn-outline-info btn-sm text-info" title="Eliminar">
                     <i class="fas fa-trash"></i>
                     </button>
                 </form>

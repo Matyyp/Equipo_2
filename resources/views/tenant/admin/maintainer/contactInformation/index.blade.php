@@ -2,7 +2,14 @@
 
 @section('title', 'Información de Contacto')
 @section('page_title', 'Listado de Información de Contacto')
-
+@push('styles')
+<style>
+  .btn-outline-info.text-info:hover,
+.btn-outline-info.text-info:focus {
+  color: #fff !important;
+}
+</style>
+@endpush
 @section('content')
 <div class="container-fluid">
   <div class="card shadow-sm">
@@ -42,7 +49,7 @@
                   <td>{{ $item->data_contact }}</td>
                   <td class="text-center">
                     <a href="{{ route('informacion_contacto.edit', $item->id_contact_information) }}"
-                       class="btn btn-outline-warning btn-sm text-dark" title="Editar">
+                       class="btn btn-outline-info btn-sm text-info" title="Editar">
                       <i class="fas fa-pen"></i>
                     </a>
                   </td>
