@@ -7,7 +7,7 @@
                 src="{{ $tenantLogo }}"
                 alt="{{ $tenantCompanyName ?? config('app.name') }} logo"
                 class="brand-image" 
-                style="display:block; margin:0 auto; max-height:50px; width:auto;"
+                style="display:block; margin:0 auto; max-height:100px; width:auto;"
             />
         @else
             <span class="brand-text font-weight-light">
