@@ -36,6 +36,12 @@
                     <p class="form-control-plaintext border-bottom pb-2">{{ $register->client_name }}</p>
                   </div>
                 </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="font-weight-bold text-muted small">Correo electronico</label>
+                    <p class="form-control-plaintext border-bottom pb-2">{{ $register->client_email }}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -64,6 +70,12 @@
                   <div class="form-group">
                     <label class="font-weight-bold text-muted small">Sucursal</label>
                     <p class="form-control-plaintext border-bottom pb-2">{{ optional($register->rentalCar->branchOffice)->name_branch_offices }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="font-weight-bold text-muted small">Precio por dia</label>
+                    <p class="form-control-plaintext border-bottom pb-2">{{ optional($register->rentalCar->price_per_day)->name_price_per_day }}</p>
                   </div>
                 </div>
               </div>

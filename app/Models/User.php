@@ -42,6 +42,22 @@ class User extends Authenticatable
     {
         return $this->belongsTo(BranchOffice::class, 'id_branch_office');
     }
+    public function userRatings()
+    {
+        return $this->hasMany(UserRating::class);
+    }
+
+    public function averageRating()
+    {
+        return $this->hasMany(\App\Models\UserRating::class, 'user_id')
+                    ->avg('stars');
+    }
+
+    public function averageRatingFormatted()
+    {
+        $avg = $this->averageRating();
+        return $avg !== null ? number_format($avg, 1) : null;
+    }
 
 
     /**

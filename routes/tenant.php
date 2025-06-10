@@ -39,6 +39,7 @@ use App\Http\Controllers\AboutUsController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\ServiceLandingController;
 use App\Http\Controllers\ContainerImageLandingController;
+use App\Http\Controllers\UserRatingController;
 
 
 use App\Http\Controllers\ReservationController;
@@ -207,23 +208,18 @@ Route::middleware([
         ->name('rental-cars.data');
         Route::resource('rental-cars', RentalCarController::class);
         
-        // Endpoint DataTables
         Route::get('reservations/data', [ReservationController::class, 'data'])
             ->name('reservations.data');
 
-        // Listar todas las reservas web
         Route::get('reservations', [ReservationController::class, 'index'])
             ->name('reservations.index');
 
-        // Confirmar una reserva (genera rent_register)
         Route::post('reservations/{reservation}/confirm', [ReservationController::class, 'confirm'])
             ->name('reservations.confirm');
 
-        // Cancelar una reserva
         Route::post('reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])
             ->name('reservations.cancel');
 
-        //modulo de arriendos
         Route::prefix('reservas')->name('reservas.')->group(function () {
             Route::post('{reservation}/confirmar', [ReservationController::class, 'confirm'])->name('confirmar');
             Route::post('{reservation}/cancelar', [ReservationController::class, 'cancel'])->name('cancelar');
@@ -234,6 +230,14 @@ Route::middleware([
 
         Route::get('registro-renta/data', [RegisterRentController::class, 'data'])->name('registro_renta.data');
         Route::resource('registro-renta', RegisterRentController::class);
+        Route::resource('user_ratings', UserRatingController::class)->only(['store']);
+        Route::get('/user_ratings/{user}', [UserRatingController::class, 'getByUser']);
+        Route::post('registro-renta', [RegisterRentController::class, 'store'])->name('registro-renta.store');
+        Route::get('registro-renta/fechas-ocupadas/{id}', [RegisterRentController::class, 'fechasOcupadas']);
+        Route::get('/buscar-cliente', [RegisterRentController::class, 'buscarClientePorCorreo']);
+
+
+
     });
     
     //Landing

@@ -39,4 +39,8 @@ class RegisterRent extends Model
     {
         return $this->belongsTo(Reservation::class);
     }
+    public function userRatings()
+    {
+        return $this->hasMany(UserRating::class, 'register_rent_id');
+    }
 }

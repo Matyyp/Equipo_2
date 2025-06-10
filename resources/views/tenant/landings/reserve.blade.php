@@ -8,10 +8,21 @@
 @endpush
 @section('content')
 @php
-    // Obtener rangos de reservas para JS
-    $reservedRanges = $car->reservations()
+    use App\Models\RegisterRent;
+
+    $reservations = $car->reservations()
         ->whereIn('status', ['pending', 'confirmed'])
         ->get(['start_date', 'end_date']);
+
+    $registerRents = RegisterRent::where('rental_car_id', $car->id)
+        ->get(['start_date', 'end_date']);
+
+    $reservedRanges = $reservations->concat($registerRents)->map(function ($item) {
+        return [
+            'start_date' => \Carbon\Carbon::parse($item->start_date)->format('Y-m-d'),
+            'end_date' => \Carbon\Carbon::parse($item->end_date)->format('Y-m-d'),
+        ];
+    });
 @endphp
 
 <div class="container mx-auto py-12 px-4">
