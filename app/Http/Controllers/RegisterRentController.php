@@ -25,9 +25,19 @@ class RegisterRentController extends Controller
             })
             ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
             ->addColumn('acciones', function ($r) {
-                return '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Ver">
+                $showBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info mr-1" title="Ver">
                     <i class="fas fa-eye"></i>
                 </a>';
+                $accidentBtn = '';
+                if ($r->rentalCar) {
+                    // Ahora pasamos id_rent (el id del registro de arriendo)
+                    $accidentUrl = route('accidente.create', ['id_rent' => $r->id]);
+                    $accidentBtn = '<a href="' . $accidentUrl . '" class="btn btn-outline-info btn-sm text-info" title="Registrar Accidente">
+                        <i class="fas fa-car-crash"></i>
+                    </a>';
+                }
+                // Separación mínima entre botones (solo me-1 en el primero)
+                return $showBtn . $accidentBtn;
             })
             ->rawColumns(['acciones'])
             ->toJson();

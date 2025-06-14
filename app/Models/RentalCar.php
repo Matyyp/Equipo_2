@@ -38,4 +38,9 @@ class RentalCar extends Model
     {
         return $this->hasMany(Reservation::class, 'car_id', 'id');
     }
+
+    public function accidents()
+    {
+        return $this->hasMany(\App\Models\Accident::class, 'rental_car_id');
+    }
 }
