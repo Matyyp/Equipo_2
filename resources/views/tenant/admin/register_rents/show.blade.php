@@ -42,6 +42,12 @@
                     <p class="form-control-plaintext border-bottom pb-2">{{ $register->client_email }}</p>
                   </div>
                 </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="font-weight-bold text-muted small">Número telefónico</label>
+                    <p class="form-control-plaintext border-bottom pb-2">{{ $register->number_phone }}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -75,7 +81,9 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label class="font-weight-bold text-muted small">Precio por dia</label>
-                    <p class="form-control-plaintext border-bottom pb-2">{{ optional($register->rentalCar->price_per_day)->name_price_per_day }}</p>
+                    <p class="form-control-plaintext border-bottom pb-2">
+                      ${{ number_format(optional($register->rentalCar)->price_per_day, 0, ',', '.') }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -129,12 +137,25 @@
               </h6>
             </div>
             <div class="card-body">
-              <div class="form-group">
-                <label class="font-weight-bold text-muted small">Monto Pagado</label>
-                <p class="h5">
-                  ${{ number_format($register->payment, 0, ',', '.') }}
-                </p>
-                <small class="text-muted">Valor total del arriendo</small>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="font-weight-bold text-muted small">Monto Pagado</label>
+                    <p class="h5">
+                      ${{ number_format($register->payment, 0, ',', '.') }}
+                    </p>
+                    <small class="text-muted">Valor total del arriendo</small>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="font-weight-bold text-muted small">Monto Pagado</label>
+                    <p class="h5">
+                      ${{ number_format($register->guarantee, 0, ',', '.') }}
+                    </p>
+                    <small class="text-muted">Garantia</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

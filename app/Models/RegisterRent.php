@@ -26,7 +26,8 @@ class RegisterRent extends Model
         'km_exit',
         'client_rut',     
         'client_name',      
-        'client_email',       
+        'client_email',   
+        'number_phone',    
     ];
 
 

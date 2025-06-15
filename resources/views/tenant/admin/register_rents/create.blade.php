@@ -91,6 +91,11 @@
             </div>
 
             <div class="form-group">
+              <label for="number_phone">Teléfono</label>
+              <input type="text" name="number_phone" id="number_phone" class="form-control" placeholder="Ej: +56 9 1234 5678">
+            </div>
+
+            <div class="form-group">
               <label for="address">Dirección</label>
               <input type="text" name="address" id="address" class="form-control" placeholder="Calle falsa 123" required>
             </div>
@@ -168,7 +173,7 @@
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
-            <button type="submit" class="btn btn-primary">
+            <button type="button" id="confirmar-btn" class="btn btn-primary">
               Registrar
             </button>
           </div>
@@ -180,6 +185,7 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
   // RUT Formatter
@@ -300,6 +306,26 @@
       document.getElementById('total_price').value = '';
     }
   }
+</script>
+
+<script>
+  document.getElementById('confirmar-btn').addEventListener('click', function (e) {
+    Swal.fire({
+      title: '¿Confirmar Registro de Arriendo?',
+      html: 'Los datos ingresados se usarán en el contrato y <b>no podrán modificarse</b> posteriormente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, registrar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.querySelector('form').submit();
+      }
+    });
+  });
 </script>
 @endpush
 
