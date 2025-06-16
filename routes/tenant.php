@@ -90,6 +90,9 @@ Route::middleware([
         //Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
 
         //Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
+        Route::get('dashboard/rents/data', [DashboardController::class, 'getRentsDataDashboard'])->name('dashboard.rents.data');
+
+
     });
     
     Route::middleware('auth')->group(function () {
@@ -227,7 +230,9 @@ Route::middleware([
             Route::get('{reservation}/crear-registro-renta', [ReservationController::class, 'crearRegistroRenta'])->name('crearRegistroRenta');
             Route::post('{reservation}/guardar-registro-renta', [ReservationController::class, 'guardarRegistroRenta'])->name('guardarRegistroRenta');
         });
-
+    });
+    // Modulo de arriendos
+    Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
         Route::get('registro-renta/data', [RegisterRentController::class, 'data'])->name('registro_renta.data');
         Route::resource('registro-renta', RegisterRentController::class);
         Route::resource('user_ratings', UserRatingController::class)->only(['store']);
@@ -235,9 +240,7 @@ Route::middleware([
         Route::post('registro-renta', [RegisterRentController::class, 'store'])->name('registro-renta.store');
         Route::get('registro-renta/fechas-ocupadas/{id}', [RegisterRentController::class, 'fechasOcupadas']);
         Route::get('/buscar-cliente', [RegisterRentController::class, 'buscarClientePorCorreo']);
-
-
-
+        Route::put('registro-renta/completar/{id}', [RegisterRentController::class, 'completar'])->name('registro-renta.completar');
     });
     
     //Landing

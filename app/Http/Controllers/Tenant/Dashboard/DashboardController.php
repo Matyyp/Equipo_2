@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\RegisterRent;
+use Yajra\DataTables\Facades\DataTables;
 
 class DashboardController extends Controller
 {
@@ -94,4 +96,29 @@ public function chartData(Request $request): JsonResponse
         ]
     ]);
 }
+public function getRentsDataDashboard()
+{
+    $query = RegisterRent::with(['rentalCar.brand', 'rentalCar.model', 'rentalCar.branchOffice'])
+        ->where('status', 'en_progreso'); // solo mostrar en progreso en el dashboard
+
+    return datatables()->eloquent($query)
+        ->addColumn('auto', function ($r) {
+            $brand = optional($r->rentalCar->brand)->name_brand ?? 'N/A';
+            $model = optional($r->rentalCar->model)->name_model ?? '';
+            return trim("{$brand} {$model}");
+        })
+        ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
+        ->addColumn('acciones', function ($r) {
+            $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Ver">
+                <i class="fas fa-eye"></i>
+            </a>';
+            return $verBtn;
+        })
+        ->addColumn('status', fn($r) => $r->status === 'completado' 
+            ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
+            : '<span class="border border-warning text-warning px-2 py-1 rounded">En Progreso</span>')
+        ->rawColumns(['acciones', 'status'])
+        ->toJson();
+}
+
 }

@@ -33,17 +33,22 @@ class RegisterRentController extends Controller
                     <i class="fas fa-eye"></i>
                 </a>';
 
-                if ($r->userRatings->isEmpty()) {
-                    $reseñaBtn = '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" title="Añadir Reseña">
+                $reseñaBtn = $r->userRatings->isEmpty()
+                    ? '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" title="Añadir Reseña">
                         <i class="fas fa-star"></i>
-                    </button>';
-                } else {
-                    $reseñaBtn = '';
-                }
+                    </button>' : '';
 
-                return $verBtn . $reseñaBtn;
+                $completarBtn = $r->status === 'en_progreso'
+                    ? '<button class="btn btn-outline-info btn-sm text-info ml-1 completar-btn" data-id="' . $r->id . '" data-toggle="modal" data-target="#completarModal">
+                        <i class="fas fa-check-circle"></i>
+                    </button>' : '';
+
+                return $verBtn . $reseñaBtn . $completarBtn;
             })
-            ->rawColumns(['acciones'])
+            ->addColumn('status', fn($r) => $r->status === 'completado' 
+                ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
+                : '<span class="border border-warning text-warning px-2 py-1 rounded">En Progreso</span>')
+            ->rawColumns(['acciones', 'status'])
             ->toJson();
     }
 
@@ -207,6 +212,26 @@ class RegisterRentController extends Controller
         }
 
         return response()->json(['found' => false]);
+    }
+
+    public function completar(Request $request, $id)
+    {
+        $request->validate([
+            'km_llegada' => 'required|integer|min:0',
+        ]);
+
+        $renta = RegisterRent::findOrFail($id);
+        $renta->status = 'completado';
+        $renta->save();
+
+        // Actualizar kilometraje del auto
+        $car = $renta->rentalCar;
+        if ($car) {
+            $car->km = $request->km_llegada;
+            $car->save();
+        }
+
+        return redirect()->route('registro-renta.index')->with('success', 'Arriendo completado y kilometraje actualizado.');
     }
 
 }

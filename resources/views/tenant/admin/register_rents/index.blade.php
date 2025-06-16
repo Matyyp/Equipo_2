@@ -69,6 +69,7 @@
               <th>Sucursal</th>
               <th>Desde</th>
               <th>Hasta</th>
+              <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -130,6 +131,32 @@
     </form>
   </div>
 </div>
+<!-- Modal Completar Renta -->
+<div class="modal fade" id="completarModal" tabindex="-1" aria-labelledby="completarModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="form-completar-renta" method="POST">
+      @csrf
+      @method('PUT')
+      <input type="hidden" name="renta_id" id="renta_id">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary text-white">
+          <h5 class="modal-title" id="completarModalLabel">Completar Arriendo</h5>
+          <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Kilómetros de llegada</label>
+            <input type="number" name="km_llegada" class="form-control" required min="0">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Completar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
 
 @endsection
@@ -154,6 +181,7 @@ $(function(){
       { data: 'sucursal', name: 'rentalCar.branchOffice.name_branch_offices' },
       { data: 'start_date', name: 'start_date' },
       { data: 'end_date', name: 'end_date' },
+      { data: 'status', name: 'status' },
       { data: 'acciones', name: 'acciones', orderable: false, searchable: false, className: 'text-center' },
     ],
     order: [[4, 'desc']],
@@ -210,6 +238,14 @@ $(document).on('click', 'button[data-target="#ratingModal"]', function () {
       starsInput.value = 0;
       criterioGroup.classList.add('d-none');
     });
+  });
+</script>
+
+<script>
+  $(document).on('click', '.completar-btn', function () {
+    let id = $(this).data('id');
+    $('#renta_id').val(id);
+    $('#form-completar-renta').attr('action', '/registro-renta/completar/' + id);
   });
 </script>
 
