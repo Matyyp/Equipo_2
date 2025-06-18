@@ -1,6 +1,5 @@
 <?php
 
-// app/Http/Controllers/ReservationController.php
 namespace App\Http\Controllers;
 
 use App\Models\RentalCar;
@@ -29,9 +28,18 @@ class ReservationController extends Controller
         ->addColumn('rut', fn($r) => $r->rut)
 
         ->addColumn('cliente', function($r) {
-            $name  = e($r->user->name);
-            $email = e($r->user->email);
-            return "{$name}<br><small class=\"text-muted\">{$email}</small>";
+            $user = $r->user;
+            $name = e($user->name);
+            $email = e($user->email);
+            $rating = $user->averageRatingFormatted();
+
+            if ($rating) {
+                $stars = '<i class="fas fa-star text-info"></i> <span class="text-dark">' . $rating . '</span>';
+            } else {
+                $stars = '<span class="text-muted">Sin calificación</span>';
+            }
+
+            return "{$name} <span class=\"ms-2\">{$stars}</span><br><small class=\"text-muted\">{$email}</small>";
         })
 
         ->addColumn('auto', fn($r) => $r->car->brand->name_brand.' '.$r->car->model->name_model)
