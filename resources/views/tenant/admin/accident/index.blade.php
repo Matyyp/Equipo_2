@@ -49,8 +49,30 @@
       background: white;
       margin: auto;
     }
+    /* Botón volver abajo de la paginación, dentro de la tabla */
+    .datatable-return-btn-wrapper {
+      text-align: right;
+      margin-top: 1rem;
+      padding-right: 1.5rem;
+    }
+    .btn-volver {
+      background: #6c757d !important; /* Gris de encabezado */
+      color: #fff !important;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 18px;
+      font-size: 14px;
+      transition: background 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-volver:hover, .btn-volver:focus {
+      background: #565e64 !important;
+      color: #fff !important;
+    }
   </style>
 @endpush
+
 @push('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -65,6 +87,7 @@
   });
 </script>
 @endpush
+
 @section('content')
 <div class="container-fluid">
 @if(session('success'))
@@ -103,6 +126,14 @@
             </tr>
         </thead>
         </table>
+        <!-- Botón volver abajo del paginado, dentro de la tabla -->
+        <div class="datatable-return-btn-wrapper">
+          <a 
+            href="{{ route('rental-cars.index') }}" 
+            class="btn btn-volver">
+            Volver
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -150,23 +181,40 @@
         responsive: true
       });
 
-      // Marcar como completado
+      // Marcar como completado con SweetAlert2
       $(document).on('click', '.btn-mark-complete', function() {
         var id = $(this).data('id');
-        if(confirm('¿Marcar este accidente como completado?')) {
-          $.ajax({
-            url: '/accidente/' + id + '/complete',
-            type: 'POST',
-            data: {
-              _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-              if(response.success) {
-                $('#accidents-table').DataTable().ajax.reload(null, false);
+        Swal.fire({
+          title: '¿Marcar como completado?',
+          text: "¿Seguro que deseas marcar este accidente como completado?",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#17a2b8',
+          cancelButtonColor: '#888',
+          confirmButtonText: 'Sí, marcar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '/accidente/' + id + '/complete',
+              type: 'POST',
+              data: {
+                _token: '{{ csrf_token() }}'
+              },
+              success: function(response) {
+                if(response.success) {
+                  $('#accidents-table').DataTable().ajax.reload(null, false);
+                  Swal.fire({
+                    icon: 'success',
+                    title: '¡Completado!',
+                    text: 'El accidente ha sido marcado como completado.',
+                    confirmButtonColor: '#17a2b8'
+                  });
+                }
               }
-            }
-          });
-        }
+            });
+          }
+        });
       });
 
       // SweetAlert2 para eliminar

@@ -200,6 +200,7 @@ Route::middleware([
         Route::resource('pagos', PaymentRecordController::class)->names('payment');
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
+        Route::get('/analiticas/chart-line-data', [DashboardController::class, 'chartLineData'])->name('analiticas.chart.line.data');
     });
     // Módulo Costos de Servicios Básicos 
     Route::middleware(['auth', 'permission:cost_basic_service.access'])->group(function () {
