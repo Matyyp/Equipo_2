@@ -7,7 +7,7 @@
 <div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white">
-      <h5 class="mb-0">Editar Auto de Arriendo</h5>
+      <h5 class="mb-0">Editar Vehículo de Arriendo</h5>
     </div>
     <div class="card-body">
       <form action="{{ route('rental-cars.update', $rentalCar) }}" method="POST" enctype="multipart/form-data">

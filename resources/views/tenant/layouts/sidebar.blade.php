@@ -65,29 +65,20 @@
                 </li>
                 @endcan
 
-                {{-- Reservas --}}
+                {{-- Arriendos --}}
                 @can('reservas.access')
-                <li class="nav-item has-treeview {{ request()->is('reservations*') || request()->is('rental-cars*') || request()->is('registro-renta*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('reservations*') || request()->is('rental-cars*') || request()->is('registro-renta*') ? 'active' : '' }}">
+                <li class="nav-item has-treeview {{request()->is('rental-cars*') || request()->is('registro-renta*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{request()->is('rental-cars*') || request()->is('registro-renta*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-days"></i>
-                        <p>Reservas<i class="right fas fa-angle-left"></i></p>
+                        <p>Arriendo vehículos<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
-                        {{-- Autos de Arriendo --}}
+                        {{-- Vehículos de Arriendo --}}
                         <li class="nav-item">
                             <a href="{{ route('rental-cars.index') }}"
                             class="nav-link {{ request()->routeIs('rental-cars.*') ? 'active' : '' }}">
                                 <i class="fas fa-car nav-icon"></i>
-                                <p>Autos de Arriendo</p>
-                            </a>
-                        </li>
-                        
-                        {{-- Listado de Reservas Web --}}
-                        <li class="nav-item">
-                            <a href="{{ route('reservations.index') }}"
-                            class="nav-link {{ request()->routeIs('reservations.*') ? 'active' : '' }}">
-                                <i class="fas fa-list nav-icon"></i>
-                                <p>Listado de Reservas</p>
+                                <p>Vehículos de Arriendo</p>
                             </a>
                         </li>
                         
@@ -99,6 +90,27 @@
                                 <p>Listado de Arriendos</p>
                             </a>
                         </li>
+                    </ul>
+                </li>
+                @endcan
+
+                {{-- Reservas --}}
+                @can('reservas.access')
+                <li class="nav-item has-treeview {{ request()->is('reservations*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('reservations*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-calendar-days"></i>
+                        <p>Reservas web<i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        {{-- Listado de Reservas Web --}}
+                        <li class="nav-item">
+                            <a href="{{ route('reservations.index') }}"
+                            class="nav-link {{ request()->routeIs('reservations.*') ? 'active' : '' }}">
+                                <i class="fas fa-list nav-icon"></i>
+                                <p>Listado de Reservas</p>
+                            </a>
+                        </li>
+
                     </ul>
                 </li>
                 @endcan
