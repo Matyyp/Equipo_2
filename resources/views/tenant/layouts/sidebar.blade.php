@@ -177,15 +177,7 @@
 @endcan
 
                 {{-- Mantenciones --}}
-                @can('mantenimiento.access')
-                <li class="nav-item has-treeview {{ request()->is('mantenimiento*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('mantenimiento*') ? 'active' : '' }}">
-                        <i class="nav-icon fa-solid fa-screwdriver-wrench"></i>
-                        <p>Mant. Vehículos<i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview"></ul>
-                </li>
-                @endcan
+
                  @can('landing.access')
                 <li class="nav-item has-treeview 
                     {{ request()->is('navbar*') || 
@@ -267,6 +259,36 @@
                     </ul>
                 </li>
                 @endcan
+@can('landing.access')
+<li class="nav-item has-treeview 
+    {{ request()->is('maintenance/type*') || request()->is('maintenance/entries*') ? 'menu-open' : '' }}">
+    
+    <a href="#" class="nav-link 
+        {{ request()->is('maintenance/type*') || request()->is('maintenance/entries*') ? 'active' : '' }}">
+        
+        <i class="nav-icon fas fa-tools"></i>
+        <p>
+            Mantenciones
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('maintenance.type.index') }}" class="nav-link {{ request()->routeIs('maintenance.type.*') ? 'active' : '' }}">
+                <i class="fas fa-cogs nav-icon"></i>
+                <p>Tipo de Mantención</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('maintenance.entries.index') }}" class="nav-link {{ request()->routeIs('maintenance.entries.*') ? 'active' : '' }}">
+                <i class="fas fa-clipboard-list nav-icon"></i>
+                <p>Registro de Mantenciones</p>
+            </a>
+        </li>
+    </ul>
+</li>
+@endcan
 
 
                 {{-- Administración --}}

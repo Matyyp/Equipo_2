@@ -6,13 +6,22 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use App\Services\MaintenanceAlertService;
 class DashboardController extends Controller
 {
     public function index()
     {
         return view('tenant.admin.sale.analytics');
     }
+public function mantencionesAlert(MaintenanceAlertService $service)
+{
+    $alertData = $service->getUpcoming();
+
+    return view('tenant.admin.dashboard', [
+        'mantencionesProximas' => $alertData['entries'],
+        'mantencionesTotal' => $alertData['total'],
+    ]);
+}
 
 public function chartData(Request $request): JsonResponse
 {

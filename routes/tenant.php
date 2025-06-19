@@ -57,6 +57,7 @@ use App\Http\Controllers\RegisterRentController;
 |
 */
 
+
 Route::middleware([
     'web',
     InitializeTenancyByDomain::class,
@@ -81,15 +82,12 @@ Route::middleware([
 
     });
 
-    Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
-        Route::get('/dashboard', function () {
-            return view('tenant.admin.dashboard');
-        })->name('dashboard');
-        // Dashboard principal vía controlador
-        //Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
-
-        //Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
-    });
+Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'mantencionesAlert'])->name('dashboard');
+    // Dashboard principal vía controlador
+    //Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
+    //Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
+});
     
     Route::middleware('auth')->group(function () {
         Route::get   ('/profile', [ProfileController::class, 'edit'   ])->name('profile.edit');
@@ -318,7 +316,51 @@ Route::middleware([
         // Agrega esta ruta adicional para DataTables
 
     });
+    // Módulo de mantenimiento
+    Route::middleware(['auth', 'permission:landing.access'])->prefix('maintenance')->group(function () {
+        Route::post('entries/{entry}/mark-unavailable', [\App\Http\Controllers\MaintenanceController::class, 'markUnavailable'])
+        ->name('maintenance.entries.mark-unavailable');
+        Route::put('entries/{entry}/complete', [\App\Http\Controllers\MaintenanceController::class, 'markCompleted'])
+            ->name('maintenance.entries.complete');
+        Route::post('entries/schedule', [\App\Http\Controllers\MaintenanceController::class, 'storeScheduled'])
+            ->name('maintenance.entries.schedule');
+        Route::post('entries/interrupt', [\App\Http\Controllers\MaintenanceController::class, 'interruptScheduled'])
+            ->name('maintenance.entries.interrupt');
 
+        // 📌 Tipos de mantención (maintenance_types)
+        Route::get('type/data', [\App\Http\Controllers\MaintenanceTypeController::class, 'data'])
+            ->name('maintenance.type.data');
+
+        Route::resource('type', \App\Http\Controllers\MaintenanceTypeController::class)
+            ->names([
+                'index'   => 'maintenance.type.index',
+                'create'  => 'maintenance.type.create',
+                'store'   => 'maintenance.type.store',
+                'edit'    => 'maintenance.type.edit',
+                'update'  => 'maintenance.type.update',
+                'destroy' => 'maintenance.type.destroy',
+            ]);
+
+        // 📌 Mantenciones (entries / maintenances)
+        Route::get('entries/data', [\App\Http\Controllers\MaintenanceController::class, 'data'])
+            ->name('maintenance.entries.data');
+
+        Route::resource('entries', \App\Http\Controllers\MaintenanceController::class)
+            ->names([
+
+                'edit'    => 'maintenance.entries.edit',
+                'update'  => 'maintenance.entries.update',
+
+            ]);
+            Route::resource('entries', \App\Http\Controllers\MaintenanceController::class)
+        ->parameters(['entries' => 'maintenance'])
+            ->names([
+                'index'   => 'maintenance.entries.index',
+                'create'  => 'maintenance.entries.create',
+                'store'   => 'maintenance.entries.store',
+                'destroy' => 'maintenance.entries.destroy',
+            ]);
+    });
 
     // CRUD Usuarios
     Route::middleware(['auth', 'permission:users.index'])->group(function () {
