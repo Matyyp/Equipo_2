@@ -26,7 +26,8 @@ class RegisterRent extends Model
         'km_exit',
         'client_rut',     
         'client_name',      
-        'client_email',       
+        'client_email',   
+        'number_phone',    
     ];
 
 
@@ -38,5 +39,9 @@ class RegisterRent extends Model
     public function reservation()
     {
         return $this->belongsTo(Reservation::class);
+    }
+    public function userRatings()
+    {
+        return $this->hasMany(UserRating::class, 'register_rent_id');
     }
 }

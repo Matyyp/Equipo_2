@@ -50,7 +50,13 @@
 
   <div class="card ">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div><i class="fas fa-file-signature"></i> Registros de Arriendo</div>
+        <div>
+          <i class="fas fa-file-signature"></i> Registros de Arriendo
+          <a href="{{ route('registro-renta.create') }}"
+            style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+            <i class="fas fa-plus mr-1"></i> Ingresar un arriendo
+          </a>
+        </div>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -63,6 +69,7 @@
               <th>Sucursal</th>
               <th>Desde</th>
               <th>Hasta</th>
+              <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -71,6 +78,87 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Reseña -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="{{ route('user_ratings.store') }}">
+      @csrf
+      <input type="hidden" name="register_rent_id" id="rating_rent_id">
+      <input type="hidden" name="stars" id="selected-stars" value="0">
+      
+      <div class="modal-content">
+        <div class="modal-header bg-secondary text-white">
+          <h5 class="modal-title" id="ratingModalLabel">Añadir Reseña</h5>
+          <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+
+          <!-- Estrellas como íconos -->
+          <div class="form-group">
+            <label>Estrellas</label>
+            <div id="star-rating" class="mb-2">
+              @for ($i = 1; $i <= 5; $i++)
+                <i class="fas fa-star text-muted star-icon" data-value="{{ $i }}" style="cursor:pointer; font-size: 1.5rem;"></i>
+              @endfor
+            </div>
+          </div>
+
+          <!-- Criterio (solo se muestra si estrellas < 5) -->
+          <div class="form-group mt-2 d-none" id="criterio-group">
+            <label>Criterio</label>
+            <select name="criterio" class="form-control" id="criterio-select">
+              <option value="">Seleccione un criterio</option>
+              <option value="Impuntual">Impuntual</option>
+              <option value="Sin respeto">Sin respeto</option>
+              <option value="Mal uso del auto">Mal uso del auto</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+
+          <!-- Comentario -->
+          <div class="form-group mt-2">
+            <label>Comentario</label>
+            <textarea name="comentario" class="form-control" rows="3"></textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Reseña</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Modal Completar Renta -->
+<div class="modal fade" id="completarModal" tabindex="-1" aria-labelledby="completarModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="form-completar-renta" method="POST">
+      @csrf
+      @method('PUT')
+      <input type="hidden" name="renta_id" id="renta_id">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary text-white">
+          <h5 class="modal-title" id="completarModalLabel">Completar Arriendo</h5>
+          <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Kilómetros de llegada</label>
+            <input type="number" name="km_llegada" class="form-control" required min="0">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Completar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 @endsection
 
 @push('scripts')
@@ -93,6 +181,7 @@ $(function(){
       { data: 'sucursal', name: 'rentalCar.branchOffice.name_branch_offices' },
       { data: 'start_date', name: 'start_date' },
       { data: 'end_date', name: 'end_date' },
+      { data: 'status', name: 'status' },
       { data: 'acciones', name: 'acciones', orderable: false, searchable: false, className: 'text-center' },
     ],
     order: [[4, 'desc']],
@@ -101,4 +190,63 @@ $(function(){
   });
 });
 </script>
+
+<script>
+$(document).on('click', 'button[data-target="#ratingModal"]', function () {
+  const rentId = $(this).data('id');
+  $('#rating_rent_id').val(rentId);
+});
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('.star-icon');
+    const criterioGroup = document.getElementById('criterio-group');
+    const starsInput = document.getElementById('selected-stars');
+
+    stars.forEach(star => {
+      star.addEventListener('click', function () {
+        const rating = parseInt(this.getAttribute('data-value'));
+
+        // Marcar estrellas
+        stars.forEach(s => {
+          s.classList.remove('text-warning');
+          s.classList.add('text-muted');
+        });
+        for (let i = 0; i < rating; i++) {
+          stars[i].classList.remove('text-muted');
+          stars[i].classList.add('text-warning');
+        }
+
+        // Actualizar input hidden
+        starsInput.value = rating;
+
+        // Mostrar criterio si estrellas < 5
+        if (rating < 5) {
+          criterioGroup.classList.remove('d-none');
+        } else {
+          criterioGroup.classList.add('d-none');
+          document.getElementById('criterio-select').value = ''; // Limpiar criterio
+        }
+      });
+    });
+
+    // Al abrir modal, reiniciar selección
+    $('#ratingModal').on('show.bs.modal', function (event) {
+      stars.forEach(s => s.classList.remove('text-warning'));
+      stars.forEach(s => s.classList.add('text-muted'));
+      starsInput.value = 0;
+      criterioGroup.classList.add('d-none');
+    });
+  });
+</script>
+
+<script>
+  $(document).on('click', '.completar-btn', function () {
+    let id = $(this).data('id');
+    $('#renta_id').val(id);
+    $('#form-completar-renta').attr('action', '/registro-renta/completar/' + id);
+  });
+</script>
+
 @endpush
