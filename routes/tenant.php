@@ -87,6 +87,8 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
     // Dashboard principal vía controlador
     //Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
     //Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
+    Route::get('dashboard/rents/data', [DashboardController::class, 'getRentsDataDashboard'])->name('dashboard.rents.data');
+
 });
     
     Route::middleware('auth')->group(function () {
