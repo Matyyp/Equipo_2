@@ -205,6 +205,10 @@ Route::middleware([
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
         Route::get('/analiticas/chart-line-data', [DashboardController::class, 'chartLineData'])->name('analiticas.chart.line.data');
+        Route::get('/dashboard/car-type-ranking', [DashboardController::class, 'carTypeRanking'])->name('analiticas.car.type.ranking');
+        Route::get('/dashboard/top-users-ranking', [DashboardController::class, 'topUsersRanking'])->name('analiticas.top.users.ranking');
+        Route::get('analiticas/top-users-ranking', [DashboardController::class, 'topUsersRanking'])->name('analiticas.top.users.ranking');
+        Route::get('analiticas/user-ratings/{client_rut}', [DashboardController::class, 'userRatings'])->name('analiticas.user.ratings');
     });
     // Módulo Costos de Servicios Básicos 
     Route::middleware(['auth', 'permission:cost_basic_service.access'])->group(function () {

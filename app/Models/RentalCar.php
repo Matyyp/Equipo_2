@@ -43,4 +43,8 @@ class RentalCar extends Model
     {
         return $this->hasMany(\App\Models\Accident::class, 'rental_car_id');
     }
+    public function registerRents()
+    {
+        return $this->hasMany(\App\Models\RegisterRent::class, 'rental_car_id', 'id');
+    }
 }

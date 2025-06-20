@@ -21,6 +21,13 @@
                 </div>
             @endif
 
+            {{-- Mostrar mensaje si no hay arriendos --}}
+            @if((isset($registerRents) && $registerRents->isEmpty()) && (!isset($selectedRent) || !$selectedRent))
+                <div class="alert alert-warning text-center">
+                    <b>No existen arriendos registrados.</b><br>
+                    Debe registrar un arriendo antes de poder crear un accidente.
+                </div>
+            @else
             <form action="{{ route('accidente.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
@@ -106,6 +113,7 @@
                     </div>
                 </div>
             </form>
+            @endif
         </div>
     </div>
 </div>

@@ -64,13 +64,14 @@ class BranchOfficeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'schedule'            => 'required|string|max:100',
-            'street'              => 'required|string|max:150',
-            'name_branch_offices' => 'required|string|max:250',
-            'id_location'         => 'required|exists:locations,id_location',
-            'id_business'         => 'required|exists:businesses,id_business',
-            'phone'               => ['required', 'regex:/^\+569\d{8}$/'],
-            'email'               => 'required|email|max:100',
+        'schedule'            => 'required|string|max:100',
+        'street'              => 'required|string|max:150',
+        'name_branch_offices' => 'required|string|max:250',
+        'id_location'         => 'required|exists:locations,id_location',
+        'id_business'         => 'required|exists:businesses,id_business',
+        'phone'               => ['required', 'regex:/^\+569\d{8}$/'],
+        'email'               => 'required|email|max:100',
+        'number_parkings'     => 'required|integer|min:0',
         ]);
 
         // Crear sucursal
@@ -80,6 +81,7 @@ class BranchOfficeController extends Controller
             'name_branch_offices' => $request->name_branch_offices,
             'id_location'         => $request->id_location,
             'id_business'         => $request->id_business,
+            'number_parkings'     => $request->number_parkings,
         ]);
 
         // Insertar datos de contacto si están presentes
@@ -151,19 +153,21 @@ class BranchOfficeController extends Controller
         $request->validate([
             'schedule'    => 'required|string|max:100',
             'street'      => 'required|string|max:150',
-            'name_branch_offices'      => 'required|string|max:150',
+            'name_branch_offices' => 'required|string|max:150',
             'id_location' => 'required|exists:locations,id_location',
             'id_business' => 'required|exists:businesses,id_business',
+            'number_parkings' => 'required|integer|min:0', // <-- Añadido
         ]);
 
         BranchOffice::where('id_branch', $id)
-        ->update([
-            'schedule'    => $request->schedule,
-            'street'      => $request->street,
-            'name_branch_offices' => $request->name_branch_offices,
-            'id_location' => $request->id_location,
-            'id_business' => $request->id_business,
-        ]);
+            ->update([
+                'schedule'          => $request->schedule,
+                'street'            => $request->street,
+                'name_branch_offices' => $request->name_branch_offices,
+                'id_location'       => $request->id_location,
+                'id_business'       => $request->id_business,
+                'number_parkings'   => $request->number_parkings, // <-- Añadido
+            ]);
 
         return redirect()->route('sucursales.index');
     }

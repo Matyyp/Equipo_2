@@ -70,34 +70,49 @@ class DashboardController extends Controller
 
         // --- Estacionamientos activos
         $activeQuery = DB::table('parks as p')
-            ->join('services as s', 'p.id_service', '=', 's.id_service')
-            ->where('s.type_service', 'parking_daily')
-            ->where('p.status', 'parked');
+    ->join('services as s', 'p.id_service', '=', 's.id_service')
+    ->where('s.type_service', 'parking_daily')
+    ->where('p.status', 'parked');
 
-        if ($user->hasRole('SuperAdmin')) {
-            if ($branchId) {
-                $activeQuery->where('s.id_branch_office', $branchId);
-            }
-        } else {
-            $activeQuery->where('s.id_branch_office', $user->id_branch_office);
+    if ($user->hasRole('SuperAdmin')) {
+        if ($branchId) {
+            $activeQuery->where('s.id_branch_office', $branchId);
         }
+    } else {
+        $activeQuery->where('s.id_branch_office', $user->id_branch_office);
+    }
 
-        $activeCount = $activeQuery->count();
-        $totalSpots = 50;
-        $availableCount = max(0, $totalSpots - $activeCount);
+    $activeCount = $activeQuery->count();
 
-        return response()->json([
-            'labels' => $labels,
-            'values' => $values,
-            'parking' => [
-                'ocupados' => $activeCount,
-                'disponibles' => $availableCount,
-            ]
-        ]);
+    // Obtener número de estacionamientos dinámicamente desde la sucursal
+    if ($user->hasRole('SuperAdmin')) {
+        if ($branchId) {
+            $totalSpots = \DB::table('branch_offices')
+                ->where('id_branch', $branchId)
+                ->value('number_parkings') ?? 0;
+        } else {
+            $totalSpots = \DB::table('branch_offices')->sum('number_parkings');
+        }
+    } else {
+        $totalSpots = \DB::table('branch_offices')
+            ->where('id_branch', $user->id_branch_office)
+            ->value('number_parkings') ?? 0;
+    }
+
+    $availableCount = max(0, $totalSpots - $activeCount);
+
+    return response()->json([
+        'labels' => $labels,
+        'values' => $values,
+        'parking' => [
+            'ocupados' => $activeCount,
+            'disponibles' => $availableCount,
+        ]
+    ]);
     }
 
     // NUEVA FUNCIÓN para el gráfico lineal
-public function chartLineData(Request $request): JsonResponse
+    public function chartLineData(Request $request): JsonResponse
     {
         try {
             $filter = $request->get('filter', 'daily');
@@ -226,7 +241,7 @@ public function chartLineData(Request $request): JsonResponse
                 'trace' => $e->getTraceAsString(),
             ], 500);
         }
-    }
+    
 
     if ($filter === 'weekly') {
         $barData = $query
@@ -276,30 +291,98 @@ public function chartLineData(Request $request): JsonResponse
             'disponibles' => $availableCount,
         ]
     ]);
-}
-public function getRentsDataDashboard()
+    }
+
+    public function getRentsDataDashboard()
+    {
+        $query = RegisterRent::with(['rentalCar.brand', 'rentalCar.model', 'rentalCar.branchOffice'])
+            ->where('status', 'en_progreso'); // solo mostrar en progreso en el dashboard
+
+        return datatables()->eloquent($query)
+            ->addColumn('auto', function ($r) {
+                $brand = optional($r->rentalCar->brand)->name_brand ?? 'N/A';
+                $model = optional($r->rentalCar->model)->name_model ?? '';
+                return trim("{$brand} {$model}");
+            })
+            ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
+            ->addColumn('acciones', function ($r) {
+                $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Ver">
+                    <i class="fas fa-eye"></i>
+                </a>';
+                return $verBtn;
+            })
+            ->addColumn('status', fn($r) => $r->status === 'completado' 
+                ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
+                : '<span class="border border-warning text-warning px-2 py-1 rounded">En Progreso</span>')
+            ->rawColumns(['acciones', 'status'])
+            ->toJson();
+    }
+    public function carTypeRanking(Request $request): JsonResponse
+    {
+        $user = auth()->user();
+        $branchId = $request->get('branch_id');
+
+        // Query para ranking: cuenta de rentas agrupadas por tipo de auto (modelo y/o marca)
+        $carTypeQuery = \DB::table('register_rents as rr')
+            ->join('rental_cars as rc', 'rr.rental_car_id', '=', 'rc.id')
+            ->join('brands as b', 'rc.brand_id', '=', 'b.id_brand')
+            ->join('model_cars as m', 'rc.model_car_id', '=', 'm.id_model')
+            ->selectRaw("CONCAT(b.name_brand, ' ', m.name_model) as car_type, COUNT(*) as total")
+            ->groupBy('b.name_brand', 'm.name_model')
+            ->orderByDesc('total');
+
+        // Si hay filtro de sucursal
+        if ($user->hasRole('SuperAdmin')) {
+            if ($branchId) {
+                $carTypeQuery->where('rc.branch_office_id', $branchId);
+            }
+        } else {
+            $carTypeQuery->where('rc.branch_office_id', $user->id_branch_office);
+        }
+
+        $ranking = $carTypeQuery->limit(10)->get();
+
+        return response()->json([
+            'labels' => $ranking->pluck('car_type'),
+            'values' => $ranking->pluck('total'),
+        ]);
+    }
+public function topUsersRanking(Request $request): JsonResponse
 {
-    $query = RegisterRent::with(['rentalCar.brand', 'rentalCar.model', 'rentalCar.branchOffice'])
-        ->where('status', 'en_progreso'); // solo mostrar en progreso en el dashboard
+    $user = auth()->user();
+    $branchId = $request->get('branch_id');
 
-    return datatables()->eloquent($query)
-        ->addColumn('auto', function ($r) {
-            $brand = optional($r->rentalCar->brand)->name_brand ?? 'N/A';
-            $model = optional($r->rentalCar->model)->name_model ?? '';
-            return trim("{$brand} {$model}");
-        })
-        ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
-        ->addColumn('acciones', function ($r) {
-            $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Ver">
-                <i class="fas fa-eye"></i>
-            </a>';
-            return $verBtn;
-        })
-        ->addColumn('status', fn($r) => $r->status === 'completado' 
-            ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
-            : '<span class="border border-warning text-warning px-2 py-1 rounded">En Progreso</span>')
-        ->rawColumns(['acciones', 'status'])
-        ->toJson();
+    $query = \DB::table('register_rents as rr')
+        ->selectRaw('rr.client_name, rr.client_email, COUNT(*) as total, rr.client_rut')
+        ->groupBy('rr.client_name', 'rr.client_email', 'rr.client_rut')
+        ->orderByDesc('total');
+
+    // Filtro de sucursal si aplica (si tienes branch_id en rental_cars, puedes hacer join como en otros)
+    if ($user->hasRole('SuperAdmin')) {
+        if ($branchId) {
+            $query->join('rental_cars as rc', 'rr.rental_car_id', '=', 'rc.id');
+            $query->where('rc.branch_office_id', $branchId);
+        }
+    } else {
+        $query->join('rental_cars as rc', 'rr.rental_car_id', '=', 'rc.id');
+        $query->where('rc.branch_office_id', $user->id_branch_office);
+    }
+
+    $ranking = $query->limit(10)->get();
+
+    return response()->json([
+        'users' => $ranking
+    ]);
+}
+public function userRatings(Request $request, $client_rut)
+{
+    $ratings = \App\Models\UserRating::whereHas('rent', function($q) use ($client_rut) {
+        $q->where('client_rut', $client_rut);
+    })->orderByDesc('id')->get();
+
+    return response()->json([
+        'ratings' => $ratings
+    ]);
+}
 }
 
-}
