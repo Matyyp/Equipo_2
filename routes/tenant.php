@@ -67,9 +67,15 @@ Route::middleware([
     Route::get('/', function () {
         return view('tenant.landings.welcomev2');
     });
+
+    Route::get('/whatsapp/contract-link/{parkingRegister}', [ParkingController::class, 'generateContractWhatsappLink'])
+    ->name('whatsapp.contract.link');
+
+
     Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])
         ->name('contrato.print')
-        ->middleware('signed');
+        ->middleware(['signed', 'throttle:5,10']);
+
 
     Route::get('/v1', function () {
         return view('tenant.landings.welcome');
@@ -167,6 +173,7 @@ Route::middleware([
         ->name('ticket.print');
         Route::get('parking/{parking}/send-whatsapp', [ParkingController::class, 'sendContractWhatsApp'])
         ->name('parking.send_whatsapp');
+        
 
 
         Route::resource('estacionamiento', ParkingController::class);

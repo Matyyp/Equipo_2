@@ -55,7 +55,6 @@
           <table id="owners-table" class="table table-striped w-100">
             <thead class="thead-light">
               <tr>
-                <th>Tipo</th>
                 <th>Nombre</th>
                 <th>Teléfono</th>
                 <th class="text-center">Acciones</th>
@@ -64,7 +63,6 @@
             <tbody>
               @forelse ($owner as $item)
                 <tr>
-                  <td>{{ $item->type_owner }}</td>
                   <td>{{ $item->name }}</td>
                   <td>{{ $item->number_phone }}</td>
                   <td class="text-center">

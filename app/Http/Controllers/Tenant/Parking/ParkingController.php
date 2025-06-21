@@ -25,6 +25,7 @@ use App\Models\Voucher;
 use App\Models\Business;
 use App\Models\Addon;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -83,18 +84,6 @@ public function index(Request $request)
                     $phoneDigitsOnly = '56' . $phoneDigitsOnly;
                 }
 
-                $contractUrl = URL::temporarySignedRoute('contrato.print', now()->addMinutes(1), ['parking' => $reg->getKey()]);
-
-                $message = $owner
-                    ? "Hola {$owner->name}, gracias por estacionarte en nuestro Rent a car. Aquí está tu contrato: \n\n" .
-                    "contrato: " . $contractUrl . 
-                    "\n\nEl enlace expirará en 2 minutos."
-                    : null;
-
-                $whatsappUrl = $phoneDigitsOnly && $message
-                    ? "https://wa.me/{$phoneDigitsOnly}?text=" . urlencode($message)
-                    : null;
-
                 // enlace WhatsApp para recordatorio de pago (solo parking_annual)
                 if ($service && $service->type_service === 'parking_annual' && $owner && $phoneDigitsOnly) {
                     $totalFormatted = number_format($reg->total_value, 0, ',', '.');
@@ -105,6 +94,8 @@ public function index(Request $request)
                 }
 
                 if (!$service) return null;
+
+                $contractUrl = URL::temporarySignedRoute('contrato.print', now()->addMinutes(1), ['parking' => $reg->getKey()]);
 
                 // Obtener servicios extras asociados a la sucursal
                 $extraServices = Service::where('type_service', 'extra')
@@ -133,7 +124,6 @@ public function index(Request $request)
                     'id_branch'     => $user->hasRole('SuperAdmin') ? $branch?->id_branch ?? 'N/D' : null,
                     'branch_name'   => $user->hasRole('SuperAdmin') ? $branch?->name_branch_offices ?? 'N/D' : null,
                     'contract_url' => URL::signedRoute('contrato.print', ['parking' => $reg->getKey()]),
-                    'whatsapp_url' => $whatsappUrl,
                     'whatsapp_payment_reminder_url' => $whatsappPaymentReminderUrl,
                     'car_wash_service' => $hasCarWashService
                         ? [
@@ -168,6 +158,46 @@ public function index(Request $request)
 
     return view('tenant.admin.parking.index', compact('empresaExiste', 'sucursalExiste'));
 }
+
+public function generateContractWhatsappLink(ParkingRegister $parkingRegister)
+{
+    $park = Park::find($parkingRegister->id_park);
+    $car = $park?->park_car;
+    $owner = $car?->car_belongs->first()?->belongs_owner;
+
+    $phone = $owner?->number_phone;
+    $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
+
+    if ($phoneDigitsOnly && !str_starts_with($phoneDigitsOnly, '56')) {
+        $phoneDigitsOnly = '56' . $phoneDigitsOnly;
+    }
+
+    if (!$phoneDigitsOnly || !$owner) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No se pudo obtener el teléfono o propietario.',
+        ]);
+    }
+
+    // Genera el enlace firmado para el contrato con validez corta
+    $contractUrl = URL::temporarySignedRoute(
+        'contrato.print',
+        now()->addMinutes(4),
+        ['parking' => $parkingRegister->getKey()]
+    );
+
+    $message = "Hola {$owner->name}, gracias por estacionarte en nuestro Rent a car. Aquí está tu contrato:\n\n" .
+               "Contrato: " . $contractUrl .
+               "\n\nEl enlace expirará en 2 minutos.";
+
+    $whatsappUrl = "https://wa.me/{$phoneDigitsOnly}?text=" . urlencode($message);
+
+    return response()->json([
+        'success' => true,
+        'url' => $whatsappUrl,
+    ]);
+}
+
 
 
 public function sendPaymentReminderWhatsApp(Request $request, $parkingId)

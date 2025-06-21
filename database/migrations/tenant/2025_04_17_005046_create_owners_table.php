@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('owners', function (Blueprint $table) {
             $table->id('id_owner'); 
-            $table->enum('type_owner', ['cliente', 'empresa']);
             $table->string('name');
             $table->integer('number_phone');
             $table->timestamps();

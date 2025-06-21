@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <style>
-    /* 🔧 Solución al conflicto de superposición del overlay */
+    /* Solución al conflicto de superposición del overlay */
     #sidebar-overlay {
         pointer-events: none !important;
         background: transparent !important;
@@ -186,43 +186,43 @@
 @section('content')
 <div class="container-fluid">
   <div class="card">
-      <div class="card-header bg-secondary text-white">
-        <div class="d-flex justify-content-between align-items-center flex-wrap w-100">
-          <div class="d-flex align-items-center mb-2 mb-md-0">
-            <i class="fas fa-history mr-2"></i>Listado de Estacionados
-          </div>
-          <div class="text-end">
-            @php
-              $bloqueado = !$empresaExiste || !$sucursalExiste;
-            @endphp
+    <div class="card-header bg-secondary text-white">
+      <div class="d-flex justify-content-between align-items-center flex-wrap w-100">
+        <div class="d-flex align-items-center mb-2 mb-md-0">
+          <i class="fas fa-history mr-2"></i>Listado de Estacionados
+        </div>
+        <div class="text-end">
+          @php
+            $bloqueado = !$empresaExiste || !$sucursalExiste;
+          @endphp
 
-            @if(!$empresaExiste)
-              <div class="alert alert-warning d-inline-flex align-items-center gap-2 p-2 mb-2 mb-md-0">
-                <i class="fas fa-exclamation-triangle me-1"></i>
-                <span class="small">Debes registrar los <strong>datos de la empresa</strong>.</span>
-                <a href="{{ route('empresa.index') }}"
-                  style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-                  <i class="fas fa-building ml-1"></i> Ingresar datos empresa
-                </a>
-              </div>
-            @elseif(!$sucursalExiste)
-              <div class="alert alert-warning d-inline-flex align-items-center gap-2 p-2 mb-2 mb-md-0">
-                <i class="fas fa-exclamation-triangle me-1"></i>
-                <span class="small">Debes crear una <strong>sucursal</strong>.</span>
-                <a href="{{ route('sucursales.index') }}"
-                  style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-                  <i class="fas fa-store"></i> Crear sucursal
-                </a>
-              </div>
-            @else
-              <a href="{{ route('estacionamiento.create') }}"
-                style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-                <i class="fas fa-plus mr-1"></i> Ingresar vehículo
+          @if(!$empresaExiste)
+            <div class="d-inline-flex align-items-center gap-2 p-2 mb-2 mb-md-0 rounded" style="background-color: #17a2b8;">
+              <i class="fas fa-exclamation-circle mr-2"></i>
+              <span class="small">Complete la configuración: <strong>Faltan datos de la empresa</strong></span>
+              <a href="{{ route('empresa.index') }}"
+                class="btn btn-sm btn-outline-light ml-2" style="white-space: nowrap;">
+                <i class="fas fa-building me-1"></i> Registrar empresa
               </a>
-            @endif
-          </div>
+            </div>
+          @elseif(!$sucursalExiste)
+            <div class="d-inline-flex align-items-center gap-2 p-2 mb-2 mb-md-0 rounded" style="background-color: #17a2b8;">
+              <i class="fas fa-exclamation-circle mr-2"> </i>
+              <span class="small">Complete la configuración: <strong>Falta crear una sucursal</strong></span>
+              <a href="{{ route('sucursales.index') }}"
+                class="btn btn-sm btn-outline-light ml-2" style="white-space: nowrap;">
+                <i class="fas fa-store me-1"></i> Crear sucursal
+              </a>
+            </div>
+          @else
+            <a href="{{ route('estacionamiento.create') }}"
+              class="btn btn-sm btn-outline-light" style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+              <i class="fas fa-plus me-1"></i> Ingresar vehículo
+            </a>
+          @endif
         </div>
       </div>
+    </div>
 
     <div class="card-body">
       <div class="table-responsive">
@@ -627,9 +627,8 @@ $(function () {
                                 <i class="fas fa-plus-circle"></i>
                             </button>
                             <button 
-                                onclick="window.open('${row.whatsapp_url || '#'}', '_blank')" 
-                                class="btn btn-sm btn-outline-info btn-extra-services text-info" 
-                                ${row.whatsapp_url ? '' : 'disabled'}>
+                                onclick="sendWhatsappContractLink(${row.id_parking_register})"
+                                class="btn btn-sm btn-outline-info btn-extra-services text-info">
                                 <i class="fab fa-whatsapp"></i>
                             </button>
 
@@ -1175,5 +1174,22 @@ $('#parking-table').on('click', '.btn-reminder', function() {
         console.error('No hay URL de WhatsApp para este registro');
     }
 });
+
+
+function sendWhatsappContractLink(id) {
+  fetch(`/whatsapp/contract-link/${id}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.url) {
+        window.open(data.url, '_blank');
+      } else {
+        alert(data.message || 'No se pudo generar el enlace de WhatsApp.');
+      }
+    })
+    .catch(() => alert('Error al generar el enlace.'));
+}
+
+
+
 </script>
 @endpush

@@ -37,38 +37,38 @@
 
     <div class="card-body">
       @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+      <div class="alert alert-success d-flex align-items-center p-2 mb-2 rounded">
+        <i class="fas fa-check-circle mr-2"></i>
+        <span class="mr-2">{{ session('success') }}</span>
+      </div>
       @endif
+
       @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+      <div class="alert alert-danger d-flex align-items-center p-2 mb-2 rounded">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        <span class="mr-2">{{ session('error') }}</span>
+      </div>
       @endif
 
       @if($parkingServices->isEmpty())
-        <div class="alert alert-warning">
-          No hay servicios de estacionamiento disponibles.
-          <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-success mt-2">
-            <i class="fas fa-store"></i> Ir a sucursal
-          </a>
-        </div>
-        <script>
-          document.addEventListener('DOMContentLoaded', () => {
-            $('#form-register :input:not([name="_token"])').prop('disabled', true);
-          });
-        </script>
+      <div class="alert d-flex align-items-center p-2 mb-2 rounded" style="background-color: #17a2b8; color: white;">
+        <i class="fas fa-info-circle mr-2"></i>
+        <span class="mr-2">No hay servicios de estacionamiento disponibles.</span>
+        <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-outline-light">
+          <i class="fas fa-store mr-1"></i>Ir a sucursal
+        </a>
+      </div>
+      <script>document.addEventListener('DOMContentLoaded',()=>{$('#form-register :input:not([name="_token"])').prop('disabled',true);});</script>
       @elseif(!$hasContract)
-        <div class="alert alert-warning">
-          No hay contratos activos asociados a los servicios disponibles.
-          <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-success mt-2">
-            <i class="fas fa-store"></i> Ir a sucursal
-          </a>
-        </div>
-        <script>
-          document.addEventListener('DOMContentLoaded', () => {
-            $('#form-register :input:not([name="_token"])').prop('disabled', true);
-          });
-        </script>
+      <div class="alert d-flex align-items-center p-2 mb-2 rounded" style="background-color: #17a2b8; color: white;">
+        <i class="fas fa-info-circle mr-2"></i>
+        <span class="mr-2">No hay contratos activos asociados a los servicios disponibles.</span>
+        <a href="{{ route('sucursales.index') }}" class="btn btn-sm btn-outline-light">
+          <i class="fas fa-store mr-1"></i>Ir a sucursal
+        </a>
+      </div>
+      <script>document.addEventListener('DOMContentLoaded',()=>{$('#form-register :input:not([name="_token"])').prop('disabled',true);});</script>
       @endif
-
       <form action="{{ route('estacionamiento.store') }}" method="POST" autocomplete="off" id="form-register">
         @csrf
 

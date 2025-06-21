@@ -49,13 +49,17 @@
   @endif
 
   <div class="card ">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-        <div>
-          <i class="fas fa-file-signature"></i> Registros de Arriendo
-          <a href="{{ route('registro-renta.create') }}"
-            style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-            <i class="fas fa-plus mr-1"></i> Ingresar un arriendo
-          </a>
+    <div class="card-header bg-secondary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fas fa-file-signature"></i> Registros de Arriendo
+          </div>
+          <div>
+            <a href="{{ route('registro-renta.create') }}"
+                        style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+                        <i class="fas fa-plus mr-1"></i> Ingresar un arriendo
+            </a>
+          </div>
         </div>
     </div>
     <div class="card-body">

@@ -32,13 +32,11 @@ class OwnerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'type_owner'    => 'required|in:cliente,empresa',
             'name'          => 'required|string|max:100',
             'number_phone'  => 'required|string|max:20',
         ]);
     
         Owner::create([
-            'type_owner'    => $request->type_owner,
             'name'          => $request->name,
             'number_phone'  => $request->number_phone,
         ]);
@@ -69,14 +67,12 @@ class OwnerController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'type_owner'    => 'required|in:cliente,empresa',
             'name'          => 'required|string|max:100',
             'number_phone'  => 'required|string|max:20',
         ]);
 
         Owner::where('id_owner', $id)
         ->update([
-            'type_owner'    => $request->type_owner,
             'name'          => $request->name,
             'number_phone'  => $request->number_phone,
         ]);
