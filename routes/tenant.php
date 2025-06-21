@@ -241,6 +241,8 @@ Route::middleware([
         Route::get('registro-renta/fechas-ocupadas/{id}', [RegisterRentController::class, 'fechasOcupadas']);
         Route::get('/buscar-cliente', [RegisterRentController::class, 'buscarClientePorCorreo']);
         Route::put('registro-renta/completar/{id}', [RegisterRentController::class, 'completar'])->name('registro-renta.completar');
+        Route::get('register_rents/{id}/contrato', [RegisterRentController::class, 'contratoPDF'])->name('register_rents.contrato_pdf');
+
     });
     
     //Landing

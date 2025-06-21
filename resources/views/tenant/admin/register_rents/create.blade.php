@@ -46,28 +46,24 @@
 
       <form action="{{ route('registro-renta.store') }}" method="POST" autocomplete="off">
         @csrf
-
-        <div class="mb-4">
-            <label class="form-label text-dark fw-bold">Auto</label>
-            <select name="id_car" id="id_car" class="form-select form-select-lg border-dark bg-light" required>
-                <option value="">Seleccione un auto</option>
-                @foreach ($cars as $car)
-                    <option value="{{ $car->id }}" data-price="{{ $car->price_per_day }}">
-                        {{ $car->brand->name_brand }} {{ $car->model->name_model }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
         <div class="row">
+          <div class="col-md-6">
+              <label class="form-label text-dark fw-bold">Auto</label>
+              <br>
+              <select name="id_car" id="id_car" class="p-2 border-b-2 border-gray-300 bg-transparent focus:border-blue-500 focus:outline-none transition-colors" required>
+                  <option value="">Seleccione un auto</option>
+                  @foreach ($cars as $car)
+                      <option value="{{ $car->id }}" data-price="{{ $car->price_per_day }}">
+                          {{ $car->brand->name_brand }} {{ $car->model->name_model }}
+                      </option>
+                  @endforeach
+              </select>
+          </div>
           <div class="col-md-6">
               <label class="form-label text-dark fw-bold">Precio por día</label>
               <input type="text" id="price_per_day" class="form-control bg-light" readonly>
           </div>
-          <div class="col-md-6">
-              <label class="form-label text-dark fw-bold">Total</label>
-              <input type="text" id="total_price" class="form-control bg-light" readonly>
-          </div>
+          
         </div>
 
         <hr class="my-4">
@@ -168,11 +164,16 @@
               <label for="end_date">Fecha Término</label>
               <input type="text" id="end_date" name="end_date" class="form-control" placeholder="dd/mm/aaaa" required readonly>
             </div>
+            <div class="form-group">
+              <label class="form-label text-dark fw-bold">Total</label>
+              <input type="text" id="total_price" class="form-control bg-light" readonly>
+            </div>
           </div>
         </div>
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
+            <a href="{{ route('registro-renta.index') }}" class="btn btn-secondary me-1">Cancelar</a>
             <button type="button" id="confirmar-btn" class="btn btn-primary">
               Registrar
             </button>

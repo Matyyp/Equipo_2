@@ -9,6 +9,9 @@ use App\Models\ExternalUser;
 use App\Models\RentalCar;
 use App\Models\Reservation;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Business;
+use App\Models\ContactInformation;
 
 class RegisterRentController extends Controller
 {
@@ -33,6 +36,10 @@ class RegisterRentController extends Controller
                     <i class="fas fa-eye"></i>
                 </a>';
 
+                $contratoBtn = '<a href="' . route('register_rents.contrato_pdf', $r->id) . '" class="btn btn-outline-primary btn-sm text-primary me-1" title="Generar Contrato" target="_blank">
+                    <i class="fas fa-file-pdf"></i>
+                </a>';
+
                 $reseñaBtn = $r->userRatings->isEmpty()
                     ? '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" title="Añadir Reseña">
                         <i class="fas fa-star"></i>
@@ -43,7 +50,7 @@ class RegisterRentController extends Controller
                         <i class="fas fa-check-circle"></i>
                     </button>' : '';
 
-                return $verBtn . $reseñaBtn . $completarBtn;
+                return $verBtn . $contratoBtn . $reseñaBtn . $completarBtn;
             })
             ->addColumn('status', fn($r) => $r->status === 'completado' 
                 ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
@@ -233,5 +240,71 @@ class RegisterRentController extends Controller
 
         return redirect()->route('registro-renta.index')->with('success', 'Arriendo completado y kilometraje actualizado.');
     }
+
+    public function contratoPDF($id)
+    {
+        $rent = RegisterRent::with(['rentalCar'])->findOrFail($id);
+
+        $car = $rent->rentalCar;
+
+        // Logo base64 desde storage
+        $logo = Business::value('logo');
+        $logoPath = storage_path('app/public/' . $logo);
+        $logoBase64 = 'data:' . mime_content_type($logoPath) . ';base64,' . base64_encode(file_get_contents($logoPath));
+
+        // Datos de contacto (si tienes relacionados, por ahora mock)
+        $datosContacto = ContactInformation::limit(3)->get(); // cambia esto si tienes relación
+
+        $traduccionesContacto = [
+            'email'    => 'Correo Electrónico',
+            'phone'    => 'Teléfono',
+            'mobile'   => 'Celular',
+            'whatsapp' => 'WhatsApp',
+            'website'  => 'Sitio Web',
+            'social'   => 'Red Social',
+        ];
+
+        $datosContactoTraducido = $datosContacto->map(function ($contacto) use ($traduccionesContacto) {
+            return [
+                'tipo' => $traduccionesContacto[$contacto->type_contact] ?? ucfirst($contacto->type_contact),
+                'dato' => $contacto->data_contact,
+            ];
+        });
+
+
+        // Datos para la vista PDF
+        $data = [
+            'url_logo'      => $logoBase64,
+            'marca'  => $car->brand->name_brand ?? '',
+            'modelo' => $car->model->name_model ?? '',
+            'patente'       => $car->patent ?? 'N/A',
+            'inicio'        => Carbon::parse($rent->start_date)->format('d-m-Y'),
+            'termino'       => Carbon::parse($rent->end_date)->format('d-m-Y'),
+            'km_exit'       => $rent->km_exit ?? '',
+            'combustible'   => $rent->departure_fuel ?? '',
+            'garantia'      => $rent->guarantee ?? 0,
+            'pago'          => $rent->payment ?? 0,
+            'nombre'        => $rent->client_name ?? '',
+            'rut'           => $rent->client_rut ?? '',
+            'email'         => $rent->client_email ?? '',
+            'telefono'      => $rent->number_phone ?? '',
+            'licencia'      => $rent->driving_license ?? '',
+            'clase'         => $rent->class_licence ?? '',
+            'vence'         => Carbon::parse($rent->expire)->format('d-m-Y'),
+            'direccion'     => $rent->address ?? '',
+            'observacion'   => $rent->observation ?? '',
+            'direccion_sucursal' => $car->branch_office->street ?? 'Sucursal no asignada', // ajusta si tienes relación
+            'horario'       => $car->branch_office->schedule ?? 'Horario no disponible',   // idem
+            'datos_contacto'=> $datosContactoTraducido,
+        ];
+
+        $pdf = PDF::loadView('tenant.admin.register_rents.contract_pdf', $data)
+            ->setPaper('a4', 'portrait');
+
+        $pdfBase64 = base64_encode($pdf->output());
+
+        return view('pdf.print_contrato', compact('pdfBase64'));
+    }
+
 
 }
