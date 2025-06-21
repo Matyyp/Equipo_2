@@ -232,7 +232,7 @@ Route::middleware([
         });
     });
     // Modulo de arriendos
-    Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
+    Route::middleware(['auth', 'permission:arriendos.access'])->group(function () {
         Route::get('registro-renta/data', [RegisterRentController::class, 'data'])->name('registro_renta.data');
         Route::resource('registro-renta', RegisterRentController::class);
         Route::resource('user_ratings', UserRatingController::class)->only(['store']);

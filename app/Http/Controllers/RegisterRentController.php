@@ -32,11 +32,11 @@ class RegisterRentController extends Controller
             })
             ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
             ->addColumn('acciones', function ($r) {
-                $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Ver">
+                $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info" title="Ver">
                     <i class="fas fa-eye"></i>
                 </a>';
 
-                $contratoBtn = '<a href="' . route('register_rents.contrato_pdf', $r->id) . '" class="btn btn-outline-primary btn-sm text-primary me-1" title="Generar Contrato" target="_blank">
+                $contratoBtn = '<a href="' . route('register_rents.contrato_pdf', $r->id) . '" class="btn btn-outline-info btn-sm text-info ml-1" title="Generar Contrato" target="_blank">
                     <i class="fas fa-file-pdf"></i>
                 </a>';
 
@@ -123,6 +123,24 @@ class RegisterRentController extends Controller
             'km_exit' => 'required|numeric',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+        ], [
+            'id_car.required' => 'El campo auto es obligatorio.',
+            'id_car.exists' => 'El auto seleccionado no es válido.',
+            'name.required' => 'El campo nombre es obligatorio.',
+            'email.required' => 'El campo correo electrónico es obligatorio.',
+            'email.email' => 'Debe ingresar un correo electrónico válido.',
+            'address.required' => 'El campo dirección es obligatorio.',
+            'driving_license.required' => 'El campo licencia de conducir es obligatorio.',
+            'class_licence.required' => 'El campo clase de licencia es obligatorio.',
+            'expire.required' => 'El campo fecha de expiración es obligatorio.',
+            'guarantee.required' => 'El campo garantía es obligatorio.',
+            'guarantee.numeric' => 'La garantía debe ser un número.',
+            'departure_fuel.required' => 'Debe seleccionar el nivel de combustible de salida.',
+            'km_exit.required' => 'El campo kilómetros de salida es obligatorio.',
+            'km_exit.numeric' => 'Los kilómetros deben ser un número.',
+            'start_date.required' => 'El campo fecha de inicio es obligatorio.',
+            'end_date.required' => 'El campo fecha de término es obligatorio.',
+            'end_date.after_or_equal' => 'La fecha de término debe ser igual o posterior a la de inicio.',
         ]);
 
         // Validar solapamiento con reservas o arriendos
