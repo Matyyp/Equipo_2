@@ -66,9 +66,13 @@
               <i class="fas fa-plus"></i> Nuevo registro
             </a>
           @else
-            <div class="alert alert-warning d-flex align-items-center gap-2 mb-0 py-2 px-2" style="font-size:15px;">
-              <i class="fas fa-exclamation-triangle mr-2"></i>
-              <strong>Debe haber al menos un arriendo asociado al vehículo.</strong>
+            <div class="alert d-flex align-items-center gap-2 mb-0 py-2 px-2" style="background-color: #17a2b8;">
+              <i class="fas fa-info-circle mr-2"></i>
+              <span>Debe haber al menos un arriendo asociado al vehículo.</span>
+              <a href="{{ route('registro-renta.create') }}"
+                style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;;" class="ml-2">
+                <i class="fas fa-plus mr-1"></i> Ingresar un arriendo
+              </a>
             </div>
           @endif
         @else

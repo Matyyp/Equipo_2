@@ -37,7 +37,7 @@ class RegisterRentController extends Controller
             $accidentBtn = '';
             if ($r->rentalCar) {
                 $accidentUrl = route('accidente.create', ['id_rent' => $r->id]);
-                $accidentBtn = '<a href="' . $accidentUrl . '" class="btn btn-outline-info btn-sm text-info" title="Registrar Accidente">
+                $accidentBtn = '<a href="' . $accidentUrl . '" class="btn btn-outline-info btn-sm text-info mr-1" title="Registrar Accidente">
                     <i class="fas fa-car-crash"></i>
                 </a>';
             }

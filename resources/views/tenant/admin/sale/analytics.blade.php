@@ -13,16 +13,15 @@
     padding-right: 0 !important;
     margin-top: 0;
 }
-#userRankingList li, #userRankingList .user-header {
+
+#userRankingList li,
+.user-header {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-}
-#userRankingList li {
-    transition: background 0.2s;
-    cursor: pointer;
+    gap: 0;
     padding: 0;
     min-height: 44px;
+    border-bottom: 1px solid #e5e7eb;
 }
 #userRankingList li:last-child {
     border-bottom: none;
@@ -30,44 +29,88 @@
 #userRankingList li:hover {
     background: #e5e7eb;
 }
+
 .user-header {
     font-weight: 700;
     color: #374151;
     font-size: 0.97rem;
     background: #f3f4f6;
     border-bottom: 2px solid #e5e7eb;
-    padding: 0;
-    cursor: default;
     min-height: 38px;
+    cursor: default;
+    gap: 0;
 }
-.user-header > div {
-    padding: 10px 0 10px 0;
+
+.user-header > div,
+#userRankingList li > div {
     display: flex;
+    align-items: left;
+    justify-content: center;
+    height: 100%;
+}
+
+/* Columna # */
+.header-rank,
+.user-ranking-number {
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+    text-align: center;
+    justify-content: center;
     align-items: center;
 }
-.user-header .header-rank   { width: 32px; min-width: 32px; text-align: center;}
-.user-header .header-user   { flex: 1; padding-left: 8px;}
-.user-header .header-count  { width: 92px; min-width: 92px; text-align: right;}
-.user-header .header-rating { width: 60px; min-width: 60px; text-align: right;}
-.user-ranking-number {
-    width: 32px;
-    min-width: 32px;
+
+/* Columna Usuario - alineada a la izquierda */
+.header-user,
+.user-info {
+    flex: 1 1 0%;
+    min-width: 0;
+    text-align: left;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-left: 12px;
+    padding-right: 0;
+    gap: 2px;
+}
+
+/* Columna Cant. de Arriendos */
+.header-count,
+.user-right {
+    width: 130px;
+    min-width: 130px;
+    max-width: 130px;
     text-align: center;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* Columna Valoración */
+.header-rating,
+.user-rating-col {
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-row,
+.user-meta {
+    width: 100%;
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.user-ranking-number {
     font-weight: bold;
     color: #64748b;
     font-size: 1.05rem;
     display: flex;
-    align-items: center;
-    justify-content: center;
 }
-.user-info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 12px 0 12px 12px; /* <-- Cambiado aquí el último valor */
-}
+
 .user-row {
     font-weight: 600;
     font-size: 1rem;
@@ -76,6 +119,7 @@
     align-items: center;
     gap: 6px;
 }
+
 .user-meta {
     color: #6b7280;
     font-size: 0.95rem;
@@ -83,28 +127,15 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .user-right {
-    min-width: 92px;
-    width: 92px;
-    text-align: right;
     font-size: 1rem;
     color: #10b981;
     font-weight: bold;
-    padding-right: 8px;
+    padding-right: 0;
     padding-left: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
-.user-rating-col {
-    width: 60px;
-    min-width: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-right: 8px;
-}
+
 .user-rating-btn {
     background: none;
     border: none;
@@ -122,29 +153,7 @@
     font-size: 1.1rem;
     margin-left: 3px;
 }
-.user-header {
-    display: flex;
-    font-weight: 700;
-    color: #374151;
-    font-size: 0.97rem;
-    background: #f3f4f6;
-    border-bottom: 2px solid #e5e7eb;
-    padding: 0;
-    cursor: default;
-    min-height: 38px;
-    gap: 16px; /* <-- Espacio horizontal entre columnas */
-}
-.user-header > div {
-    padding: 10px 0 10px 0;
-    display: flex;
-    align-items: center;
-    
-}
 
-.user-header .header-rank   { width: 32px; min-width: 32px; text-align: center;padding-left: 10px;}
-.user-header .header-user   { flex: 1; padding-left: 12px;}  
-.user-header .header-count  { width: 110px; min-width: 92px; text-align: right; padding-left: 12px;}
-.user-header .header-rating { width: 70px; min-width: 60px; text-align: right; padding-left: 12px;}
 #userRatingsModal {
     position: fixed;
     z-index: 50;
@@ -197,6 +206,46 @@
 }
 .rating-label { font-weight: 600; }
 .rating-empty { color: #999; font-style: italic; }
+.contenedor-padre {
+  display: flex;
+  flex-direction: column;       /* Apila los hijos verticalmente */
+  align-items: center;          /* Centra horizontalmente */
+  gap: 20px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  max-width: 100%;            /* Controla el ancho total */
+  margin: 0 auto;               /* Centra el contenedor en la página */
+  width: 100%;
+}
+
+/* Hacemos que los dos contenedores tengan el mismo ancho que el padre */
+.contenedor,
+.contenedor2 {
+  display: flex;
+  flex-wrap: wrap;              /* Permite varias filas */
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Estilos para todas las cards gráficas */
+.contenedor > div {
+  flex: 1 1 calc(25% - 20px);   /* 4 columnas iguales con espacio */
+  min-width: 300px;             /* Evita que se achiquen demasiado en pantallas pequeñas */
+  max-width: 100%;
+  height: 420px;                /* Altura uniforme */
+  box-sizing: border-box;
+  background-color: white;
+}
+
+/* Asegura que el último gráfico también use el mismo ancho */
+.contenedor2 > div {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 </style>
 @endpush
 @push('scripts')
@@ -543,7 +592,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="header-rank">#</div>
             <div class="header-user">Usuario</div>
             <div class="header-count">Cant. de Arriendos</div>
-            <div class="header-rating">Rating</div>
+            <div class="header-rating">Valoración</div>
         `;
         ul.appendChild(header);
 
@@ -569,14 +618,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.getElementById('userRankingSearch').addEventListener('input', function() {
-        const value = this.value.toLowerCase();
-        const filtered = allUsers.filter(u => 
-            u.client_name.toLowerCase().includes(value) ||
-            (u.client_email && u.client_email.toLowerCase().includes(value))
-        );
-        renderUserList(filtered);
-    });
+
 
     // MODAL LOGIC
     function showUserRatings(clientRut, clientName) {
@@ -627,10 +669,11 @@ document.addEventListener('DOMContentLoaded', function () {
 @endpush
 
 @section('content')
-<div class="p-6">
-    <div class="grid row gap-6 m-2">
+<div class="p-0">
+    <div class="contenedor-padre ">
+        <div class="contenedor ">
         <!-- Card gráfico de barras -->
-        <div class="bg-white rounded-lg shadow p-4 mr-2 mb-2">
+        <div class="bg-white  rounded-lg shadow p-4  mb-2">
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-sm font-semibold">Ingresos</h3>
                 <div class="flex items-center gap-2">
@@ -652,15 +695,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 <canvas id="chartTotalValue"></canvas>
             </div>
         </div>
-
-        <!-- Card gráfico lineal -->
-        <div class="bg-white rounded-lg shadow p-4 mb-2">
+        <!-- Card ranking de autos más arrendados -->
+        <div class="bg-white rounded-lg shadow p-4   mb-2">
             <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Desempeño: Estacionamientos (azul) vs Rentas (rojo)</h3>
+                <h3 class="text-sm font-semibold">Tipos de auto más arrendados</h3>
                 @if(auth()->user()->hasRole('SuperAdmin'))
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectLineal" class="border border-gray-300 rounded text-sm px-2 py-1">
+                        <select id="branchSelectCarType" class="border border-gray-300 rounded text-sm px-2 py-1">
                             @foreach(\App\Models\BranchOffice::all() as $branch)
                                 <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
                             @endforeach
@@ -669,14 +711,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 @endif
             </div>
             <div class="relative" style="height: 250px;">
-                <canvas id="chartLineal"></canvas>
+                <canvas id="chartCarType"></canvas>
             </div>
         </div>
+
         
+
         <!-- Card gráfico de torta -->
-        <div class="bg-white rounded-lg shadow p-4 mb-2 mx-2">
+        <div class="bg-white rounded-lg shadow p-4  mb-2">
             <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Disponibilidad Estacionamientos</h3>
+                <h3 class="text-sm font-semibold">Disponibilidad estacionamientos</h3>
                 @if(auth()->user()->hasRole('SuperAdmin'))
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Sucursal:</span>
@@ -693,15 +737,14 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div id="parkingInfo" class="text-center text-sm mt-3 font-medium text-gray-700"></div>
         </div>
-
-        <!-- Card ranking de autos más arrendados -->
-        <div class="bg-white rounded-lg shadow p-4 mb-2 mx-2">
+<!-- Card gráfico lineal -->
+        <div class="bg-white  rounded-lg shadow p-4  mb-2">
             <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Ranking Tipos de Auto Más Arrendados</h3>
+                <h3 class="text-sm font-semibold">Estacionamientos (azul) vs Rentas (rojo)</h3>
                 @if(auth()->user()->hasRole('SuperAdmin'))
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectCarType" class="border border-gray-300 rounded text-sm px-2 py-1">
+                        <select id="branchSelectLineal" class="border border-gray-300 rounded text-sm px-2 py-1">
                             @foreach(\App\Models\BranchOffice::all() as $branch)
                                 <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
                             @endforeach
@@ -710,12 +753,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 @endif
             </div>
             <div class="relative" style="height: 250px;">
-                <canvas id="chartCarType"></canvas>
+                <canvas id="chartLineal"></canvas>
             </div>
         </div>
-        <div class="bg-white col-6 rounded-lg shadow p-4 mb-2 ">
+        
+    </div>
+    <div class="contenedor2 ">    
+        <div class="bg-white rounded-lg shadow p-4 mb-2 ">
             <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Ranking Usuarios que Más Arrendaron Autos</h3>
+                <h3 class="text-sm font-semibold">Usuarios que más arrendaron autos</h3>
                 @if(auth()->user()->hasRole('SuperAdmin'))
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Sucursal:</span>
@@ -727,12 +773,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 @endif
             </div>
-            <div class="bg-gray-100 rounded-lg shadow p-4 w-full max-w-md mx-auto">
-                <div class="mb-3">
-                    <input type="text" id="userRankingSearch" placeholder="Buscar usuario..." class="w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring">
-                </div>
                 <ul id="userRankingList" class="divide-y divide-gray-200"></ul>
-            </div>
+
         </div>
 
         <!-- Modal para calificaciones -->
@@ -742,8 +784,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div id="userRatingsList"></div>
             </div>
         </div>
-
-
     </div>
+</div>
+
+     
 </div> 
 @endsection
