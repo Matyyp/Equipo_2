@@ -10,6 +10,11 @@
     rel="stylesheet"
     href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css"
   />
+  <!-- DataTables Responsive CSS -->
+  <link 
+    rel="stylesheet"
+    href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css"
+  />
 
   <style>
     table.dataTable td,
@@ -28,10 +33,9 @@
 
     .dataTables_paginate .pagination .page-item.active a.page-link {
       background-color: #17a2b8 !important; 
-      color:rgb(255, 255, 255) !important;
+      color: rgb(255, 255, 255) !important;
       border-color: #17a2b8 !important; 
     }
-
 
     .dataTables_paginate .pagination .page-item .page-link {
       background-color: #eeeeee;
@@ -44,7 +48,6 @@
       color: #fff !important;
     }
   </style>
-
 @endpush
 
 @section('content')
@@ -62,19 +65,21 @@
       </a>
     </div>
     <div class="card-body">
-      <table id="cars-table" class="table table-striped w-100">
-        <thead>
-          <tr>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>Año</th>
-            <th>Estado</th>
-            <th>Sucursal</th>
-            <th>Precio</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-      </table>
+      <div class="table-responsive">
+        <table id="cars-table" class="table table-striped w-100">
+          <thead>
+            <tr>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Año</th>
+              <th>Estado</th>
+              <th>Sucursal</th>
+              <th>Precio</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -85,6 +90,10 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+  <!-- DataTables Responsive JS -->
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
 
   <script>
   document.addEventListener('DOMContentLoaded', () => {

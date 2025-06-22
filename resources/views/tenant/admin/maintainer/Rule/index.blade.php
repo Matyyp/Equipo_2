@@ -1,13 +1,17 @@
+{{-- resources/views/tenant/admin/rules/index.blade.php --}}
 @extends('tenant.layouts.admin')
 
 @section('title', 'Reglas de contratos')
 @section('page_title', 'Listado de Reglas')
-@push('styles')
 
-<style>
-      table.dataTable td,
+@push('styles')
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css">
+  <style>
+    table.dataTable td,
     table.dataTable th {
       border: none !important;
+      vertical-align: middle;
     }
 
     table.dataTable tbody tr {
@@ -20,30 +24,39 @@
     }
 
     .dataTables_paginate .pagination .page-item.active a.page-link {
-      background-color: #17a2b8 !important; 
-      color:rgb(255, 255, 255) !important;
-      border-color: #17a2b8 !important; 
+      background-color: #17a2b8 !important;
+      color: rgb(255, 255, 255) !important;
+      border-color: #17a2b8 !important;
     }
-
 
     .dataTables_paginate .pagination .page-item .page-link {
       background-color: #eeeeee;
       color: #17a2b8 !important;
       border-color: #eeeeee;
     }
-  .btn-outline-info.text-info:hover,
-.btn-outline-info.text-info:focus {
-  color: #fff !important;
-}
-</style>
+
+    .btn-outline-info.text-info:hover,
+    .btn-outline-info.text-info:focus {
+      color: #fff !important;
+    }
+
+    /* Ajuste para texto largo en la columna Descripción */
+    td.descripcion-cell {
+      white-space: normal !important;
+      word-wrap: break-word;
+      max-width: 300px;
+    }
+  </style>
 @endpush
+
 @section('content')
 <div class="container-fluid">
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div><i class="fas fa-gavel mr-2"></i>Reglas de contrato</div>
+      <div><i class="fas fa-gavel mr-2"></i> Reglas de contrato</div>
       <a href="{{ route('reglas.create') }}"
-         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;"
+         class="ml-auto">
         <i class="fas fa-plus"></i> Nuevo
       </a>
     </div>
@@ -63,7 +76,7 @@
             @forelse ($Rule as $rule)
               <tr>
                 <td>{{ $rule->name }}</td>
-                <td>{{ $rule->description }}</td>
+                <td class="descripcion-cell">{{ $rule->description }}</td>
                 <td>
                   @switch($rule->type_contract)
                     @case('rent')
@@ -79,16 +92,15 @@
                       <span class="border border-muted text-muted px-2 py-1 rounded">Sin tipo</span>
                   @endswitch
                 </td>
-
                 <td class="text-center">
                   <a href="{{ route('reglas.edit', $rule->id_rule) }}"
-                    class="btn btn-outline-info btn-sm text-info" title="Editar">
+                     class="btn btn-outline-info btn-sm text-info" title="Editar">
                     <i class="fas fa-pen"></i>
                   </a>
                 </td>
               </tr>
             @empty
-              {{-- Dejar vacío para que DataTables muestre el mensaje por defecto --}}
+              {{-- Dejar vacío para que DataTables muestre mensaje por defecto --}}
             @endforelse
           </tbody>
         </table>
@@ -99,37 +111,39 @@
 @endsection
 
 @push('scripts')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-  $(document).ready(function() {
-    $('#rules-table').DataTable({
-      language: {
-        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-      }
-    });
+  <script>
+    $(document).ready(function () {
+      $('#rules-table').DataTable({
+        responsive: true,
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        }
+      });
 
-    document.querySelectorAll('.delete-form').forEach(form => {
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        Swal.fire({
-          title: '¿Eliminar esta regla?',
-          text: 'Esta acción no se puede deshacer.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
-        }).then(result => {
-          if (result.isConfirmed) {
-            form.submit();
-          }
+      document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          Swal.fire({
+            title: '¿Eliminar esta regla?',
+            text: 'Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+          }).then(result => {
+            if (result.isConfirmed) {
+              form.submit();
+            }
+          });
         });
       });
     });
-  });
-</script>
+  </script>
 @endpush

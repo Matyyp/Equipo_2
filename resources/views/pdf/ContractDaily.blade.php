@@ -204,7 +204,7 @@
         <td colspan="4">TELÉFONO CONTACTO: {{ $telefono }}</td>
     </tr>
     <tr>
-        <td colspan="2">VALOR DIARIO</td>
+        <td colspan="2">VALOR ESTACIONAMIENTO</td>
         <td colspan="2">{{ '$' . number_format($valor_estacionamiento, 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span></td>
     </tr>
 
@@ -292,12 +292,11 @@
     <!-- Lista de reglas mejorada -->
     <div style="font-size: 12px; margin-top: 10px;">
         @foreach($reglas as $i => $regla)
-            <div style="margin-bottom: 8px; page-break-inside: avoid;">
+            <div style="margin-bottom: 8px; page-break-inside: avoid; word-wrap: break-word; white-space: normal; line-height: 1.4;">
                 <strong>{{ $i + 1 }}.</strong> {{ $regla->description }}
             </div>
         @endforeach
     </div>
-
     <!-- Footer (manteniendo tu estructura actual) -->
     <div style="position: absolute; bottom: 20px; width: 100%; font-size: 12px;">
         <div style="height: 2px; background-color: black; width: 100%; margin: 10px 0;"></div>

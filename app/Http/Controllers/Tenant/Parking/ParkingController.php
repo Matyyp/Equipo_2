@@ -399,7 +399,7 @@ public function sendPaymentReminderWhatsApp(Request $request, $parkingId)
     
         $owner = Owner::firstOrCreate(
             ['number_phone' => $data['phone']],
-            ['name' => $data['name'], 'type_owner' => 'cliente']
+            ['name' => $data['name']]
         );
     
         $car = Car::firstOrCreate(
@@ -419,15 +419,19 @@ public function sendPaymentReminderWhatsApp(Request $request, $parkingId)
         $tipo_servicio = $service->type_service;
 
         if ($tipo_servicio === 'parking_daily') {
-            $id_contract = DailyContract::select('id_contract')->first();
+            $dailyContract = DailyContract::whereHas('contract_daily_contract_parking.contract_parking_contract', function ($query) use ($service) {
+                $query->where('id_branch_office', $service->id_branch_office);
+            })->first();
+            $id_contract = $dailyContract?->id_contract;
             $total = $days * $service->price_net;
         } elseif ($tipo_servicio === 'parking_annual') {
-            $id_contract = AnnualContract::select('id_contract')->first();
+            $annualContract = AnnualContract::whereHas('contract_annual_contract_parking.contract_parking_contract', function ($query) use ($service) {
+                $query->where('id_branch_office', $service->id_branch_office);
+            })->first();
+            $id_contract = $annualContract?->id_contract;
             $total = $service->price_net;
         }
 
-        
-    
         $park = Park::create([
             'id_car'     => $car->id_car,
             'id_service' => $data['service_id']
@@ -454,7 +458,7 @@ public function sendPaymentReminderWhatsApp(Request $request, $parkingId)
         ]);
     
         Generate::create([
-            'id_contract'          => $id_contract->id_contract,
+            'id_contract'          => $id_contract,
             'id_parking_register'  => $parking->id_parking_register
         ]);
     
@@ -729,7 +733,6 @@ public function update(Request $request, $id)
         $owner->update([
             'name' => $data['name'],
             'number_phone' => $data['phone'],
-            'type_owner' => 'cliente'
         ]);
 
         // Marca y modelo

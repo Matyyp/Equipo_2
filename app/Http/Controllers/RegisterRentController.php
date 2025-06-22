@@ -8,6 +8,8 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Models\ExternalUser;
 use App\Models\RentalCar;
 use App\Models\Reservation;
+use App\Models\ContractRent;
+use App\Models\Contract;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Business;
@@ -273,6 +275,23 @@ class RegisterRentController extends Controller
         // Datos de contacto (si tienes relacionados, por ahora mock)
         $datosContacto = ContactInformation::limit(3)->get(); // cambia esto si tienes relación
 
+        // Paso 1: Obtener el contrato rent filtrando la sucursal
+        $rentContract = ContractRent::whereHas('contract_rent_contract', function ($query) use ($car) {
+            $query->where('id_branch_office', $car->branch_office_id);
+        })
+        ->with(['contract_rent_contract.contract_contains.contains_rule']) // eager load
+        ->first();
+
+        $contractRentContract = $rentContract->contract_rent_contract;
+
+        $contractContains = $contractRentContract->contract_contains ?? collect();
+
+        $reglas = $contractContains
+            ->map(fn($contain) => $contain->contains_rule)
+            ->filter()
+            ->values();
+
+
         $traduccionesContacto = [
             'email'    => 'Correo Electrónico',
             'phone'    => 'Teléfono',
@@ -314,6 +333,7 @@ class RegisterRentController extends Controller
             'direccion_sucursal' => $car->branch_office->street ?? 'Sucursal no asignada', // ajusta si tienes relación
             'horario'       => $car->branch_office->schedule ?? 'Horario no disponible',   // idem
             'datos_contacto'=> $datosContactoTraducido,
+            'reglas'        => $reglas
         ];
 
         $pdf = PDF::loadView('tenant.admin.register_rents.contract_pdf', $data)

@@ -96,11 +96,11 @@
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="name">Nombre</label>
-            <input type="text" id="name" name="name" class="form-control" title="Debe ingresar el nombre del cliente" required>
+            <input type="text" id="name" placeholder="Ej: Juan Perez" name="name" class="form-control" title="Debe ingresar el nombre del cliente" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="phone">Teléfono</label>
-            <input type="text" id="phone" name="phone" class="form-control" pattern="^[0-9]{9}$" maxlength="9" inputmode="numeric" title="Debe ingresar exactamente 9 dígitos" required>
+            <input type="text" id="phone" name="phone" placeholder="Ej: 912345678" class="form-control" pattern="^[0-9]{9}$" maxlength="9" inputmode="numeric" title="Debe ingresar exactamente 9 dígitos" required>
           </div>
         </div>
 
@@ -118,22 +118,22 @@
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="arrival_km">Km Entrada (opcional)</label>
-            <input type="number" id="arrival_km" name="arrival_km" class="form-control" min="0">
+            <input type="number" placeholder="Ej: 5000" id="arrival_km" name="arrival_km" class="form-control" min="0">
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="km_exit">Km Salida (opcional)</label>
-            <input type="number" id="km_exit" name="km_exit" class="form-control" min="0">
+            <input type="number" placeholder="Ej: 8000" id="km_exit" name="km_exit" class="form-control" min="0">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="brand_name">Marca</label>
-            <input type="text" id="brand_name" name="brand_name" class="form-control" title="Ingrese la Marca del vehículo" required>
+            <input type="text" id="brand_name" placeholder="Ej: Toyota" name="brand_name" class="form-control" title="Ingrese la Marca del vehículo" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="model_name">Modelo</label>
-            <input type="text" id="model_name" name="model_name" class="form-control" title="Ingrese la Modelo del vehículo" required>
+            <input type="text" id="model_name" placeholder="Ej: Yaris" name="model_name" class="form-control" title="Ingrese la Modelo del vehículo" required>
           </div>
         </div>
 
@@ -141,7 +141,7 @@
         <div class="form-group">
           <label for="branch_office_id">Sucursal</label>
           <select id="branch_office_id" name="branch_office_id" class="selectpicker form-control" data-live-search="true" required>
-            <option value="">—</option>
+            <option value="">Seleccione una sucursal</option>
             @foreach($branches as $branch)
               <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
             @endforeach
@@ -152,7 +152,7 @@
         <div class="form-group">
           <label for="service_id">Tipo de Estacionamiento</label>
           <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
-            <option value="">—</option>
+            <option value="">Seleccione el tipo de estacionamiento</option>
             @unless(auth()->user()->hasRole('SuperAdmin'))
               @foreach($parkingServices as $svc)
                 @role('SuperAdmin')
