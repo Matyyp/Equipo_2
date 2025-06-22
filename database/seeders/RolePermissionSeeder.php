@@ -28,6 +28,7 @@ class RolePermissionSeeder extends Seeder
             'accidente.access',
 
             'landing.access',
+            'arriendos.access',
 
         ] as $perm) {
             Permission::firstOrCreate(['name' => $perm]);

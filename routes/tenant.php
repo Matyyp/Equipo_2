@@ -257,7 +257,7 @@ Route::middleware([
         });
     });
     // Modulo de arriendos
-    Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
+    Route::middleware(['auth', 'permission:arriendos.access'])->group(function () {
         Route::get('registro-renta/data', [RegisterRentController::class, 'data'])->name('registro_renta.data');
         Route::resource('registro-renta', RegisterRentController::class);
         Route::resource('user_ratings', UserRatingController::class)->only(['store']);
@@ -266,6 +266,8 @@ Route::middleware([
         Route::get('registro-renta/fechas-ocupadas/{id}', [RegisterRentController::class, 'fechasOcupadas']);
         Route::get('/buscar-cliente', [RegisterRentController::class, 'buscarClientePorCorreo']);
         Route::put('registro-renta/completar/{id}', [RegisterRentController::class, 'completar'])->name('registro-renta.completar');
+        Route::get('register_rents/{id}/contrato', [RegisterRentController::class, 'contratoPDF'])->name('register_rents.contrato_pdf');
+
     });
     
     //Landing
