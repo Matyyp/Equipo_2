@@ -17,7 +17,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     @stack('styles')
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini layout-fixed d-flex flex-column min-vh-100">
+
 <div class="wrapper">
 
     {{-- Navbar --}}
@@ -62,7 +63,7 @@
     @include('tenant.layouts.sidebar')
 
     {{-- Contenido --}}
-    <div class="content-wrapper">
+    <div class="content-wrapper flex-grow-1">
         <section class="content py-4">
             <div class="container-fluid">
                 @yield('content')
