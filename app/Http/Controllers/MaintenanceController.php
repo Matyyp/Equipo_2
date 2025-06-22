@@ -9,6 +9,8 @@ use App\Models\MaintenanceImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MaintenanceController extends Controller
 {
@@ -30,62 +32,56 @@ class MaintenanceController extends Controller
                 ->addColumn('type', fn($m) => e($m->type->name ?? ''))
 
                 ->addColumn('status', function ($m) {
-                    $status = 'Programada';
+    // 1. Verificar si el auto está actualmente en mantención
+    $inMaintenance = $m->car && !$m->car->is_active;
+    
+    // 2. Verificar si la tarea está completada
+    $isCompleted = $m->is_completed;
 
-                    if (!$m->is_completed && $m->employee_name) {
-                        $status = 'En proceso';
-                    }
+    // 3. Lógica para determinar qué mostrar
+    if ($inMaintenance) {
+        if ($isCompleted) {
+            // Auto en mantención PERO esta tarea específica está completada
+            return "<span class='border border-success text-success px-2 py-1 rounded font-weight-bold'>Completada</span>";
+        } else {
+            // Auto en mantención y tarea pendiente
+            return "<span class='border border-danger text-danger px-2 py-1 rounded font-weight-bold'>En mantención</span>";
+        }
+    } else {
+        // Auto NO está en mantención - mostrar estado normal de la tarea
+        if ($isCompleted) {
+            return "<span class='border border-success text-success px-2 py-1 rounded'>Completada</span>";
+        } elseif ($m->employee_name) {
+            return "<span class='border border-warning text-warning px-2 py-1 rounded'>En proceso</span>";
+        } else {
+            return "<span class='border border-secondary text-secondary px-2 py-1 rounded'>Programada</span>";
+        }
+    }
+})
+->addColumn('proximidad', function ($m) {
+    $fechaTexto = null;
+    $kmTexto = null;
 
-                    if ($m->is_completed) {
-                        $status = 'Completada';
-                    }
+    // Fecha programada
+    if (!empty($m->scheduled_date)) {
+        $fechaTexto = '' . \Carbon\Carbon::parse($m->scheduled_date)->format('d-m-Y');
+    }
 
-                    $badgeColor = match($status) {
-                        'Programada' => 'secondary',
-                        'En proceso' => 'warning',
-                        'Completada' => 'success',
-                        default => 'light'
-                    };
+    // Asegúrate de que la relación esté cargada y tenga valor
+    if (!is_null($m->scheduled_km) && $m->car && !is_null($m->car->km)) {
+        $kmFaltantes = $m->scheduled_km - $m->car->km;
+        $kmTexto = $kmFaltantes <= 0
+            ? '⚠ Excedido'
+            : "{$kmFaltantes} km para Mantención";
+    }
 
-                    $statusHtml = "<span class='badge badge-{$badgeColor}'>{$status}</span>";
+    if ($fechaTexto && $kmTexto) {
+        return "{$fechaTexto} / {$kmTexto}";
+    }
 
-                    if ($m->car && !$m->car->is_active) {
-                        $statusHtml .= "<div><span class='badge badge-dark mt-1'>En mantención</span></div>";
-                    }
+    return $fechaTexto ?? $kmTexto ?? '-';
+})
 
-                    return $statusHtml;
-                })
-                
-                ->addColumn('proximidad', function ($m) {
-                    $diasFaltantes = null;
-                    $kmFaltantes = null;
-
-                    if ($m->scheduled_date) {
-                        $diasFaltantes = now()->diffInDays($m->scheduled_date, false); // negativo si ya pasó
-                    }
-
-                    if ($m->scheduled_km && $m->car && $m->car->km) {
-                        $kmFaltantes = $m->scheduled_km - $m->car->km;
-                    }
-
-                    // Elegimos la menor proximidad de los dos
-                    $proximidadValor = min(
-                        $diasFaltantes !== null ? abs($diasFaltantes) : INF,
-                        $kmFaltantes !== null ? abs($kmFaltantes) : INF
-                    );
-
-                    $texto = '';
-                    if ($diasFaltantes !== null) {
-                        $texto .= $diasFaltantes <= 0 ? '⚠ Fecha Vencida' : "{$diasFaltantes} días";
-                    }
-
-                    if ($kmFaltantes !== null) {
-                        $texto .= $texto ? ' / ' : '';
-                        $texto .= $kmFaltantes <= 0 ? '⚠ Excedido' : "{$kmFaltantes} km para Mantención";
-                    }
-
-                    return $texto ?: '-';
-                })
 
 
                 ->addColumn('acciones', function ($m) {
@@ -103,7 +99,7 @@ class MaintenanceController extends Controller
                     $maintenanceBtn = $disableMaintenance
                         ? '<button class="btn btn-sm btn-outline-info" disabled><i class="fas fa-tools"></i></button>'
                         : <<<HTML
-                            <form action="{$mark}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Marcar vehículo como en mantenimiento?')">
+                            <form action="{$mark}" method="POST" class="form-mark d-inline">
                                 {$csrf}
                                 <button class="btn btn-sm btn-outline-info"><i class="fas fa-tools"></i></button>
                             </form>
@@ -131,10 +127,10 @@ class MaintenanceController extends Controller
                         {$maintenanceBtn}
                         {$completeBtn}
                         {$viewBtn}
-                        <form action="{$delete}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar esta mantención?')">
-                            {$csrf}{$method}
-                            <button class="btn btn-sm btn-outline-info"><i class="fas fa-trash"></i></button>
-                        </form>
+                            <form action="{$delete}" method="POST" class="form-delete d-inline">
+                                {$csrf}{$method}
+                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-trash"></i></button>
+                            </form>
                     HTML;
                 })
 

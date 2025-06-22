@@ -26,60 +26,54 @@
         border-color: #17a2b8 !important; 
       }
 
-
       .dataTables_paginate .pagination .page-item .page-link {
         background-color: #eeeeee;
         color: #17a2b8 !important;
         border-color: #eeeeee;
       }
-
   </style>
 @endpush
 
 @section('content')
 <div class="container-fluid">
-
   @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
   <div class="card">
-<div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center flex-wrap">
-  {{-- Título con ícono a la izquierda --}}
-  <div class="d-flex align-items-center">
-    <i class="fas fa-tools mr-2"></i> Listado de Mantenciones
-  </div>
-
-  {{-- Botones a la derecha --}}
-  <div class="d-flex flex-wrap ml-auto gap-2">
-    <a href="{{ route('maintenance.entries.create') }}"
-       style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
-      <i class="fas fa-plus"></i> Nueva
-    </a>
-    <a href="#" data-toggle="modal" data-target="#programMaintenanceModal"
-       style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
-      <i class="fas fa-calendar-plus"></i> Nueva Programada
-    </a>
-    <a href="#" data-toggle="modal" data-target="#interruptScheduleModal"
-       style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
-      <i class="fas fa-ban"></i> Interrumpir Programada
-    </a>
-  </div>
-</div>
-
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center flex-wrap">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-tools mr-2"></i> Listado de Mantenciones
+      </div>
+      <div class="d-flex flex-wrap ml-auto gap-2">
+        <a href="{{ route('maintenance.entries.create') }}"
+           style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+          <i class="fas fa-plus"></i> Nueva
+        </a>
+        <a href="#" data-toggle="modal" data-target="#programMaintenanceModal"
+           style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+          <i class="fas fa-calendar-plus"></i> Nueva Programada
+        </a>
+        <a href="#" data-toggle="modal" data-target="#interruptScheduleModal"
+           style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+          <i class="fas fa-ban"></i> Interrumpir Programada
+        </a>
+      </div>
+    </div>
     <div class="card-body">
-      <table id="maintenances-table" class="table table-striped w-100">
-        <thead>
-          <tr>
-            <th>Vehículo</th>
-            <th>Mantención</th>
-            <th>Estado</th>
-            <th>Proximidad</th>
-
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-      </table>
+      <div class="table-responsive">
+        <table id="maintenances-table" class="table table-striped w-100">
+          <thead>
+            <tr>
+              <th>Vehículo</th>
+              <th>Mantención</th>
+              <th>Estado</th>
+              <th>Proximidad</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -268,6 +262,8 @@
 </div>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
@@ -290,5 +286,51 @@ $(function () {
   });
 });
 </script>
+<script>
+$(document).ready(function () {
+    // SweetAlert para eliminar
+    $(document).on('submit', '.form-delete', function (e) {
+        e.preventDefault();
+        const form = this;
+
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: "¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+
+    // SweetAlert para marcar como en mantenimiento
+    $(document).on('submit', '.form-mark', function (e) {
+        e.preventDefault();
+        const form = this;
+
+        Swal.fire({
+            title: '¿Marcar vehículo en mantenimiento?',
+            text: "El vehículo pasará a estado de mantención.",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, confirmar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#17a2b8',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+
 @endpush
 
