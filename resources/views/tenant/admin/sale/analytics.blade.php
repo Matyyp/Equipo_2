@@ -4,6 +4,10 @@
 @section('page_title', 'Analiticas')
 @push('styles')
 <style>
+.btn-outline-info.text-info:hover,
+.btn-outline-info.text-info:focus {
+    color: #fff !important;
+}
 #userRankingList {
     border: 1px solid #e5e7eb;
     border-radius: 8px;
@@ -139,19 +143,20 @@
 .user-rating-btn {
     background: none;
     border: none;
-    color: #3b82f6;
+    color: #fbbf24;
     cursor: pointer;
     padding: 0 6px;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     transition: color 0.15s;
 }
 .user-rating-btn:hover {
-    color: #1d4ed8;
+    color: #f59e42;
 }
 .star-icon {
     color: #fbbf24;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     margin-left: 3px;
+    vertical-align: middle;
 }
 
 #userRatingsModal {
@@ -250,6 +255,7 @@
 @endpush
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://kit.fontawesome.com/96b81e7f85.js" crossorigin="anonymous"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     let chartBar = null;
@@ -606,19 +612,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
                 <div class="user-right" title="Cantidad de arriendos">${u.total}</div>
                 <div class="user-rating-col">
-                    <button class="user-rating-btn" data-client-rut="${u.client_rut}" data-client-name="${u.client_name}" title="Ver calificaciones">
-                        <span class="star-icon">&#9733;</span>
-                    </button>
+<button class="btn btn-outline-info btn-sm text-info ml-1 " data-client-rut="${u.client_rut}" data-client-name="${u.client_name}" title="Ver calificaciones">
+    <i class="fas fa-star"></i>
+</button>
                 </div>
             `;
-            li.querySelector('.user-rating-btn').addEventListener('click', function() {
+            li.querySelector('.btn-outline-info').addEventListener('click', function() {
                 showUserRatings(this.getAttribute('data-client-rut'), this.getAttribute('data-client-name'));
             });
             ul.appendChild(li);
         });
     }
-
-
 
     // MODAL LOGIC
     function showUserRatings(clientRut, clientName) {
@@ -645,7 +649,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('closeUserRatingsModal').addEventListener('click', function() {
         document.getElementById('userRatingsModal').classList.add('hidden');
     });
-    // Cierra el modal si se hace click fuera del contenido
     document.getElementById('userRatingsModal').addEventListener('click', function(e) {
         if (e.target === this) {
             this.classList.add('hidden');
@@ -759,32 +762,30 @@ document.addEventListener('DOMContentLoaded', function () {
         
     </div>
     <div class="contenedor2 ">    
-        <div class="bg-white rounded-lg shadow p-4 mb-2 ">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Usuarios que más arrendaron autos</h3>
-                @if(auth()->user()->hasRole('SuperAdmin'))
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectUsers" class="border border-gray-300 rounded text-sm px-2 py-1">
-                            @foreach(\App\Models\BranchOffice::all() as $branch)
-                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
-            </div>
+            <div class="bg-white rounded-lg shadow p-4 mb-2 ">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold">Usuarios que más arrendaron autos</h3>
+                    @if(auth()->user()->hasRole('SuperAdmin'))
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">Sucursal:</span>
+                            <select id="branchSelectUsers" class="border border-gray-300 rounded text-sm px-2 py-1">
+                                @foreach(\App\Models\BranchOffice::all() as $branch)
+                                    <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                </div>
                 <ul id="userRankingList" class="divide-y divide-gray-200"></ul>
-
-        </div>
-
-        <!-- Modal para calificaciones -->
-        <div id="userRatingsModal" class="hidden">
-            <div class="modal-content">
-                <button type="button" class="close-modal-btn" id="closeUserRatingsModal" aria-label="Cerrar">&times;</button>
-                <div id="userRatingsList"></div>
+            </div>
+            <!-- Modal para calificaciones -->
+            <div id="userRatingsModal" class="hidden">
+                <div class="modal-content">
+                    <button type="button" class="close-modal-btn" id="closeUserRatingsModal" aria-label="Cerrar">&times;</button>
+                    <div id="userRatingsList"></div>
+                </div>
             </div>
         </div>
-    </div>
 </div>
 
      
