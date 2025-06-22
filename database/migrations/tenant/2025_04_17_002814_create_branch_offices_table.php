@@ -16,13 +16,13 @@ return new class extends Migration
             $table->string('name_branch_offices');
             $table->string('schedule');
             $table->string('street');
+            $table->integer('number_parkings')->default(0);
             $table->unsignedBigInteger('id_business');
             $table->unsignedBigInteger('id_location');
             $table->foreign('id_business')->references('id_business')->on('businesses')->onDelete('cascade');
             $table->foreign('id_location')->references('id_location')->on('locations')->onDelete('cascade');
             $table->enum('status', ['active', 'Inactive']);
             $table->timestamps();
-
         });
 
         Schema::table('contracts', function (Blueprint $table) {

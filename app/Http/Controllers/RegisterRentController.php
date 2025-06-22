@@ -23,44 +23,49 @@ class RegisterRentController extends Controller
     }
 
     public function data()
-    {
-        $query = RegisterRent::with(['rentalCar.brand', 'rentalCar.model', 'rentalCar.branchOffice']);
+{
+    $query = RegisterRent::with([
+        'rentalCar.brand', 
+        'rentalCar.model', 
+        'rentalCar.branchOffice',
+        'userRatings' // ¡Asegúrate de incluir esta relación!
+    ]);
 
-        return datatables()->eloquent($query)
-            ->addColumn('auto', function ($r) {
-                $brand = optional($r->rentalCar->brand)->name_brand ?? 'N/A';
-                $model = optional($r->rentalCar->model)->name_model ?? '';
-                return trim("{$brand} {$model}");
-            })
-            ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
-            ->addColumn('acciones', function ($r) {
-                $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info" title="Ver">
-                    <i class="fas fa-eye"></i>
+    return datatables()->eloquent($query)
+        ->addColumn('auto', function ($r) {
+            $brand = optional($r->rentalCar->brand)->name_brand ?? 'N/A';
+            $model = optional($r->rentalCar->model)->name_model ?? '';
+            return trim("{$brand} {$model}");
+        })
+        ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
+        ->addColumn('acciones', function ($r) {
+            $accidentBtn = '';
+            if ($r->rentalCar) {
+                $accidentUrl = route('accidente.create', ['id_rent' => $r->id]);
+                $accidentBtn = '<a href="' . $accidentUrl . '" class="btn btn-outline-info btn-sm text-info mr-1" title="Registrar Accidente">
+                    <i class="fas fa-car-crash"></i>
                 </a>';
+            }
+            $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Ver">
+                <i class="fas fa-eye"></i>
+            </a>';
+            $reseñaBtn = ($r->userRatings && $r->userRatings->isEmpty())
+                ? '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" title="Añadir Reseña">
+                    <i class="fas fa-star"></i>
+                </button>' : '';
+            $completarBtn = $r->status === 'en_progreso'
+                ? '<button class="btn btn-outline-info btn-sm text-info ml-1 completar-btn" data-id="' . $r->id . '" data-toggle="modal" data-target="#completarModal">
+                    <i class="fas fa-check-circle"></i>
+                </button>' : '';
 
-                $contratoBtn = '<a href="' . route('register_rents.contrato_pdf', $r->id) . '" class="btn btn-outline-info btn-sm text-info ml-1" title="Generar Contrato" target="_blank">
-                    <i class="fas fa-file-pdf"></i>
-                </a>';
-
-                $reseñaBtn = $r->userRatings->isEmpty()
-                    ? '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" title="Añadir Reseña">
-                        <i class="fas fa-star"></i>
-                    </button>' : '';
-
-                $completarBtn = $r->status === 'en_progreso'
-                    ? '<button class="btn btn-outline-info btn-sm text-info ml-1 completar-btn" data-id="' . $r->id . '" data-toggle="modal" data-target="#completarModal">
-                        <i class="fas fa-check-circle"></i>
-                    </button>' : '';
-
-                return $verBtn . $contratoBtn . $reseñaBtn . $completarBtn;
-            })
-            ->addColumn('status', fn($r) => $r->status === 'completado' 
-                ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
-                : '<span class="border border-warning text-warning px-2 py-1 rounded">En Progreso</span>')
-            ->rawColumns(['acciones', 'status'])
-            ->toJson();
-    }
-
+            return $accidentBtn . $verBtn . $reseñaBtn . $completarBtn;
+        })
+        ->addColumn('status', fn($r) => $r->status === 'completado' 
+            ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
+            : '<span class="border border-warning text-warning px-2 py-1 rounded">En Progreso</span>')
+        ->rawColumns(['acciones', 'status'])
+        ->toJson();
+}
     public function show($id)
     {
         $register = RegisterRent::with(['rentalCar.brand', 'rentalCar.branchOffice'])->findOrFail($id);

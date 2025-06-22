@@ -6,6 +6,7 @@ use App\Models\RentalCar;
 use App\Models\Brand;
 use App\Models\ModelCar;
 use App\Models\BranchOffice;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -21,11 +22,18 @@ class RentalCarController extends Controller
 
     public function data(Request $request)
     {
-        return DataTables::of(RentalCar::with(['brand','model','branchOffice']))
+        return DataTables::of(RentalCar::with(['brand','model','branchOffice','accidents'])) // agrega accidents a with
             ->addColumn('marca', fn($c) => $c->brand->name_brand)
             ->addColumn('modelo', fn($c) => $c->model->name_model)
             ->addColumn('year',   fn($c) => $c->year)
             ->addColumn('estado', function($c) {
+                // Si tiene algún accidente "in progress", forzar Inactivo visualmente
+                $hasInProgressAccident = $c->accidents->contains(function($acc) {
+                    return $acc->status === 'in progress';
+                });
+                if ($hasInProgressAccident) {
+                    return '<span class="border border-secondary text-secondary px-2 py-1 rounded">Inactivo</span>';
+                }
                 return $c->is_active
                     ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
                     : '<span class="border border-secondary text-secondary px-2 py-1 rounded">Inactivo</span>';
@@ -36,15 +44,18 @@ class RentalCarController extends Controller
                 $v = route('rental-cars.show',   $c);
                 $e = route('rental-cars.edit',   $c);
                 $d = route('rental-cars.destroy',$c);
+                $accidents = route('accidente.index', ['rental_car_id' => $c->id]);
                 $token  = csrf_field();
                 $method = method_field('DELETE');
-
                 return <<<HTML
                 <a href="{$v}" class="btn btn-outline-info btn-sm text-info" title="Ver">
                     <i class="fas fa-eye"></i>
                 </a>
                 <a href="{$e}" class="btn btn-outline-info btn-sm text-info" title="Editar">
                     <i class="fas fa-pen"></i>
+                </a>
+                <a href="{$accidents}" class="btn btn-outline-info btn-sm text-info" title="Accidentes">
+                    <i class="fas fa-car-crash"></i>
                 </a>
                 <form action="{$d}" method="POST" style="display:inline" onsubmit="return confirm('¿Eliminar?')">
                     {$token}{$method}
