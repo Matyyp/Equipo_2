@@ -41,6 +41,47 @@
 @endpush
 @section('content')
 <div class="row">
+@if($mantencionesProximas->count())
+<div class="col-12 mb-4">
+  <div class="card shadow-sm border-start border-4 border-info">
+    <div class="card-body">
+      <div class="d-flex align-items-center mb-3">
+        <i class="fas fa-tools fa-lg text-info me-2 mr-1"> </i>
+        <h5 class="mb-0 text-info">
+          {{ $mantencionesTotal }}  mantención{{ $mantencionesTotal > 1 ? 'es' : '' }} próxima{{ $mantencionesTotal > 1 ? 's' : '' }} detectada{{ $mantencionesTotal > 1 ? 's' : '' }}
+        </h5>
+      </div>
+
+      <p class="mb-2 text-muted">Mostrando un resumen por vehículo:</p>
+
+      <ul class="mb-3 ps-3 small">
+        @foreach($mantencionesProximas as $m)
+          <li class="mb-1">
+            <i class="fas fa-car me-1 text-secondary"></i>
+            <strong>{{ $m->car->brand->name_brand ?? '-' }} {{ $m->car->model->name_model ?? '-' }}</strong>
+            <span class="text-muted">– {{ $m->type->name }}</span>
+            @if($m->scheduled_date)
+              <span class="badge bg-light text-dark ms-2">
+                {{ \Carbon\Carbon::parse($m->scheduled_date)->format('d/m/Y') }}
+              </span>
+            @endif
+          </li>
+        @endforeach
+      </ul>
+
+      <div class="text-end">
+        <a href="{{ route('maintenance.entries.index') }}" class="btn btn-sm btn-outline-info">
+          <i class="fas fa-list me-1"></i> Ver todas las mantenciones
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+@endif
+
+
+
+
     {{-- Card 1 --}}
     <div class="col-6 col-md-3 mb-4">
         <a href="/estacionamiento/create" class="text-decoration-none">
