@@ -66,7 +66,7 @@
                 @endcan
 
                 {{-- Arriendos --}}
-                @can('reservas.access')
+                @can('arriendos.access')
                 <li class="nav-item has-treeview {{request()->is('rental-cars*') || request()->is('registro-renta*') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{request()->is('rental-cars*') || request()->is('registro-renta*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-days"></i>

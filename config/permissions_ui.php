@@ -20,6 +20,9 @@ return [
     'Reservas' => [
         'reservas.access' => 'Acceso a reservas',
     ],
+    'Arriendo de vehículos' => [
+        'arriendos.access' => 'Acceso a arriendos de vehículos',
+    ],
     'Ventas' => [
         'ventas.access' => 'Acceso a ventas',
         'cost_basic_service.access' => 'Acceso a costos de servicio básico',

@@ -27,6 +27,7 @@ class RolePermissionSeeder extends Seeder
             'cost_basic_service.access',
 
             'landing.access',
+            'arriendos.access',
 
         ] as $perm) {
             Permission::firstOrCreate(['name' => $perm]);

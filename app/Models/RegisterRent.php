@@ -44,4 +44,13 @@ class RegisterRent extends Model
     {
         return $this->hasMany(UserRating::class, 'register_rent_id');
     }
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'id_brand');
+    }
+
+    public function modelCar()
+    {
+        return $this->belongsTo(ModelCar::class, 'id_model');
+    }
 }
