@@ -12,97 +12,72 @@
   <div class="card">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div><i class="fas fa-info-circle mr-2"></i>Quiénes Somos</div>
-
+      <a href="{{ route('landing.quienes-somos.edit', $aboutUs) }}" 
+      style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto" title="Editar">
+        <i class="fas fa-pen me-1"></i> Editar
+      </a>
     </div>
+
     <div class="card-body">
       <div class="table-responsive">
-        <table id="quienes-somos-table" class="table table-striped table-bordered w-100">
-          <thead>
-            <tr>
-              <th>Texto Superior</th>
-              <th>Título Principal</th>
-              <th>Texto Secundario</th>
-              <th>Botón</th>
-              <th>Colores</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+        <table class="table table-bordered w-100">
           <tbody>
             <tr>
-              <!-- Texto Superior -->
+              <th width="200">Texto Superior</th>
               <td>
-                @if($aboutUs->top_text_active)
-                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                @else
-                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                @endif
-                <div class="mt-2 small">{{ Str::limit($aboutUs->top_text, 50) }}</div>
+                {!! $aboutUs->top_text_active 
+                    ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                    : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>' !!}
+                <div class="mt-2 small">{{ Str::limit($aboutUs->top_text, 100) }}</div>
               </td>
-              
-              <!-- Título Principal -->
+            </tr>
+            <tr>
+              <th>Título Principal</th>
               <td>
-                @if($aboutUs->main_title_active)
-                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                @else
-                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                @endif
+                {!! $aboutUs->main_title_active 
+                    ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                    : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>' !!}
                 <div class="mt-2">{{ $aboutUs->main_title }}</div>
               </td>
-              
-              <!-- Texto Secundario -->
+            </tr>
+            <tr>
+              <th>Texto Secundario</th>
               <td>
-                @if($aboutUs->secondary_text_active)
-                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                @else
-                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                @endif
-                <div class="mt-2 small">{{ Str::limit($aboutUs->secondary_text, 50) }}</div>
+                {!! $aboutUs->secondary_text_active 
+                    ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                    : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>' !!}
+                <div class="mt-2 small">{{ Str::limit($aboutUs->secondary_text, 100) }}</div>
               </td>
-              
-              <!-- Botón -->
+            </tr>
+            <tr>
+              <th>Botón</th>
               <td>
-                @if($aboutUs->button_active)
-                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                @else
-                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                @endif
+                {!! $aboutUs->button_active 
+                    ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                    : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>' !!}
                 <div class="mt-2">
-                  <span class="d-block"><strong>Texto:</strong> {{ $aboutUs->button_text }}</span>
-                  <span class="d-block"><strong>Enlace:</strong> {{ $aboutUs->button_link }}</span>
+                  <div><strong>Texto:</strong> {{ $aboutUs->button_text }}</div>
+                  <div><strong>Enlace:</strong> {{ $aboutUs->button_link }}</div>
                 </div>
               </td>
-              
-              <!-- Colores -->
+            </tr>
+            <tr>
+              <th>Colores</th>
               <td>
-                <div class="d-flex flex-column gap-1 small">
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->button_text_color }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Texto Botón
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->button_color }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Fondo Botón
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->card_color }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Fondo Tarjeta
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->card_text_color }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Texto Tarjeta
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $aboutUs->video_card_color }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Color Tarjeta Video
-                  </div>
+                <div class="d-flex flex-wrap gap-3 small">
+                  @foreach([
+                    'Texto Botón' => $aboutUs->button_text_color,
+                    'Fondo Botón' => $aboutUs->button_color,
+                    'Fondo Tarjeta' => $aboutUs->card_color,
+                    'Texto Tarjeta' => $aboutUs->card_text_color,
+                    'Tarjeta Video' => $aboutUs->video_card_color
+                  ] as $label => $color)
+                    <div class="d-flex align-items-center gap-2 me-4">
+                      <span style="display:inline-block;width:15px;height:15px;background-color:{{ $color }};border-radius:50%;border:1px solid #ccc;"></span>
+                      {{ $label }}
+                    </div>
+                  @endforeach
                 </div>
-              </td>
-              
-              <!-- Acciones -->
-              <td>
-                <a href="{{ route('landing.quienes-somos.edit', $aboutUs) }}" class="btn btn-outline-info btn-sm text-info" title="Editar">
-                  <i class="fas fa-pen"></i>
-                </a>
               </td>
             </tr>
           </tbody>
@@ -119,25 +94,8 @@
     font-size: 0.75em;
     padding: 0.35em 0.65em;
   }
-  #quienes-somos-table td {
+  table td {
     vertical-align: middle;
   }
 </style>
-@endpush
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  $('#quienes-somos-table').DataTable({
-    language: {
-      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-    },
-    responsive: true,
-    searching: false,
-    paging: false,
-    info: false,
-    ordering: false
-  });
-});
-</script>
 @endpush

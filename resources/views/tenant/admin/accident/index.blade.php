@@ -4,6 +4,8 @@
 @section('page_title','Listado de Accidentes')
 
 @push('styles')
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css"> {{-- Agregado CSS responsive --}}
   <style>
     table.dataTable td, table.dataTable th { border: none !important; }
     table.dataTable tbody tr { border: none !important; }
@@ -39,6 +41,13 @@
       background: #565e64 !important;
       color: #fff !important;
     }
+    /* Controlar ancho y texto para responsividad */
+    table.dataTable td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
   </style>
 @endpush
 
@@ -70,7 +79,7 @@
               <i class="fas fa-info-circle mr-2"></i>
               <span>Debe haber al menos un arriendo asociado al vehículo.</span>
               <a href="{{ route('registro-renta.create') }}"
-                style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;;" class="ml-2">
+                style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-2">
                 <i class="fas fa-plus mr-1"></i> Ingresar un arriendo
               </a>
             </div>
@@ -115,16 +124,19 @@
 @endsection
 
 @push('scripts')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
   $(document).ready(function() {
-    $('#accidents-table').DataTable({
+    var table = $('#accidents-table').DataTable({
       processing: true,
       serverSide: true,
+      responsive: true,
       ajax: {
         url: '{{ route("accidente.data") }}',
         data: function (d) {
@@ -132,28 +144,27 @@
         }
       },
       columns: [
-        { data: 'id_rent', name: 'id_rent' },
-        { data: 'name_accident', name: 'name_accident' },
-        { data: 'description', name: 'description' },
-        { data: 'bill_number', name: 'bill_number' },
-        { data: 'description_accident_term', name: 'description_accident_term' },
-        { data: 'photo', name: 'photo', orderable: false, searchable: false },
-        { data: 'status', name: 'status' },
-        { data: 'created_at', name: 'created_at' },
+        { data: 'id_rent', responsivePriority: 1 },
+        { data: 'name_accident', responsivePriority: 2 },
+        { data: 'description', responsivePriority: 5 },
+        { data: 'bill_number', responsivePriority: 6 },
+        { data: 'description_accident_term', responsivePriority: 7 },
+        { data: 'photo', orderable: false, searchable: false, responsivePriority: 100 },
+        { data: 'status', responsivePriority: 3 },
+        { data: 'created_at', responsivePriority: 4 },
         {
-            data: 'acciones',
-            name: 'acciones',
-            orderable: false,
-            searchable: false,
-            className: 'text-center'
+          data: 'acciones',
+          orderable: false,
+          searchable: false,
+          className: 'text-center',
+          responsivePriority: 100
         }
       ],
       order: [[7, 'desc']],
-      language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
-      responsive: true
+      language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
     });
 
-    // Marcar como completado con SweetAlert2
+    // Marcar como completado
     $(document).on('click', '.btn-mark-complete', function() {
       var id = $(this).data('id');
       Swal.fire({
@@ -175,7 +186,7 @@
             },
             success: function(response) {
               if(response.success) {
-                $('#accidents-table').DataTable().ajax.reload(null, false);
+                table.ajax.reload(null, false);
                 Swal.fire({
                   icon: 'success',
                   title: '¡Completado!',
@@ -189,7 +200,7 @@
       });
     });
 
-    // SweetAlert2 para eliminar
+    // Eliminar con confirmación
     $(document).on('click', '.btn-delete-accident', function(e) {
       e.preventDefault();
       var button = $(this);

@@ -8,73 +8,69 @@
     <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
-  <div class="card">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div><i class="fas fa-shoe-prints mr-2"></i>Footers</div>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-striped table-bordered w-100">
-          <thead>
-            <tr>
-              <th>Copyright</th>
-              <th>Contacto</th>
-              <th>Redes</th>
-              <th>Colores</th>
-              <th class="text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($footers as $footer)
+  @foreach($footers as $footer)
+    <div class="card mb-4">
+      <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+        <div><i class="fas fa-shoe-prints mr-2"></i>Footer</div>
+        <a href="{{ route('landing.footer.edit', $footer->id) }}"  
+        style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto"title="Editar">
+          <i class="fas fa-pen me-1"></i> Editar
+        </a>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered w-100">
+            <tbody>
               <tr>
+                <th width="200">Copyright</th>
                 <td>
                   <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                  <div class="mt-2 small">{{ Str::limit($footer->copyright, 50) }}</div>
+                  <div class="mt-2 small">{{ Str::limit($footer->copyright, 100) }}</div>
                 </td>
-                <td>
-                  @if($footer->contact_active)
-                    <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                  @else
-                    <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                  @endif
-                  <div class="mt-2 small">{{ Str::limit($footer->contact_text, 50) }}</div>
-                </td>
-                <td>
-                  @if($footer->social_active)
-                    <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                  @else
-                    <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                  @endif
-                  <div class="mt-2 small">{{ Str::limit($footer->social_text, 50) }}</div>
-                </td>
+              </tr>
 
+              <tr>
+                <th>Contacto</th>
                 <td>
-                  <div class="d-flex flex-column gap-1 small">
+                  {!! $footer->contact_active
+                      ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                      : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>' !!}
+                  <div class="mt-2 small">{{ Str::limit($footer->contact_text, 100) }}</div>
+                </td>
+              </tr>
+
+              <tr>
+                <th>Redes Sociales</th>
+                <td>
+                  {!! $footer->social_active
+                      ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
+                      : '<span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>' !!}
+                  <div class="mt-2 small">{{ Str::limit($footer->social_text, 100) }}</div>
+                </td>
+              </tr>
+
+              <tr>
+                <th>Colores</th>
+                <td>
+                  <div class="d-flex flex-wrap gap-3 small">
                     @foreach([
                       'Fondo' => $footer->background_color,
                       'Texto 1' => $footer->text_color_1,
                       'Texto 2' => $footer->text_color_2
                     ] as $label => $color)
-                      <div class="d-flex align-items-center gap-2">
+                      <div class="d-flex align-items-center gap-2 me-4">
                         <span style="display:inline-block;width:15px;height:15px;background-color:{{ $color }};border-radius:50%;border:1px solid #ccc;"></span>
                         {{ $label }}
                       </div>
                     @endforeach
                   </div>
                 </td>
-
-                <td class="text-center">
-                  <a href="{{ route('landing.footer.edit', $footer->id) }}" class="btn btn-outline-info btn-sm text-info me-1" title="Editar">
-                    <i class="fas fa-pen"></i>
-                  </a>
-
-                </td>
               </tr>
-            @endforeach
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
+  @endforeach
 </div>
 @endsection

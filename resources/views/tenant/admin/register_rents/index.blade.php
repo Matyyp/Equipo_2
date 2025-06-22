@@ -147,7 +147,9 @@
       <div class="modal-content">
         <div class="modal-header bg-secondary text-white">
           <h5 class="modal-title" id="completarModalLabel">Completar Arriendo</h5>
-          <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Cerrar"></button>
+          <button type="button" class="btn text-white" data-dismiss="modal" aria-label="Cerrar">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
         <div class="modal-body">
           <div class="form-group">
