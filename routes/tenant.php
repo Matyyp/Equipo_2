@@ -71,6 +71,13 @@ Route::middleware([
     Route::get('/', function () {
         return view('tenant.landings.welcomev2');
     });
+    Route::get('/whatsapp/contract-link/{parkingRegister}', [ParkingController::class, 'generateContractWhatsappLink'])
+    ->name('whatsapp.contract.link');
+
+
+    Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])
+        ->name('contrato.print')
+        ->middleware(['signed', 'throttle:5,10']);
 
     Route::get('/available‐cars', [LandingController::class, 'availableCars'])
      ->name('landings.available');
