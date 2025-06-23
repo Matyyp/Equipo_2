@@ -89,20 +89,32 @@
         </a>
     </div>
 </div>
-
-{{-- Espacio para gráficos --}}
 <div class="row">
+    {{-- Gráfico de Estacionamientos --}}
     <div class="col-md-6 mb-4">
         <div class="card shadow-sm h-100">
-            <div class="bg-white rounded-lg  p-4 mx-2">
-            <h3 class="text-sm font-semibold mb-2">Disponibilidad Estacionamientos</h3>
-            <div class="relative" style="height: 250px;">
-                <canvas id="chartParking"></canvas>
-            </div>
-            <div id="parkingInfo" class="text-center text-sm mt-3 font-medium text-gray-700">
-
+            <div class="bg-white rounded-lg p-4 mx-2">
+                <h3 class="text-sm font-semibold mb-2">Disponibilidad Estacionamientos</h3>
+                <div class="relative" style="height: 250px;">
+                    <canvas id="chartParking"></canvas>
+                </div>
+                <div id="parkingInfo" class="text-center text-sm mt-3 font-medium text-gray-700"></div>
             </div>
         </div>
+    </div>
+
+    {{-- Gráfico de Tipos de Auto --}}
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="bg-white rounded-lg p-4 mx-2">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold">Tipos de auto más arrendados</h3>
+
+                </div>
+                <div class="relative" style="height: 250px;">
+                    <canvas id="chartCarType"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -210,5 +222,66 @@ $(function(){
     responsive: true,
   });
 });
+
+
+</script>
+<script>
+
+  let chartCarType = null;
+
+
+  function renderCarTypeRanking(branchId = null) {
+        let url = `{{ route('analiticas.car.type.ranking') }}`;
+        @if(auth()->user()->hasRole('SuperAdmin'))
+        if (branchId) {
+            url += `?branch_id=${branchId}`;
+        }
+        @endif
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (chartCarType) chartCarType.destroy();
+                if (data.labels.length) {
+                    const colors = [
+                        '#3b82f6', '#f59e42', '#10b981', '#f87171', '#a78bfa',
+                        '#fbbf24', '#34d399', '#f472b6', '#6366f1', '#facc15',
+                        '#4ade80', '#c026d3', '#eab308', '#f43f5e', '#0ea5e9'
+                    ];
+                    const borderColors = [
+                        '#2563eb', '#ea580c', '#059669', '#dc2626', '#7c3aed',
+                        '#b45309', '#059669', '#be185d', '#4f46e5', '#a16207',
+                        '#22c55e', '#a21caf', '#ca8a04', '#be123c', '#0369a1'
+                    ];
+                    const ctx = document.getElementById('chartCarType').getContext('2d');
+                    chartCarType = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Cantidad de Arriendos',
+                                data: data.values,
+                                backgroundColor: colors.slice(0, data.labels.length),
+                                borderColor: borderColors.slice(0, data.labels.length),
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            scales: {
+                                x: { beginAtZero: true, title: { display: true, text: 'Cantidad' } },
+                                y: { title: { display: true, text: 'Tipo de Auto' } }
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(err => console.error(err));
+    }
+    let chartTopUsers = null;
+let currentBranchIdCarType = null;
+        renderCarTypeRanking(currentBranchIdCarType);
 </script>
 @endpush
