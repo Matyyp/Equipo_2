@@ -372,7 +372,7 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         Route::post('entries/interrupt', [\App\Http\Controllers\MaintenanceController::class, 'interruptScheduled'])
             ->name('maintenance.entries.interrupt');
 
-        // 📌 Tipos de mantención (maintenance_types)
+        //Tipos de mantención (maintenance_types)
         Route::get('type/data', [\App\Http\Controllers\MaintenanceTypeController::class, 'data'])
             ->name('maintenance.type.data');
 
@@ -386,7 +386,7 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
                 'destroy' => 'maintenance.type.destroy',
             ]);
 
-        // 📌 Mantenciones (entries / maintenances)
+        // Mantenciones (entries / maintenances)
         Route::get('entries/data', [\App\Http\Controllers\MaintenanceController::class, 'data'])
             ->name('maintenance.entries.data');
 
