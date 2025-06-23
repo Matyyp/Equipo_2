@@ -180,11 +180,12 @@ public function generateContractWhatsappLink(ParkingRegister $parkingRegister)
     }
 
     // Genera el enlace firmado para el contrato con validez corta
-    $contractUrl = URL::temporarySignedRoute(
-        'contrato.print',
-        now()->addMinutes(2),
-        ['parking' => $parkingRegister->getKey()]
-    );
+        $contractUrl = URL::temporarySignedRoute(
+            'contrato.print',
+            now()->addMinutes(4),
+            ['parking' => $parkingRegister->getKey()],
+            true // forzar incluir el host actual
+        );
 
     $message = "Hola {$owner->name}, gracias por estacionarte en nuestro Rent a car. Aquí está tu contrato:\n\n" .
                "Contrato: " . $contractUrl .
