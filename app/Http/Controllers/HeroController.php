@@ -10,10 +10,11 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 class HeroController extends Controller
 {
-    public function index()
-    {
-        return view('tenant.admin.landing.hero.index');
-    }
+public function index()
+{
+    $heroes = Heroes::with('image')->get(); // Carga también la relación con la imagen
+    return view('tenant.admin.landing.hero.index', compact('heroes'));
+}
 
 public function data(Request $request)
 {

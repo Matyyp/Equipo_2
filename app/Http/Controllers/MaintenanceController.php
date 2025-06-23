@@ -32,62 +32,62 @@ class MaintenanceController extends Controller
                 ->addColumn('type', fn($m) => e($m->type->name ?? ''))
 
                 ->addColumn('status', function ($m) {
-    // 1. Verificar si el auto está actualmente en mantención
-    $inMaintenance = $m->car && !$m->car->is_active;
-    
-    // 2. Verificar si la tarea está completada
-    $isCompleted = $m->is_completed;
+                // 1. Verificar si el auto está actualmente en mantención
+                $inMaintenance = $m->car && !$m->car->is_active;
+                
+                // 2. Verificar si la tarea está completada
+                $isCompleted = $m->is_completed;
 
-    // 3. Lógica para determinar qué mostrar
-    if ($inMaintenance) {
-        if ($isCompleted) {
-            // Auto en mantención PERO esta tarea específica está completada
-            return "<span class='border border-success text-success px-2 py-1 rounded font-weight-bold'>Completada</span>";
-        } else {
-            // Auto en mantención y tarea pendiente
-            return "<span class='border border-danger text-danger px-2 py-1 rounded font-weight-bold'>En mantención</span>";
-        }
-    } else {
-        // Auto NO está en mantención - mostrar estado normal de la tarea
-        if ($isCompleted) {
-            return "<span class='border border-success text-success px-2 py-1 rounded'>Completada</span>";
-        } elseif ($m->employee_name) {
-            return "<span class='border border-warning text-warning px-2 py-1 rounded'>En proceso</span>";
-        } else {
-            return "<span class='border border-secondary text-secondary px-2 py-1 rounded'>Programada</span>";
-        }
-    }
-})
-->addColumn('proximidad', function ($m) {
-    $fechaTexto = null;
-    $kmTexto = null;
+                // 3. Lógica para determinar qué mostrar
+                if ($inMaintenance) {
+                    if ($isCompleted) {
+                        // Auto en mantención PERO esta tarea específica está completada
+                        return "<span class='border border-success text-success px-2 py-1 rounded font-weight-bold'>Completada</span>";
+                    } else {
+                        // Auto en mantención y tarea pendiente
+                        return "<span class='border border-danger text-danger px-2 py-1 rounded font-weight-bold'>En mantención</span>";
+                    }
+                } else {
+                    // Auto NO está en mantención - mostrar estado normal de la tarea
+                    if ($isCompleted) {
+                        return "<span class='border border-success text-success px-2 py-1 rounded'>Completada</span>";
+                    } elseif ($m->employee_name) {
+                        return "<span class='border border-warning text-warning px-2 py-1 rounded'>En proceso</span>";
+                    } else {
+                        return "<span class='border border-secondary text-secondary px-2 py-1 rounded'>Programada</span>";
+                    }
+                }
+            })
+            ->addColumn('proximidad', function ($m) {
+                $fechaTexto = null;
+                $kmTexto = null;
 
-    // Fecha programada
-    if (!empty($m->scheduled_date)) {
-        $fechaTexto = '' . \Carbon\Carbon::parse($m->scheduled_date)->format('d-m-Y');
-    }
+                // Fecha programada
+                if (!empty($m->scheduled_date)) {
+                    $fechaTexto = '' . \Carbon\Carbon::parse($m->scheduled_date)->format('d-m-Y');
+                }
 
-    // Asegúrate de que la relación esté cargada y tenga valor
-    if (!is_null($m->scheduled_km) && $m->car && !is_null($m->car->km)) {
-        $kmFaltantes = $m->scheduled_km - $m->car->km;
-        $kmTexto = $kmFaltantes <= 0
-            ? '⚠ Excedido'
-            : "{$kmFaltantes} km para Mantención";
-    }
+                // Asegúrate de que la relación esté cargada y tenga valor
+                if (!is_null($m->scheduled_km) && $m->car && !is_null($m->car->km)) {
+                    $kmFaltantes = $m->scheduled_km - $m->car->km;
+                    $kmTexto = $kmFaltantes <= 0
+                        ? '⚠ Excedido'
+                        : "{$kmFaltantes} km para Mantención";
+                }
 
-    if ($fechaTexto && $kmTexto) {
-        return "{$fechaTexto} / {$kmTexto}";
-    }
+                if ($fechaTexto && $kmTexto) {
+                    return "{$fechaTexto} / {$kmTexto}";
+                }
 
-    return $fechaTexto ?? $kmTexto ?? '-';
-})
+                return $fechaTexto ?? $kmTexto ?? '-';
+            })
 
 
 
                 ->addColumn('acciones', function ($m) {
-                    $edit = route('maintenance.entries.edit', $m);
-                    $delete = route('maintenance.entries.destroy', $m);
-                    $mark = route('maintenance.entries.mark-unavailable', $m);
+                    $edit = route('maintenance.entries.edit', ['maintenance' => $m]);
+                    $delete = route('maintenance.entries.destroy', ['maintenance' => $m]);
+                    $mark = route('maintenance.entries.mark-unavailable', ['entry' => $m]); // 👈 Esta usa 'entry' aún porque no está dentro del resource
                     $csrf = csrf_field();
                     $method = method_field('DELETE');
 
@@ -127,12 +127,13 @@ class MaintenanceController extends Controller
                         {$maintenanceBtn}
                         {$completeBtn}
                         {$viewBtn}
-                            <form action="{$delete}" method="POST" class="form-delete d-inline">
-                                {$csrf}{$method}
-                                <button class="btn btn-sm btn-outline-info"><i class="fas fa-trash"></i></button>
-                            </form>
+                        <form action="{$delete}" method="POST" class="form-delete d-inline">
+                            {$csrf}{$method}
+                            <button class="btn btn-sm btn-outline-info"><i class="fas fa-trash"></i></button>
+                        </form>
                     HTML;
                 })
+
 
                 ->rawColumns(['status', 'acciones'])
                 ->make(true);
@@ -263,16 +264,16 @@ class MaintenanceController extends Controller
             return redirect()->route('maintenance.entries.index')->with('success', 'Mantención registrada.');
         }
 
-        public function edit(Maintenance $entry)
+        public function edit(Maintenance $maintenance)
         {
             $types = MaintenanceType::all();
-            $cars = RentalCar::all(); // Incluye autos inactivos para poder editar mantenciones previas
+            $cars = RentalCar::all();
 
-
-            return view('tenant.admin.maintenance.entries.edit', compact('entry', 'types', 'cars'));
+            return view('tenant.admin.maintenance.entries.edit', compact('maintenance', 'types', 'cars'));
         }
 
-        public function update(Request $request, Maintenance $entry)
+
+        public function update(Request $request, Maintenance $maintenance)
         {
             $data = $request->validate([
                 'rental_car_id'       => 'required|exists:rental_cars,id',
@@ -289,22 +290,22 @@ class MaintenanceController extends Controller
             ]);
 
             if ($request->delete_invoice_file) {
-                foreach ($entry->images as $img) {
+                foreach ($maintenance->images as $img) {
                     Storage::disk('public')->delete($img->image_path);
                     $img->delete();
                 }
             }
 
             if ($request->hasFile('invoice_file')) {
-                foreach ($entry->images as $img) {
+                foreach ($maintenance->images as $img) {
                     Storage::disk('public')->delete($img->image_path);
                     $img->delete();
                 }
                 $path = $request->file('invoice_file')->store('maintenances', 'public');
-                $entry->images()->create(['image_path' => $path]);
+                $maintenance->images()->create(['image_path' => $path]);
             }
 
-            $entry->update($data);
+            $maintenance->update($data);
 
             return redirect()->route('maintenance.entries.index')->with('success', 'Mantención actualizada.');
         }

@@ -72,18 +72,6 @@ Route::middleware([
         return view('tenant.landings.welcomev2');
     });
 
-    Route::get('/whatsapp/contract-link/{parkingRegister}', [ParkingController::class, 'generateContractWhatsappLink'])
-    ->name('whatsapp.contract.link');
-
-
-    Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])
-        ->name('contrato.print')
-        ->middleware(['signed', 'throttle:5,10']);
-
-
-    Route::get('/v1', function () {
-        return view('tenant.landings.welcome');
-    });
     Route::get('/available‐cars', [LandingController::class, 'availableCars'])
      ->name('landings.available');
 
@@ -391,20 +379,16 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
             ->name('maintenance.entries.data');
 
         Route::resource('entries', \App\Http\Controllers\MaintenanceController::class)
-            ->names([
+    ->parameters(['entries' => 'maintenance'])
+    ->names([
+        'index'   => 'maintenance.entries.index',
+        'create'  => 'maintenance.entries.create',
+        'store'   => 'maintenance.entries.store',
+        'edit'    => 'maintenance.entries.edit',
+        'update'  => 'maintenance.entries.update',
+        'destroy' => 'maintenance.entries.destroy',
+    ]);
 
-                'edit'    => 'maintenance.entries.edit',
-                'update'  => 'maintenance.entries.update',
-
-            ]);
-            Route::resource('entries', \App\Http\Controllers\MaintenanceController::class)
-        ->parameters(['entries' => 'maintenance'])
-            ->names([
-                'index'   => 'maintenance.entries.index',
-                'create'  => 'maintenance.entries.create',
-                'store'   => 'maintenance.entries.store',
-                'destroy' => 'maintenance.entries.destroy',
-            ]);
     });
 
     // CRUD Usuarios

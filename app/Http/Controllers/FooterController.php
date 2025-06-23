@@ -9,10 +9,9 @@ class FooterController extends Controller
 {
     public function index()
     {
-        $footers = Footer::all();
-        return view('tenant.admin.landing.footer.index', compact('footers'));
+        $footer = Footer::first();
+        return view('tenant.admin.landing.footer.index', compact('footer'));
     }
-
     public function edit(Footer $footer)
     {
         return view('tenant.admin.landing.footer.edit', compact('footer'));

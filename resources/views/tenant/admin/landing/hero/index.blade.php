@@ -4,94 +4,140 @@
 @section('page_title', 'Hero Landing')
 
 @push('styles')
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
   <style>
-      table.dataTable td,
-      table.dataTable th {
-        border: none !important;
-      }
+    .hero-preview {
+      height: 300px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      color: white;
+    }
 
-      table.dataTable tbody tr {
-        border: none !important;
-      }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
 
-      table.dataTable {
-        border-top: 2px solid #dee2e6;
-        border-bottom: 2px solid #dee2e6;
-      }
+    .hero-content {
+      position: absolute;
+      z-index: 10;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 1rem;
+    }
 
-      .dataTables_paginate .pagination .page-item.active a.page-link {
-        background-color: #17a2b8 !important; 
-        color:rgb(255, 255, 255) !important;
-        border-color: #17a2b8 !important; 
-      }
+    .hero-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 20;
+    }
 
-
-      .dataTables_paginate .pagination .page-item .page-link {
-        background-color: #eeeeee;
-        color: #17a2b8 !important;
-        border-color: #eeeeee;
-      }
-
+    .hero-actions a,
+    .hero-actions button {
+      display: inline-block;
+      margin-left: 0.25rem;
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
   </style>
 @endpush
 
 @section('content')
-<div class="container-fluid">
-  @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-  @endif
+  <div class="container-fluid">
+    @if(session('success'))
+      <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
-  <div class="card">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div><i class="fas fa-photo-video mr-2"></i>Hero Landing</div>
-      <a href="{{ route('landing.hero.create') }}" 
-         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-        <i class="fas fa-plus"></i> Nuevo
-      </a>
-    </div>
-    <div class="card-body">
-      <table id="heroes-table" class="table table-striped w-100">
-        <thead>
-          <tr>
-            <th>Imagen</th>
-            <th>Título</th>
-            <th>Subtítulo</th>
-            <th>Botón</th>
-            <th>Colores</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-      </table>
+    <div class="card">
+
+
+
+      <div class="card-header bg-secondary text-white">
+        <div class="row w-100 align-items-center">
+          <div class="col">
+            <i class="fas fa-photo-video mr-2"></i>
+            <span>Previsualización de Heroes</span>
+          </div>
+          <div class="col-auto ms-auto">
+            <a href="{{ route('landing.hero.create') }}"
+              style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+              <i class="fas fa-plus"></i> Nuevo
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          @foreach($heroes as $hero)
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="hero-preview" style="background-image: url('{{ tenant_asset($hero->image->path) }}')">
+                <div class="hero-overlay"></div>
+                <div class="hero-actions">
+                  <a href="{{ route('landing.hero.edit', $hero) }}" class="btn btn-sm btn-info">
+                    <i class="fas fa-pen"></i>
+                  </a>
+                  <button class="btn btn-sm btn-info delete-btn" data-id="{{ $hero->id }}">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  <form id="delete-form-{{ $hero->id }}" action="{{ route('landing.hero.destroy', $hero) }}" method="POST" style="display: none;">
+                    @csrf
+                    @method('DELETE')
+                  </form>
+                </div>
+                <div class="hero-content" style="color: {{ $hero->text_color }}">
+                  @if($hero->title_active)
+                    <h5>{{ $hero->title }}</h5>
+                  @endif
+                  @if($hero->subtitle_active)
+                    <p>{{ $hero->subtitle }}</p>
+                  @endif
+                  @if($hero->button_active)
+                    <a href="#" class="btn btn-sm" style="background-color: {{ $hero->button_color }}; color: {{ $hero->text_color }}">
+                      {{ $hero->button_text }}
+                    </a>
+                  @endif
+                </div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </div>
     </div>
   </div>
-</div>
 @endsection
 
 @push('scripts')
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    $(document).ready(() => {
-      $('#heroes-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: '{{ route("landing.hero.data") }}',
-        columns: [
-          { data: 'image', name: 'image', orderable: false, searchable: false },
-          { data: 'title', name: 'title' },
-          { data: 'subtitle', name: 'subtitle' },
-          { data: 'button', name: 'button' },
-          { data: 'colors', name: 'colors', orderable: false, searchable: false },
-          { data: 'acciones', name: 'acciones', className: 'text-center', orderable: false, searchable: false }
-        ],
-        order: [[1, 'asc']],
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-        },
-        responsive: true
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', function () {
+        const id = this.getAttribute('data-id');
+
+        Swal.fire({
+          title: '¿Estás seguro de Eliminar este Slide?',
+          text: "¡Esta acción no se puede deshacer!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.getElementById(`delete-form-${id}`).submit();
+          }
+        });
       });
     });
   </script>

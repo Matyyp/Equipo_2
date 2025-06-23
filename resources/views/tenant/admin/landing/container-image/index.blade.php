@@ -4,88 +4,111 @@
 @section('page_title', 'Contenedor de Imágenes')
 
 @push('styles')
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
-<style>
-     table.dataTable td,
-    table.dataTable th {
-      border: none !important;
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <style>
+    .image-card {
+      position: relative;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    table.dataTable tbody tr {
-      border: none !important;
+    .image-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
     }
 
-    table.dataTable {
-      border-top: 2px solid #dee2e6;
-      border-bottom: 2px solid #dee2e6;
+    .image-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
     }
 
-    .dataTables_paginate .pagination .page-item.active a.page-link {
-      background-color: #17a2b8 !important; 
-      color:rgb(255, 255, 255) !important;
-      border-color: #17a2b8 !important; 
+    .image-actions a,
+    .image-actions button {
+      display: inline-block;
+      margin-left: 0.25rem;
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
     }
-
-
-    .dataTables_paginate .pagination .page-item .page-link {
-      background-color: #eeeeee;
-      color: #17a2b8 !important;
-      border-color: #eeeeee;
-    }
-
   </style>
-  @endpush
+@endpush
 
 @section('content')
-<div class="container-fluid">
-  @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-  @endif
+  <div class="container-fluid">
+    @if(session('success'))
+      <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
-  <div class="card">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div><i class="fas fa-images mr-2"></i>Imágenes del Contenedor</div>
-      <a href="{{ route('landing.container-image.create') }}"
-         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-        <i class="fas fa-plus"></i> Nuevo
-      </a>
-    </div>
-    <div class="card-body">
-      <table id="container-images-table" class="table table-striped w-100">
-        <thead>
-          <tr>
-            <th>N° Imagen</th>
-            <th>Imagen</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-      </table>
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <div class="row w-100 align-items-center">
+          <div class="col">
+            <i class="fas fa-images mr-2"></i>
+            <span>Imágenes del Contenedor</span>
+          </div>
+          <div class="col-auto ms-auto">
+            <a href="{{ route('landing.container-image.create') }}"
+              style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+              <i class="fas fa-plus"></i> Nuevo
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="row">
+          @foreach($images as $image)
+            <div class="col-md-4 mb-4">
+              <div class="image-card">
+                <img src="{{ tenant_asset($image->path) }}" alt="Imagen" class="rounded w-100">
+
+                <div class="image-actions">
+                  <a href="{{ route('landing.container-image.edit', $image) }}" class="btn btn-sm btn-info" title="Editar">
+                    <i class="fas fa-pen"></i>
+                  </a>
+                  <button class="btn btn-sm btn-info delete-btn" data-id="{{ $image->id }}">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  <form id="delete-form-{{ $image->id }}" action="{{ route('landing.container-image.destroy', $image) }}" method="POST" style="display: none;">
+                    @csrf
+                    @method('DELETE')
+                  </form>
+                </div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </div>
     </div>
   </div>
-</div>
 @endsection
 
 @push('scripts')
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    $(document).ready(() => {
-      $('#container-images-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: '{{ route("landing.container-image.data") }}',
-        columns: [
-          { data: 'id_image', name: 'id_image' },
-          { data: 'image', name: 'image', orderable: false, searchable: false },
-          { data: 'acciones', name: 'acciones', className: 'text-center', orderable: false, searchable: false }
-        ],
-        order: [[0, 'desc']],  // ordenar por ID descendente
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-        },
-        responsive: true
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', function () {
+        const id = this.getAttribute('data-id');
+
+        Swal.fire({
+          title: '¿Estás seguro de Eliminar esta Imagen?',
+          text: "¡Esta acción no se puede deshacer!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.getElementById(`delete-form-${id}`).submit();
+          }
+        });
       });
     });
   </script>
