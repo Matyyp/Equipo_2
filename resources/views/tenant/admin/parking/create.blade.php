@@ -462,5 +462,17 @@ $('#service_id').on('changed.bs.select', function() {
     $('#end_date').attr('min', $(this).val());
   });
 });
+
+$.ajax({
+  url: '{{ route("estacionamiento.checkContrato") }}',
+  method: 'GET',
+  data: { service_id: $('#service_id').val() },
+  success: function(res) {
+    console.log('Respuesta del contrato:', res);
+  },
+  error: function(err) {
+    console.error('Error en la consulta de contrato:', err);
+  }
+});
 </script>
 @endpush

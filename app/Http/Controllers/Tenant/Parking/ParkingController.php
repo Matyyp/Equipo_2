@@ -182,7 +182,7 @@ public function generateContractWhatsappLink(ParkingRegister $parkingRegister)
     // Genera el enlace firmado para el contrato con validez corta
     $contractUrl = URL::temporarySignedRoute(
         'contrato.print',
-        now()->addMinutes(4),
+        now()->addMinutes(2),
         ['parking' => $parkingRegister->getKey()]
     );
 
@@ -292,68 +292,74 @@ public function sendPaymentReminderWhatsApp(Request $request, $parkingId)
 
         $contracts = $service->service_branch_office->branch_office_contract;
 
-        // Tomamos el primero porque solo hay uno
-        $contract = $contracts->first();
-
-        if (!$contract) {
+        if ($contracts->isEmpty()) {
             return response()->json(['contract_exists' => false]);
         }
 
-        // Verificamos según el tipo del servicio
-        $exists = match ($service->type_service) {
-            'parking_daily'  => DailyContract::where('id_contract', $contract->id_contract)->exists(),
-            'parking_annual' => AnnualContract::where('id_contract', $contract->id_contract)->exists(),
-            default          => false,
-        };
+        // Verifica si al menos uno tiene contrato válido (y opcionalmente vigente)
+        $exists = $contracts->some(function ($contract) use ($service) {
+            return match ($service->type_service) {
+                'parking_daily' => DailyContract::where('id_contract', $contract->id_contract)
+                                                ->exists(),
+                'parking_annual' => AnnualContract::where('id_contract', $contract->id_contract)
+                                                ->exists(),
+                default => false,
+            };
+        });
 
         return response()->json(['contract_exists' => $exists]);
     }
 
 
+
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        $user = auth()->user();
-        // Consulta base para servicios
-        $query = Service::with('service_branch_office.branch_office_contract')
-            ->whereIn('type_service', ['parking_daily', 'parking_annual'])
-            ->where('status', 'available');
+public function create()
+{
+    $user = auth()->user();
 
-        // Si no es Admin, limitar por sucursal
-        if (!$user->hasRole('SuperAdmin')) {
-            $query->where('id_branch_office', $user->id_branch_office);
-        }
+    // Consulta base para servicios
+    $query = Service::with('service_branch_office.branch_office_contract')
+        ->whereIn('type_service', ['parking_daily', 'parking_annual'])
+        ->where('status', 'available');
 
-        $parkingServices = $query->get();
+    // Si no es SuperAdmin, limitar por sucursal
+    if (!$user->hasRole('SuperAdmin')) {
+        $query->where('id_branch_office', $user->id_branch_office);
+    }
 
-        $hasContract = false;
+    $parkingServices = $query->get();
 
-        foreach ($parkingServices as $svc) {
-            $contract = $svc->service_branch_office->branch_office_contract->first();
+    $hasContract = false;
 
-            if ($contract) {
-                if (
-                    ($svc->type_service === 'parking_daily' && DailyContract::where('id_contract', $contract->id_contract)->exists()) ||
-                    ($svc->type_service === 'parking_annual' && AnnualContract::where('id_contract', $contract->id_contract)->exists())
-                ) {
-                    $hasContract = true;
-                    break;
-                }
+    foreach ($parkingServices as $svc) {
+        $contracts = $svc->service_branch_office->branch_office_contract ?? collect();
+
+        foreach ($contracts as $contract) {
+            $isValid = match ($svc->type_service) {
+                'parking_daily' => DailyContract::where('id_contract', $contract->id_contract)->exists(),
+                'parking_annual' => AnnualContract::where('id_contract', $contract->id_contract)->exists(),
+                default => false,
+            };
+
+            if ($isValid) {
+                $hasContract = true;
+                break 2; // Sale de ambos foreach
             }
         }
-
-        $parks = Park::with('park_car')->get();
-
-        // Cargar todas las sucursales si es Admin
-        $branches = $user->hasRole('SuperAdmin')
-            ? BranchOffice::all()
-            : null;
-
-
-        return view('tenant.admin.parking.create', compact('parkingServices', 'parks', 'hasContract', 'branches'));
     }
+
+    $parks = Park::with('park_car')->get();
+
+    // Cargar todas las sucursales si es SuperAdmin
+    $branches = $user->hasRole('SuperAdmin')
+        ? BranchOffice::all()
+        : null;
+
+    return view('tenant.admin.parking.create', compact('parkingServices', 'parks', 'hasContract', 'branches'));
+}
+
 
     public function searchPhone(Request $request)
     {
