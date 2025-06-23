@@ -110,8 +110,6 @@ class ContractController extends Controller
             if ($request->contract_type === 'parking_annual') {
                 AnnualContract::create([
                     'id_contract' => $contractParking->id_contract,
-                    'important_note' => $request->important_note,
-                    'expiration_date' => $request->expiration_date,
                 ]);
             }
 
