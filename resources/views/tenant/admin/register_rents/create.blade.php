@@ -45,140 +45,132 @@
       @endif
 
       <form action="{{ route('registro-renta.store') }}" method="POST" autocomplete="off">
-        @csrf
+      @csrf
 
-        <div class="mb-4">
-            <label class="form-label text-dark fw-bold">Auto</label>
-            <select name="id_car" id="id_car" class="form-select form-select-lg border-dark bg-light" required>
-                <option value="">Seleccione un auto</option>
-                @foreach ($cars as $car)
-                    <option value="{{ $car->id }}" data-price="{{ $car->price_per_day }}">
-                        {{ $car->brand->name_brand }} {{ $car->model->name_model }}
-                    </option>
+      <!-- === DATOS DEL VEHÍCULO === -->
+      <h5 class="mt-3 border-bottom pb-2 text-info"><i class="fas fa-car"></i> Datos del Vehículo</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-label text-dark fw-bold">Auto</label>
+          <select name="id_car" id="id_car" class="form-control" required>
+            <option value="">Seleccione un auto</option>
+            @foreach ($cars as $car)
+              <option value="{{ $car->id }}" data-price="{{ $car->price_per_day }}">
+                {{ $car->brand->name_brand }} {{ $car->model->name_model }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label text-dark fw-bold">Precio por día</label>
+          <input type="text" id="price_per_day" class="form-control bg-light" readonly>
+        </div>
+      </div>
+
+      <!-- === DATOS DEL CLIENTE === -->
+      <h5 class="mt-4 border-bottom pb-2 text-info"><i class="fas fa-user"></i> Datos del Cliente</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="name">Nombre Cliente</label>
+            <input type="text" name="name" id="name" class="form-control" placeholder="Nombre completo del cliente" required>
+          </div>
+          <div class="form-group">
+            <label for="rut">RUT</label>
+            <input type="text" name="rut" id="rut" class="form-control" placeholder="Ej: 12.345.678-9" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Correo</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="ejemplo@ejemplo.com" required>
+          </div>
+          <div class="form-group">
+            <label for="number_phone">Teléfono</label>
+            <input type="text" name="number_phone" id="number_phone" class="form-control" placeholder="Ej: +56 9 1234 5678">
+          </div>
+          
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="address">Dirección</label>
+            <input type="text" name="address" id="address" class="form-control" placeholder="Calle falsa 123" required>
+          </div>
+          <div class="form-group">
+            <label for="driving_license">Licencia de Conducir</label>
+            <input type="text" name="driving_license" id="driving_license" class="form-control" placeholder="Código licencia conducir" required>
+          </div>
+          <div class="form-group">
+            <label for="class_licence">Clase de Licencia</label>
+            <input type="text" name="class_licence" id="class_licence" class="form-control" placeholder="A,B,C,etc" required>
+          </div>
+          <div class="form-group">
+            <label for="expire">Fecha de Expiración</label>
+            <input type="date" name="expire" id="expire" class="form-control" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- === DETALLES DEL ARRIENDO === -->
+      <h5 class="mt-4 border-bottom pb-2 text-info"><i class="fas fa-file-contract"></i> Detalles del Arriendo</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="guarantee">Garantía</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+              <input type="number" name="guarantee" id="guarantee" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="departure_fuel">Combustible de Salida</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-gas-pump"></i></span>
+              <select name="departure_fuel" id="departure_fuel" class="form-control" required>
+                <option value="">—</option>
+                @foreach(['vacío','1/4','1/2','3/4','lleno'] as $level)
+                  <option value="{{ $level }}">{{ ucfirst($level) }}</option>
                 @endforeach
-            </select>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6">
-              <label class="form-label text-dark fw-bold">Precio por día</label>
-              <input type="text" id="price_per_day" class="form-control bg-light" readonly>
-          </div>
-          <div class="col-md-6">
-              <label class="form-label text-dark fw-bold">Total</label>
-              <input type="text" id="total_price" class="form-control bg-light" readonly>
-          </div>
-        </div>
-
-        <hr class="my-4">
-
-        <div class="form-row">
-          <!-- Columna izquierda -->
-          <div class="col-12 col-md-6">
-            <div class="form-group">
-              <label for="name">Nombre Cliente</label>
-              <input type="text" name="name" id="name" class="form-control" placeholder="Nombre completo del cliente" required>
-            </div>
-
-            <div class="form-group">
-              <label for="rut">RUT</label>
-              <input type="text" name="rut" id="rut" class="form-control" placeholder="Ej: 12.345.678-9" required>
-            </div>
-
-            <div class="form-group">
-              <label for="email">Correo</label>
-              <input type="email" name="email" id="email" class="form-control" placeholder="ejemplo@ejemplo.com" required>
-            </div>
-
-            <div class="form-group">
-              <label for="number_phone">Teléfono</label>
-              <input type="text" name="number_phone" id="number_phone" class="form-control" placeholder="Ej: +56 9 1234 5678">
-            </div>
-
-            <div class="form-group">
-              <label for="address">Dirección</label>
-              <input type="text" name="address" id="address" class="form-control" placeholder="Calle falsa 123" required>
-            </div>
-
-            <div class="form-group">
-              <label for="driving_license">Licencia de Conducir</label>
-              <input type="text" name="driving_license" id="driving_license" class="form-control" placeholder="Código licencia conducir" required>
-            </div>
-
-            <div class="form-group">
-              <label for="class_licence">Clase de Licencia</label>
-              <input type="text" name="class_licence" id="class_licence" class="form-control" placeholder="A,B,C,etc" required>
-            </div>
-
-            <div class="form-group">
-              <label for="expire">Fecha de Expiración</label>
-              <input type="date" name="expire" id="expire" class="form-control" required>
+              </select>
             </div>
           </div>
-
-          <!-- Columna derecha -->
-          <div class="col-12 col-md-6">
-            <div class="form-group">
-              <label for="guarantee">Garantía</label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="fas fa-dollar-sign"></i>
-                </span>
-                <input type="number" name="guarantee" id="guarantee" class="form-control" required>
-              </div>
+          <div class="form-group">
+            <label for="km_exit">Kilómetros de Salida</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-tachometer-alt"></i></span>
+              <input type="number" name="km_exit" id="km_exit" class="form-control" required>
             </div>
-
-            <div class="form-group">
-              <label for="departure_fuel">Combustible de Salida</label>
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="fa-solid fa-gas-pump"></i>
-                    </span>
-                    <select name="departure_fuel" id="departure_fuel" class="form-control" required>
-                        <option value="">—</option>
-                        @foreach(['vacío','1/4','1/2','3/4','lleno'] as $level)
-                        <option value="{{ $level }}">{{ ucfirst($level) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-              <label for="km_exit">Kilómetros de Salida</label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="fas fa-tachometer-alt"></i>
-                </span>
-                <input type="number" name="km_exit" id="km_exit" class="form-control" required>                
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="observation">Observación</label>
-              <textarea name="observation" id="observation" class="form-control" rows="3" maxlength="500"></textarea>
-              <small class="text-muted">Máximo 500 caracteres</small>
-            </div>
-
-            <div class="form-group">
-              <label for="start_date">Fecha Inicio</label>
-              <input type="text" id="start_date" name="start_date" class="form-control" placeholder="dd/mm/aaaa" required readonly>
-            </div>
-
-            <div class="form-group">
-              <label for="end_date">Fecha Término</label>
-              <input type="text" id="end_date" name="end_date" class="form-control" placeholder="dd/mm/aaaa" required readonly>
-            </div>
+          </div>
+          <div class="form-group">
+            <label for="observation">Observación</label>
+            <textarea name="observation" id="observation" class="form-control" rows="3" maxlength="500"></textarea>
+            <small class="text-muted">Máximo 500 caracteres</small>
           </div>
         </div>
 
-        <div class="form-group row justify-content-end">
-          <div class="col-auto">
-            <button type="button" id="confirmar-btn" class="btn btn-primary">
-              Registrar
-            </button>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="start_date">Fecha Inicio</label>
+            <input type="text" id="start_date" name="start_date" class="form-control" placeholder="dd/mm/aaaa" required readonly>
+          </div>
+          <div class="form-group">
+            <label for="end_date">Fecha Término</label>
+            <input type="text" id="end_date" name="end_date" class="form-control" placeholder="dd/mm/aaaa" required readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label text-dark fw-bold">Total</label>
+            <input type="text" id="total_price" class="form-control bg-light" readonly>
           </div>
         </div>
-      </form>
+      </div>
+
+      <!-- === BOTONES === -->
+      <div class="form-group row justify-content-end mt-4">
+        <div class="col-auto">
+          <a href="{{ route('registro-renta.index') }}" class="btn btn-secondary me-1">Cancelar</a>
+          <button type="button" id="confirmar-btn" class="btn btn-primary">Registrar</button>
+        </div>
+      </div>
+    </form>
     </div>
   </div>
 </div>

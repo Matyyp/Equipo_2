@@ -19,34 +19,34 @@
 
     <div class="card-body">
       {{-- Alerta si faltan datos --}}
-      @if(!$hasContactInfo || !$hasRules)
-        <div class="alert alert-warning d-flex flex-column gap-2 mb-4">
-          <div class="d-flex align-items-center gap-2">
-            <i class="fas fa-exclamation-triangle"></i>
-            <strong>Antes de activar contratos debes completar:</strong>
-          </div>
-          <ul class="mb-0 ml-4">
-            @unless($hasContactInfo)
-              <li>
-                Información de contacto —
-                <a href="{{ url('/informacion_contacto/' . $branchId) }}"
-                   class="btn btn-sm btn-outline-warning">
-                  Ir a Información de Contacto
-                </a>
-              </li>
-            @endunless
-            @unless($hasRules)
-              <li>
-                Reglas de contrato —
-                <a href="{{ route('reglas.index') }}"
-                   class="btn btn-sm btn-outline-warning">
-                  Ir a Reglas
-                </a>
-              </li>
-            @endunless
-          </ul>
-        </div>
-      @endif
+@if(!$hasContactInfo || !$hasRules)
+<div class="alert d-flex flex-column gap-2 mb-4 rounded" style="background-color: #17a2b8; color: white;">
+  <div class="d-flex align-items-center gap-2">
+    <i class="fas fa-exclamation-circle mr-2"></i>
+    <strong>Antes de activar contratos debes completar:</strong>
+  </div>
+  <ul class="mb-0 ps-4">
+    @unless($hasContactInfo)
+    <li class="d-flex align-items-center gap-2 flex-wrap py-1">
+      <span class="mr-2">Información de contacto </span>
+      <a href="{{ url('/informacion_contacto/' . $branchId) }}" 
+         class="btn btn-sm btn-outline-light" style="white-space: nowrap;">
+        <i class="fas fa-address-card mr-1"></i> Ir a Contacto
+      </a>
+    </li>
+    @endunless
+    @unless($hasRules)
+    <li class="d-flex align-items-center gap-2 flex-wrap py-1">
+      <span class="mr-2">Reglas de contrato </span>
+      <a href="{{ route('reglas.index') }}" 
+         class="btn btn-sm btn-outline-light" style="white-space: nowrap;">
+        <i class="fas fa-file-contract mr-1"></i> Ir a Reglas
+      </a>
+    </li>
+    @endunless
+  </ul>
+</div>
+@endif
 
       <div class="table-responsive">
         <table class="table table-striped table-bordered align-middle w-100">

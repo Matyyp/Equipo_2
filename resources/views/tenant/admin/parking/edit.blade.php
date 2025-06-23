@@ -50,11 +50,11 @@
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="name">Nombre</label>
-            <input type="text" id="name" name="name" class="form-control" value="{{ $owner->name }}" required>
+            <input type="text" id="name" name="name" placeholder="Ej: Juan Perez" class="form-control" value="{{ $owner->name }}" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="phone">Teléfono</label>
-            <input type="text" id="phone" name="phone" class="form-control" value="{{ $owner->number_phone }}" maxlength="9" pattern="^[0-9]{9}$" required>
+            <input type="text" id="phone" name="phone" placeholder="Ej: 912345678"  class="form-control" value="{{ $owner->number_phone }}" maxlength="9" pattern="^[0-9]{9}$" required>
             <div id="phone-error" class="text-danger mt-1"></div>
           </div>
         </div>
@@ -73,18 +73,18 @@
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="arrival_km">Km Entrada</label>
-            <input type="number" id="arrival_km" name="arrival_km" class="form-control" value="{{ $parking->arrival_km }}" min="0">
+            <input type="number" id="arrival_km" placeholder="Ej: 5000" name="arrival_km" class="form-control" value="{{ $parking->arrival_km }}" min="0">
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="km_exit">Km Salida</label>
-            <input type="number" id="km_exit" name="km_exit" class="form-control" value="{{ $parking->km_exit }}" min="0">
+            <input type="number" id="km_exit" placeholder="Ej: 8000" name="km_exit" class="form-control" value="{{ $parking->km_exit }}" min="0">
           </div>
         </div>
-
+        
         @role('SuperAdmin')
         <div class="form-group">
           <label for="branch_office_id">Sucursal</label>
-          <select id="branch_office_id" name="branch_office_id" class="selectpicker form-control" data-live-search="true">
+          <select id="branch_office_id" name="branch_office_id" placeholder="Seleccione una sucursal" class="selectpicker form-control" data-live-search="true">
             <option value="">Seleccione una sucursal</option>
             @foreach($branches as $branch)
               <option value="{{ $branch->id_branch }}" {{ $branch->id_branch == $service->id_branch_office ? 'selected' : '' }}>
@@ -98,14 +98,17 @@
         <div class="form-group" id="service-group">
           <label for="service_id">Tipo de Estacionamiento</label>
           @role('SuperAdmin')
-            <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
-              <option value="">Seleccione un servicio</option>
-              @foreach($parkingServices as $svc)
-                <option value="{{ $svc->id_service }}" {{ $svc->id_service == $service->id_service ? 'selected' : '' }} data-type-service="{{ $svc->type_service }}">
-                  {{ $svc->name }}
-                </option>
-              @endforeach
-            </select>
+          <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
+            <option value="">Seleccione un servicio</option>
+            @foreach($parkingServices as $svc)
+              <option
+                value="{{ $svc->id_service }}"
+                data-type-service="{{ $svc->type_service }}"
+                {{ (string) $svc->id_service === (string) ($service->id_service ?? '') ? 'selected' : '' }}>
+                {{ $svc->name }}
+              </option>
+            @endforeach
+          </select>
           @else
             <input type="text" class="form-control" value="{{ $service->name }}" readonly>
             <input type="hidden" name="service_id" value="{{ $service->id_service }}">
@@ -115,11 +118,11 @@
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="brand_name">Marca</label>
-            <input type="text" id="brand_name" name="brand_name" class="form-control" value="{{ $brands }}" required>
+            <input type="text" id="brand_name" placeholder="Ej: Toyota" name="brand_name" class="form-control" value="{{ $brands }}" required>
           </div>
           <div class="form-group col-12 col-md-6">
             <label for="model_name">Modelo</label>
-            <input type="text" id="model_name" name="model_name" class="form-control" value="{{ $models }}" required>
+            <input type="text" id="model_name" placeholder="Ej: Yaris" name="model_name" class="form-control" value="{{ $models }}" required>
           </div>
         </div>
 
@@ -166,6 +169,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   // 1) Inicializar bootstrap-select
   $('.selectpicker').selectpicker();
+  $('#service_id').selectpicker('refresh');
+  $('#branch_office_id').selectpicker('refresh');
 
   // 2) Lógica para servicios anuales (igual que en created)
   function handleAnnualParking() {

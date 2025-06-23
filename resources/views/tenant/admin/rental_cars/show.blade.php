@@ -11,7 +11,7 @@
     <div class="card-header bg-secondary text-white d-flex align-items-center">
       <div class="d-flex align-items-center">
         <i class="fas fa-car mr-2 fa-lg"></i>
-        <h5 class="mb-0">Detalle Auto</h5>
+        <h5 class="mb-0">Detalle del vehículo</h5>
       </div>
     </div>
 
@@ -70,7 +70,7 @@
       <div class="card-body">
         <div class="d-flex flex-wrap gap-3">
           @foreach($rentalCar->images as $img)
-            <div class="border rounded overflow-hidden" style="width:200px; height:130px;">
+            <div class="border rounded overflow-hidden mr-2" style="width:200px; height:130px;">
               <img
                 src="{{ tenant_asset($img->path) }}"
                 alt="Imagen {{ $img->id }}"

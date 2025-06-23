@@ -1,10 +1,14 @@
+{{-- resources/views/tenant/admin/maintenance/entries/index.blade.php --}}
 @extends('tenant.layouts.admin')
 
 @section('title', 'Mantenciones')
 @section('page_title', 'Gestión de Mantenciones')
 
 @push('styles')
+  <!-- DataTables Bootstrap4 CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css" />
+
   <style>
       table.dataTable td,
       table.dataTable th {
@@ -22,7 +26,7 @@
 
       .dataTables_paginate .pagination .page-item.active a.page-link {
         background-color: #17a2b8 !important; 
-        color:rgb(255, 255, 255) !important;
+        color: rgb(255, 255, 255) !important;
         border-color: #17a2b8 !important; 
       }
 
@@ -30,6 +34,30 @@
         background-color: #eeeeee;
         color: #17a2b8 !important;
         border-color: #eeeeee;
+      }
+
+      .btn-outline-info.text-info:hover,
+      .btn-outline-info.text-info:focus {
+        color: #fff !important;
+      }
+      .btn-sm.btn-outline-info {
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      /* Hacer que los botones de acciones se oculten en pantallas pequeñas */
+      /* Usamos Bootstrap 4 clases utilitarias para ocultar */
+      .acciones-buttons > * {
+        /* Ocultar por defecto */
+        display: none;
+      }
+      @media (min-width: 768px) { /* md breakpoint */
+        .acciones-buttons > * {
+          display: inline-block;
+          margin: 0 2px;
+        }
       }
   </style>
 @endpush
@@ -46,15 +74,15 @@
         <i class="fas fa-tools mr-2"></i> Listado de Mantenciones
       </div>
       <div class="d-flex flex-wrap ml-auto gap-2">
-        <a href="{{ route('maintenance.entries.create') }}"
+        <a href="{{ route('maintenance.entries.create') }}" class="mr-2"
            style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
           <i class="fas fa-plus"></i> Nueva
         </a>
-        <a href="#" data-toggle="modal" data-target="#programMaintenanceModal"
+        <a href="#" data-toggle="modal" data-target="#programMaintenanceModal" class="mr-2"
            style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
           <i class="fas fa-calendar-plus"></i> Nueva Programada
         </a>
-        <a href="#" data-toggle="modal" data-target="#interruptScheduleModal"
+        <a href="#" data-toggle="modal" data-target="#interruptScheduleModal" 
            style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
           <i class="fas fa-ban"></i> Interrumpir Programada
         </a>
@@ -62,7 +90,8 @@
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        <table id="maintenances-table" class="table table-striped w-100">
+        {{-- Agregamos clases dt-responsive nowrap para mejor responsive --}}
+        <table id="maintenances-table" class="table table-striped w-100 dt-responsive nowrap">
           <thead>
             <tr>
               <th>Vehículo</th>
@@ -78,6 +107,9 @@
   </div>
 </div>
 @endsection
+
+{{-- Aquí quedan los modales igual, sin cambios --}}
+
 @foreach(App\Models\Maintenance::with('car')->get() as $m)
   <!-- Modal -->
   <div class="modal fade" id="completeMaintenanceModal_{{ $m->id }}" tabindex="-1" role="dialog" aria-labelledby="completeModalLabel_{{ $m->id }}" aria-hidden="true">
@@ -262,27 +294,39 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-
+ <!-- jQuery + DataTables JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+  <!-- DataTables Responsive JS -->
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
+  <!-- SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(function () {
   $('#maintenances-table').DataTable({
     processing: true,
     serverSide: true,
+    responsive: true,
     ajax: '{{ route('maintenance.entries.data') }}',
     columns: [
-      { data: 'car', name: 'car' },
-      { data: 'type', name: 'type' },
-      { data: 'status', name: 'status', orderable: true, searchable: true },
-      { data: 'proximidad', name: 'proximidad', orderable: true, searchable: false },
-      { data: 'acciones', name: 'acciones', orderable: false, searchable: false, className: 'text-center' },
+      { data: 'car', name: 'car', responsivePriority: 1 },
+      { data: 'type', name: 'type', responsivePriority: 2 },
+      { data: 'status', name: 'status', orderable: true, searchable: true, responsivePriority: 3 },
+      { data: 'proximidad', name: 'proximidad', orderable: true, searchable: false, responsivePriority: 4 },
+      {
+        data: 'acciones',
+        name: 'acciones',
+        orderable: false,
+        searchable: false,
+        className: 'text-center acciones-buttons',
+        responsivePriority: 10 
+      },
     ],
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-        },
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+    },
   });
 });
 </script>
@@ -333,4 +377,3 @@ $(document).ready(function () {
 </script>
 
 @endpush
-

@@ -25,8 +25,10 @@ class RolePermissionSeeder extends Seeder
             'mantenimiento.access',
             'carwash.access',
             'cost_basic_service.access',
+            'accidente.access',
 
             'landing.access',
+            'arriendos.access',
 
         ] as $perm) {
             Permission::firstOrCreate(['name' => $perm]);

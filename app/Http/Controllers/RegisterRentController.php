@@ -8,7 +8,12 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Models\ExternalUser;
 use App\Models\RentalCar;
 use App\Models\Reservation;
+use App\Models\ContractRent;
+use App\Models\Contract;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Business;
+use App\Models\ContactInformation;
 
 class RegisterRentController extends Controller
 {
@@ -18,40 +23,53 @@ class RegisterRentController extends Controller
     }
 
     public function data()
-    {
-        $query = RegisterRent::with(['rentalCar.brand', 'rentalCar.model', 'rentalCar.branchOffice']);
+{
+    $query = RegisterRent::with([
+        'rentalCar.brand', 
+        'rentalCar.model', 
+        'rentalCar.branchOffice',
+        'userRatings' // ¡Asegúrate de incluir esta relación!
+    ]);
 
-        return datatables()->eloquent($query)
-            ->addColumn('auto', function ($r) {
-                $brand = optional($r->rentalCar->brand)->name_brand ?? 'N/A';
-                $model = optional($r->rentalCar->model)->name_model ?? '';
-                return trim("{$brand} {$model}");
-            })
-            ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
-            ->addColumn('acciones', function ($r) {
-                $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Ver">
-                    <i class="fas fa-eye"></i>
+    return datatables()->eloquent($query)
+        ->addColumn('auto', function ($r) {
+            $brand = optional($r->rentalCar->brand)->name_brand ?? 'N/A';
+            $model = optional($r->rentalCar->model)->name_model ?? '';
+            return trim("{$brand} {$model}");
+        })
+        ->addColumn('sucursal', fn($r) => optional($r->rentalCar->branchOffice)->name_branch_offices ?? 'N/A')
+        ->addColumn('acciones', function ($r) {
+            $accidentBtn = '';
+            if ($r->rentalCar) {
+                $accidentUrl = route('accidente.create', ['id_rent' => $r->id]);
+                $accidentBtn = '<a href="' . $accidentUrl . '" class="btn btn-outline-info btn-sm text-info mr-1" title="Registrar Accidente">
+                    <i class="fas fa-car-crash"></i>
                 </a>';
+            }
+            $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info mr-1" title="Ver">
+                <i class="fas fa-eye"></i>
+            </a>';
 
-                $reseñaBtn = $r->userRatings->isEmpty()
-                    ? '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" title="Añadir Reseña">
-                        <i class="fas fa-star"></i>
-                    </button>' : '';
+            $contratoBtn = '<a href="' . route('register_rents.contrato_pdf', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Generar Contrato" target="_blank">
+                    <i class="fas fa-file-pdf"></i>
+                </a>';
+            $reseñaBtn = ($r->userRatings && $r->userRatings->isEmpty())
+                ? '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" title="Añadir Reseña">
+                    <i class="fas fa-star"></i>
+                </button>' : '';
+            $completarBtn = $r->status === 'en_progreso'
+                ? '<button class="btn btn-outline-info btn-sm text-info ml-1 completar-btn" data-id="' . $r->id . '" data-toggle="modal" data-target="#completarModal">
+                    <i class="fas fa-check-circle"></i>
+                </button>' : '';
 
-                $completarBtn = $r->status === 'en_progreso'
-                    ? '<button class="btn btn-outline-info btn-sm text-info ml-1 completar-btn" data-id="' . $r->id . '" data-toggle="modal" data-target="#completarModal">
-                        <i class="fas fa-check-circle"></i>
-                    </button>' : '';
-
-                return $verBtn . $reseñaBtn . $completarBtn;
-            })
-            ->addColumn('status', fn($r) => $r->status === 'completado' 
-                ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
-                : '<span class="border border-warning text-warning px-2 py-1 rounded">En Progreso</span>')
-            ->rawColumns(['acciones', 'status'])
-            ->toJson();
-    }
-
+            return $accidentBtn . $verBtn . $contratoBtn . $reseñaBtn . $completarBtn;
+        })
+        ->addColumn('status', fn($r) => $r->status === 'completado' 
+            ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
+            : '<span class="border border-warning text-warning px-2 py-1 rounded">En Progreso</span>')
+        ->rawColumns(['acciones', 'status'])
+        ->toJson();
+}
     public function show($id)
     {
         $register = RegisterRent::with(['rentalCar.brand', 'rentalCar.branchOffice'])->findOrFail($id);
@@ -116,6 +134,24 @@ class RegisterRentController extends Controller
             'km_exit' => 'required|numeric',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+        ], [
+            'id_car.required' => 'El campo auto es obligatorio.',
+            'id_car.exists' => 'El auto seleccionado no es válido.',
+            'name.required' => 'El campo nombre es obligatorio.',
+            'email.required' => 'El campo correo electrónico es obligatorio.',
+            'email.email' => 'Debe ingresar un correo electrónico válido.',
+            'address.required' => 'El campo dirección es obligatorio.',
+            'driving_license.required' => 'El campo licencia de conducir es obligatorio.',
+            'class_licence.required' => 'El campo clase de licencia es obligatorio.',
+            'expire.required' => 'El campo fecha de expiración es obligatorio.',
+            'guarantee.required' => 'El campo garantía es obligatorio.',
+            'guarantee.numeric' => 'La garantía debe ser un número.',
+            'departure_fuel.required' => 'Debe seleccionar el nivel de combustible de salida.',
+            'km_exit.required' => 'El campo kilómetros de salida es obligatorio.',
+            'km_exit.numeric' => 'Los kilómetros deben ser un número.',
+            'start_date.required' => 'El campo fecha de inicio es obligatorio.',
+            'end_date.required' => 'El campo fecha de término es obligatorio.',
+            'end_date.after_or_equal' => 'La fecha de término debe ser igual o posterior a la de inicio.',
         ]);
 
         // Validar solapamiento con reservas o arriendos
@@ -233,5 +269,89 @@ class RegisterRentController extends Controller
 
         return redirect()->route('registro-renta.index')->with('success', 'Arriendo completado y kilometraje actualizado.');
     }
+
+    public function contratoPDF($id)
+    {
+        $rent = RegisterRent::with(['rentalCar'])->findOrFail($id);
+
+        $car = $rent->rentalCar;
+
+        // Logo base64 desde storage
+        $logo = Business::value('logo');
+        $logoPath = storage_path('app/public/' . $logo);
+        $logoBase64 = 'data:' . mime_content_type($logoPath) . ';base64,' . base64_encode(file_get_contents($logoPath));
+
+        // Datos de contacto (si tienes relacionados, por ahora mock)
+        $datosContacto = ContactInformation::limit(3)->get(); // cambia esto si tienes relación
+
+        // Paso 1: Obtener el contrato rent filtrando la sucursal
+        $rentContract = ContractRent::whereHas('contract_rent_contract', function ($query) use ($car) {
+            $query->where('id_branch_office', $car->branch_office_id);
+        })
+        ->with(['contract_rent_contract.contract_contains.contains_rule']) // eager load
+        ->first();
+
+        $contractRentContract = $rentContract->contract_rent_contract;
+
+        $contractContains = $contractRentContract->contract_contains ?? collect();
+
+        $reglas = $contractContains
+            ->map(fn($contain) => $contain->contains_rule)
+            ->filter()
+            ->values();
+
+
+        $traduccionesContacto = [
+            'email'    => 'Correo Electrónico',
+            'phone'    => 'Teléfono',
+            'mobile'   => 'Celular',
+            'whatsapp' => 'WhatsApp',
+            'website'  => 'Sitio Web',
+            'social'   => 'Red Social',
+        ];
+
+        $datosContactoTraducido = $datosContacto->map(function ($contacto) use ($traduccionesContacto) {
+            return [
+                'tipo' => $traduccionesContacto[$contacto->type_contact] ?? ucfirst($contacto->type_contact),
+                'dato' => $contacto->data_contact,
+            ];
+        });
+
+
+        // Datos para la vista PDF
+        $data = [
+            'url_logo'      => $logoBase64,
+            'marca'  => $car->brand->name_brand ?? '',
+            'modelo' => $car->model->name_model ?? '',
+            'patente'       => $car->patent ?? 'N/A',
+            'inicio'        => Carbon::parse($rent->start_date)->format('d-m-Y'),
+            'termino'       => Carbon::parse($rent->end_date)->format('d-m-Y'),
+            'km_exit'       => $rent->km_exit ?? '',
+            'combustible'   => $rent->departure_fuel ?? '',
+            'garantia'      => $rent->guarantee ?? 0,
+            'pago'          => $rent->payment ?? 0,
+            'nombre'        => $rent->client_name ?? '',
+            'rut'           => $rent->client_rut ?? '',
+            'email'         => $rent->client_email ?? '',
+            'telefono'      => $rent->number_phone ?? '',
+            'licencia'      => $rent->driving_license ?? '',
+            'clase'         => $rent->class_licence ?? '',
+            'vence'         => Carbon::parse($rent->expire)->format('d-m-Y'),
+            'direccion'     => $rent->address ?? '',
+            'observacion'   => $rent->observation ?? '',
+            'direccion_sucursal' => $car->branch_office->street ?? 'Sucursal no asignada', // ajusta si tienes relación
+            'horario'       => $car->branch_office->schedule ?? 'Horario no disponible',   // idem
+            'datos_contacto'=> $datosContactoTraducido,
+            'reglas'        => $reglas
+        ];
+
+        $pdf = PDF::loadView('tenant.admin.register_rents.contract_pdf', $data)
+            ->setPaper('a4', 'portrait');
+
+        $pdfBase64 = base64_encode($pdf->output());
+
+        return view('pdf.print_contrato', compact('pdfBase64'));
+    }
+
 
 }

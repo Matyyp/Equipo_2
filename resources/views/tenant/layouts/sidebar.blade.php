@@ -7,7 +7,7 @@
                 src="{{ $tenantLogo }}"
                 alt="{{ $tenantCompanyName ?? config('app.name') }} logo"
                 class="brand-image" 
-                style="display:block; margin:0 auto; max-height:50px; width:auto;"
+                style="display:block; margin:0 auto; max-height:100px; width:auto;"
             />
         @else
             <span class="brand-text font-weight-light">
@@ -66,7 +66,7 @@
                 @endcan
 
                 {{-- Arriendos --}}
-                @can('reservas.access')
+                @can('arriendos.access')
                 <li class="nav-item has-treeview {{request()->is('rental-cars*') || request()->is('registro-renta*') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{request()->is('rental-cars*') || request()->is('registro-renta*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-days"></i>

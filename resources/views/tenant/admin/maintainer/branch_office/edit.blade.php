@@ -50,8 +50,16 @@
             <label class="form-label">Calle</label>
             <input type="text" name="street" class="form-control" value="{{ old('street', $branch->street) }}" required pattern="^.*\s\d{1,5}.*$" title="Debe incluir nombre de calle y número (ej: Calle Falsa 123)">
           </div>
-
-          <div class="col-md-6">
+          <div class="col-md-3">
+            <label class="form-label">Nº de estacionamientos</label>
+            <input type="number"
+              name="number_parkings"
+              class="form-control"
+              min="0"
+              value="{{ old('number_parkings', $branch->number_parkings) }}"
+              required>
+          </div>
+          <div class="col-md-3">
             <label class="form-label">Región</label>
             <select name="region" id="region-select" class="selectpicker form-control" data-live-search="true" required>
               <option value="">Seleccione región</option>

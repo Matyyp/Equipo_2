@@ -24,6 +24,8 @@ use App\Models\Payment;
 use App\Models\Voucher;
 use App\Models\Business;
 use App\Models\Addon;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -62,6 +64,8 @@ public function index(Request $request)
 
         $recordsFiltered = $recordsTotal; // Si no filtras, es igual
 
+        
+
         // Paginación
         $data = $query->skip($start)->take($length)->get()
             ->map(function ($reg) use ($user) {
@@ -73,7 +77,25 @@ public function index(Request $request)
                 $service = Service::with('service_branch_office')->find($park?->id_service); 
                 $branch = $service?->service_branch_office;
 
+                $phone = $owner?->number_phone;
+                $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
+
+                if (!str_starts_with($phoneDigitsOnly, '56')) {
+                    $phoneDigitsOnly = '56' . $phoneDigitsOnly;
+                }
+
+                // enlace WhatsApp para recordatorio de pago (solo parking_annual)
+                if ($service && $service->type_service === 'parking_annual' && $owner && $phoneDigitsOnly) {
+                    $totalFormatted = number_format($reg->total_value, 0, ',', '.');
+                    $messageReminder = "Hola {$owner->name}, tienes un pago pendiente de \${$totalFormatted} en nuestro parqueadero. Por favor, realiza el pago lo antes posible. ¡Gracias!";
+                    $whatsappPaymentReminderUrl = "https://wa.me/{$phoneDigitsOnly}?text=" . urlencode($messageReminder);
+                } else {
+                    $whatsappPaymentReminderUrl = null;
+                }
+
                 if (!$service) return null;
+
+                $contractUrl = URL::temporarySignedRoute('contrato.print', now()->addMinutes(1), ['parking' => $reg->getKey()]);
 
                 // Obtener servicios extras asociados a la sucursal
                 $extraServices = Service::where('type_service', 'extra')
@@ -101,7 +123,8 @@ public function index(Request $request)
                     'id_parking_register' => $reg->getKey(),
                     'id_branch'     => $user->hasRole('SuperAdmin') ? $branch?->id_branch ?? 'N/D' : null,
                     'branch_name'   => $user->hasRole('SuperAdmin') ? $branch?->name_branch_offices ?? 'N/D' : null,
-
+                    'contract_url' => URL::signedRoute('contrato.print', ['parking' => $reg->getKey()]),
+                    'whatsapp_payment_reminder_url' => $whatsappPaymentReminderUrl,
                     'car_wash_service' => $hasCarWashService
                         ? [
                             'name'  => $reg->parking_register_car_wash->car_wash_service->name,
@@ -135,6 +158,75 @@ public function index(Request $request)
 
     return view('tenant.admin.parking.index', compact('empresaExiste', 'sucursalExiste'));
 }
+
+public function generateContractWhatsappLink(ParkingRegister $parkingRegister)
+{
+    $park = Park::find($parkingRegister->id_park);
+    $car = $park?->park_car;
+    $owner = $car?->car_belongs->first()?->belongs_owner;
+
+    $phone = $owner?->number_phone;
+    $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
+
+    if ($phoneDigitsOnly && !str_starts_with($phoneDigitsOnly, '56')) {
+        $phoneDigitsOnly = '56' . $phoneDigitsOnly;
+    }
+
+    if (!$phoneDigitsOnly || !$owner) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No se pudo obtener el teléfono o propietario.',
+        ]);
+    }
+
+    // Genera el enlace firmado para el contrato con validez corta
+    $contractUrl = URL::temporarySignedRoute(
+        'contrato.print',
+        now()->addMinutes(4),
+        ['parking' => $parkingRegister->getKey()]
+    );
+
+    $message = "Hola {$owner->name}, gracias por estacionarte en nuestro Rent a car. Aquí está tu contrato:\n\n" .
+               "Contrato: " . $contractUrl .
+               "\n\nEl enlace expirará en 2 minutos.";
+
+    $whatsappUrl = "https://wa.me/{$phoneDigitsOnly}?text=" . urlencode($message);
+
+    return response()->json([
+        'success' => true,
+        'url' => $whatsappUrl,
+    ]);
+}
+
+
+
+public function sendPaymentReminderWhatsApp(Request $request, $parkingId)
+{
+    $reg = ParkingRegister::findOrFail($parkingId);
+    $park = Park::find($reg->id_park);
+
+    $owner = $park?->park_car?->car_belongs->first()?->belongs_owner;
+    if (!$owner) {
+        return response()->json(['error' => 'No se encontró el propietario del vehículo.'], 404);
+    }
+
+    $phone = $owner->phone;
+    if (!$phone) {
+        return response()->json(['error' => 'El propietario no tiene teléfono registrado.'], 400);
+    }
+
+    // Personaliza el mensaje aquí
+    $message = "Hola {$owner->name}, te recordamos que tienes un pago pendiente en el parqueadero. Por favor, realiza tu pago lo antes posible para evitar inconvenientes. ¡Gracias!";
+
+    // Limpiar el número (quitar espacios, guiones, paréntesis, etc.)
+    $phoneDigitsOnly = preg_replace('/\D+/', '', $phone);
+
+    // Crear enlace de WhatsApp
+    $whatsappUrl = "https://wa.me/{$phoneDigitsOnly}?text=" . urlencode($message);
+
+    return response()->json(['whatsapp_url' => $whatsappUrl]);
+}
+
 
 
 
@@ -307,7 +399,7 @@ public function index(Request $request)
     
         $owner = Owner::firstOrCreate(
             ['number_phone' => $data['phone']],
-            ['name' => $data['name'], 'type_owner' => 'cliente']
+            ['name' => $data['name']]
         );
     
         $car = Car::firstOrCreate(
@@ -327,15 +419,19 @@ public function index(Request $request)
         $tipo_servicio = $service->type_service;
 
         if ($tipo_servicio === 'parking_daily') {
-            $id_contract = DailyContract::select('id_contract')->first();
+            $dailyContract = DailyContract::whereHas('contract_daily_contract_parking.contract_parking_contract', function ($query) use ($service) {
+                $query->where('id_branch_office', $service->id_branch_office);
+            })->first();
+            $id_contract = $dailyContract?->id_contract;
             $total = $days * $service->price_net;
         } elseif ($tipo_servicio === 'parking_annual') {
-            $id_contract = AnnualContract::select('id_contract')->first();
+            $annualContract = AnnualContract::whereHas('contract_annual_contract_parking.contract_parking_contract', function ($query) use ($service) {
+                $query->where('id_branch_office', $service->id_branch_office);
+            })->first();
+            $id_contract = $annualContract?->id_contract;
             $total = $service->price_net;
         }
 
-        
-    
         $park = Park::create([
             'id_car'     => $car->id_car,
             'id_service' => $data['service_id']
@@ -362,7 +458,7 @@ public function index(Request $request)
         ]);
     
         Generate::create([
-            'id_contract'          => $id_contract->id_contract,
+            'id_contract'          => $id_contract,
             'id_parking_register'  => $parking->id_parking_register
         ]);
     
@@ -637,7 +733,6 @@ public function update(Request $request, $id)
         $owner->update([
             'name' => $data['name'],
             'number_phone' => $data['phone'],
-            'type_owner' => 'cliente'
         ]);
 
         // Marca y modelo

@@ -39,6 +39,9 @@ use App\Http\Controllers\AboutUsController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\ServiceLandingController;
 use App\Http\Controllers\ContainerImageLandingController;
+use App\Http\Controllers\AccidentController;
+
+
 use App\Http\Controllers\UserRatingController;
 
 
@@ -154,10 +157,12 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         ->name('estacionamiento.searchPhone');
         Route::get('estacionamiento/history', [ParkingController::class, 'history'])
         ->name('estacionamiento.history');
-        Route::get('/contrato/{parking}/print', [ParkingController::class, 'print'])
-        ->name('contrato.print');
         Route::get('/ticket/{parking}/print', [ParkingController::class, 'printTicket'])
-        ->name('contrato.print');
+        ->name('ticket.print');
+        Route::get('parking/{parking}/send-whatsapp', [ParkingController::class, 'sendContractWhatsApp'])
+        ->name('parking.send_whatsapp');
+        
+
 
         Route::resource('estacionamiento', ParkingController::class);
         Route::post('/estacionamiento/{parking}/checkout', [ParkingController::class, 'checkout'])->name('estacionamiento.checkout');
@@ -174,6 +179,21 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         Route::get('carwash/history', [CarWashController::class, 'history'])->name('carwash.history');
         Route::patch('carwash/marcar-lavado/{id}', [CarWashController::class, 'markAsWashed'])->name('carwash.markAsWashed');
     });
+    // módulo accidentes
+    Route::middleware(['auth', 'permission:accidente.access'])->group(function () {
+        // CRUD clásico
+        Route::get('accidente',         [AccidentController::class, 'index'])->name('accidente.index');
+        Route::get('accidente/data',    [AccidentController::class, 'data'])->name('accidente.data');
+        Route::get('accidente/create',  [AccidentController::class, 'create'])->name('accidente.create');
+        
+        Route::post('accidente',        [AccidentController::class, 'store'])->name('accidente.store');
+        Route::get('accidente/{accidente}/edit', [AccidentController::class, 'edit'])->name('accidente.edit');
+        Route::put('accidente/{accidente}', [AccidentController::class, 'update'])->name('accidente.update');
+        Route::delete('accidente/{accidente}', [AccidentController::class, 'destroy'])->name('accidente.destroy');
+        Route::post('accidente/{accidente}/complete', [AccidentController::class, 'markComplete'])->name('accidente.markComplete');
+        Route::get('accidente/{accidente}/pdf', [AccidentController::class, 'downloadPdf'])->name('accidente.downloadPdf');
+        Route::delete('accidente/{accidente}/photo/{photo}', [\App\Http\Controllers\AccidentController::class, 'destroyPhoto'])->name('accidente.photo.destroy');
+    });
 
 
     // Modulo ventas
@@ -181,6 +201,11 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         Route::resource('pagos', PaymentRecordController::class)->names('payment');
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
+        Route::get('/analiticas/chart-line-data', [DashboardController::class, 'chartLineData'])->name('analiticas.chart.line.data');
+        Route::get('/dashboard/car-type-ranking', [DashboardController::class, 'carTypeRanking'])->name('analiticas.car.type.ranking');
+        Route::get('/dashboard/top-users-ranking', [DashboardController::class, 'topUsersRanking'])->name('analiticas.top.users.ranking');
+        Route::get('analiticas/top-users-ranking', [DashboardController::class, 'topUsersRanking'])->name('analiticas.top.users.ranking');
+        Route::get('analiticas/user-ratings/{client_rut}', [DashboardController::class, 'userRatings'])->name('analiticas.user.ratings');
     });
     // Módulo Costos de Servicios Básicos 
     Route::middleware(['auth', 'permission:cost_basic_service.access'])->group(function () {
@@ -193,6 +218,7 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         Route::get('costos/{id}/edit', [CostBasicServiceController::class, 'edit'])->name('cost_basic_service.edit');
         Route::put('costos/{id}', [CostBasicServiceController::class, 'update'])->name('cost_basic_service.update');
         Route::delete('costos/{id}', [CostBasicServiceController::class, 'destroy']);
+        
     });
 
 
@@ -214,7 +240,8 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
 
         Route::post('reservations/{reservation}/confirm', [ReservationController::class, 'confirm'])
             ->name('reservations.confirm');
-
+        
+        // Cancelar una reserva
         Route::post('reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])
             ->name('reservations.cancel');
 
@@ -227,7 +254,7 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         });
     });
     // Modulo de arriendos
-    Route::middleware(['auth', 'permission:reservas.access'])->group(function () {
+    Route::middleware(['auth', 'permission:arriendos.access'])->group(function () {
         Route::get('registro-renta/data', [RegisterRentController::class, 'data'])->name('registro_renta.data');
         Route::resource('registro-renta', RegisterRentController::class);
         Route::resource('user_ratings', UserRatingController::class)->only(['store']);
@@ -236,6 +263,8 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         Route::get('registro-renta/fechas-ocupadas/{id}', [RegisterRentController::class, 'fechasOcupadas']);
         Route::get('/buscar-cliente', [RegisterRentController::class, 'buscarClientePorCorreo']);
         Route::put('registro-renta/completar/{id}', [RegisterRentController::class, 'completar'])->name('registro-renta.completar');
+        Route::get('register_rents/{id}/contrato', [RegisterRentController::class, 'contratoPDF'])->name('register_rents.contrato_pdf');
+
     });
     
     //Landing

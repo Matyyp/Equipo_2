@@ -49,13 +49,17 @@
   @endif
 
   <div class="card ">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-        <div>
-          <i class="fas fa-file-signature"></i> Registros de Arriendo
-          <a href="{{ route('registro-renta.create') }}"
-            style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-            <i class="fas fa-plus mr-1"></i> Ingresar un arriendo
-          </a>
+    <div class="card-header bg-secondary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fas fa-file-signature"></i> Registros de Arriendo
+          </div>
+          <div>
+            <a href="{{ route('registro-renta.create') }}"
+                        style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+                        <i class="fas fa-plus mr-1"></i> Ingresar un arriendo
+            </a>
+          </div>
         </div>
     </div>
     <div class="card-body">
@@ -90,7 +94,9 @@
       <div class="modal-content">
         <div class="modal-header bg-secondary text-white">
           <h5 class="modal-title" id="ratingModalLabel">Añadir Reseña</h5>
-          <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Cerrar"></button>
+          <button type="button" class="btn text-white" data-dismiss="modal" aria-label="Cerrar">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
         <div class="modal-body">
 
@@ -141,7 +147,9 @@
       <div class="modal-content">
         <div class="modal-header bg-secondary text-white">
           <h5 class="modal-title" id="completarModalLabel">Completar Arriendo</h5>
-          <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Cerrar"></button>
+          <button type="button" class="btn text-white" data-dismiss="modal" aria-label="Cerrar">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
         <div class="modal-body">
           <div class="form-group">

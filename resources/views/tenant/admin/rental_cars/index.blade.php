@@ -5,11 +5,8 @@
 @section('page_title', 'Autos de Arriendo')
 
 @push('styles')
-  <!-- DataTables Bootstrap4 CSS -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css"
-  />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css" />
 
   <style>
     table.dataTable td,
@@ -27,24 +24,34 @@
     }
 
     .dataTables_paginate .pagination .page-item.active a.page-link {
-      background-color: #17a2b8 !important; 
-      color:rgb(255, 255, 255) !important;
-      border-color: #17a2b8 !important; 
+      background-color: #17a2b8 !important;
+      color: #fff !important;
+      border-color: #17a2b8 !important;
     }
-
 
     .dataTables_paginate .pagination .page-item .page-link {
       background-color: #eeeeee;
       color: #17a2b8 !important;
       border-color: #eeeeee;
     }
-    
+
     .btn-outline-info.text-info:hover,
     .btn-outline-info.text-info:focus {
       color: #fff !important;
     }
-  </style>
+    /* Para la celda que contiene los botones de acciones */
+    table.dataTable td.text-center {
+      white-space: nowrap; /* Evita que los botones se dividan en varias líneas */
+    }
 
+    /* Contenedor flex para botones, sin quiebre de línea */
+    .actions-wrapper {
+      display: flex;
+      flex-wrap: nowrap; /* forzar que no se quiebren */
+      gap: 0.3rem; /* pequeño espacio entre botones */
+      align-items: center;
+    }
+  </style>
 @endpush
 
 @section('content')
@@ -62,29 +69,32 @@
       </a>
     </div>
     <div class="card-body">
-      <table id="cars-table" class="table table-striped w-100">
-        <thead>
-          <tr>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>Año</th>
-            <th>Estado</th>
-            <th>Sucursal</th>
-            <th>Precio</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-      </table>
+      <div class="table-responsive">
+        <table id="cars-table" class="table table-striped w-100">
+          <thead>
+            <tr>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Año</th>
+              <th>Estado</th>
+              <th>Sucursal</th>
+              <th>Precio</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 @endsection
 
 @push('scripts')
-  <!-- jQuery + DataTables JS -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
 
   <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -95,29 +105,19 @@
         url: '{{ route("rental-cars.data") }}'
       },
       columns: [
-        { data: 'marca',    name: 'brand.name_brand' },
-        { data: 'modelo',   name: 'model.name_model' },
-        { data: 'year',     name: 'year' },
-        {
-          data: 'estado',
-          name: 'is_active',
-          orderable: false,
-          searchable: false
-        },
-        {
-          data: 'sucursal',
-          name: 'sucursal',
-        },
-        {
-          data: 'price',
-          name: 'price_per_day',
-        },
+        { data: 'marca',    name: 'brand.name_brand', responsivePriority: 1 },
+        { data: 'modelo',   name: 'model.name_model', responsivePriority: 2 },
+        { data: 'year',     name: 'year', responsivePriority: 3 },
+        { data: 'estado',   name: 'is_active', orderable: false, searchable: false, responsivePriority: 4 },
+        { data: 'sucursal', name: 'sucursal', responsivePriority: 5 },
+        { data: 'price',    name: 'price_per_day', responsivePriority: 6 },
         {
           data: 'acciones',
           name: 'acciones',
           orderable: false,
           searchable: false,
-          className: 'text-center'
+          className: 'text-center',
+          responsivePriority: 10 // Más baja prioridad, para ocultarse primero
         }
       ],
       order: [[0, 'asc']],

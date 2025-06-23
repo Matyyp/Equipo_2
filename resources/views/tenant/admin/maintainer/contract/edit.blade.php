@@ -40,22 +40,6 @@
         @csrf
         @method('PUT')
 
-        @if($type === 'parking_annual')
-          <div class="form-group mb-3">
-            <label for="important_note">Nota Importante</label>
-            <input type="text" name="important_note" id="important_note" class="form-control"
-              value="{{ old('important_note', $contract->contract_contract_parking->contract_parking_contract_annual->important_note ?? '') }}">
-          </div>
-
-          <div class="form-group mb-3">
-            <label for="expiration_date">Fecha de Expiración</label>
-            <input type="date" name="expiration_date" id="expiration_date" class="form-control"
-              value="{{ old('expiration_date', optional($contract->contract_contract_parking->contract_parking_contract_annual)->expiration_date
-              ? \Carbon\Carbon::parse($contract->contract_contract_parking->contract_parking_contract_annual->expiration_date)->format('Y-m-d')
-              : '') }}">
-          </div>
-        @endif
-
         <div class="form-group mb-4">
           <label><strong>Datos de Contacto</strong></label>
           @foreach($contactInformation as $contact)

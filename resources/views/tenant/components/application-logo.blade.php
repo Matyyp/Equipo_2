@@ -6,7 +6,7 @@
         src="{{ $tenantLogo }}"
         alt="{{ config('app.name') }}"
         {{ $attributes->merge([
-            'class' => trim(($class ?? '') . ' max-h-20 w-auto object-contain'),
+            'class' => trim('object-contain block mx-auto ' . $class),
             'style' => 'display:block; margin:auto;',
         ]) }}
     />

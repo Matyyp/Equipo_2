@@ -48,28 +48,38 @@
 
         {{-- Fila 2: Dirección y Región --}}
         <div class="row mb-3">
-          <div class="col-md-6">
-            <label class="form-label">Calle</label>
-            <input type="text"
-              name="street"
-              id="street-input"
-              class="form-control"
-              value="{{ old('street') }}"
-              required
-              pattern="^.*\s\d{1,5}.*$"
-              title="Debe incluir nombre de calle y número (ej: Calle Falsa 123)">
-
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Región</label>
-            <select id="region-select" class="selectpicker form-control" data-live-search="true" required>
-              <option value="">Seleccione región</option>
-              @foreach ($region as $r)
-                <option value="{{ $r->id }}">{{ $r->name_region }}</option>
-              @endforeach
-            </select>
-          </div>
+        <div class="col-md-6">
+          <label class="form-label">Calle</label>
+          <input type="text"
+            name="street"
+            id="street-input"
+            class="form-control"
+            value="{{ old('street') }}"
+            required
+            pattern="^.*\s\d{1,5}.*$"
+            title="Debe incluir nombre de calle y número (ej: Calle Falsa 123)">
         </div>
+        
+        <div class="col-md-3">
+          <label class="form-label">Nº de estacionamientos</label>
+          <input type="number"
+            name="number_parkings"
+            class="form-control"
+            min="0"
+            value="{{ old('number_parkings', 0) }}"
+            required>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Región</label>
+          <select id="region-select" class="selectpicker form-control" data-live-search="true" required>
+            <option value="">Seleccione región</option>
+            @foreach ($region as $r)
+              <option value="{{ $r->id }}">{{ $r->name_region }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
 
         {{-- Fila 3: Comuna y Teléfono --}}
         <div class="row mb-3">
