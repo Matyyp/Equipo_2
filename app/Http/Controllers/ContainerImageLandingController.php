@@ -9,10 +9,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ContainerImageLandingController extends Controller
 {
-    public function index()
-    {
-        return view('tenant.admin.landing.container-image.index');
-    }
+public function index()
+{
+    $images = ContainerImageLanding::all();
+    return view('tenant.admin.landing.container-image.index', compact('images'));
+}
 
     public function data(Request $request)
     {

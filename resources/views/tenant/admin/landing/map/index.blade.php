@@ -1,246 +1,174 @@
 @extends('tenant.layouts.admin')
 
-@section('title', 'Gestión de Mapa + Contacto')
-@section('page_title', 'Gestión de Mapa + Contacto')
+@section('title', 'Vista Previa Mapa + Contacto')
+@section('page_title', 'Vista Previa Mapa + Contacto')
+
+@push('styles')
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    .leaflet-container {
+      height: 100%;
+      width: 100%;
+    }
+
+  </style>
+  <style>
+  .map-border {
+    border-width: 4px !important;
+    border-style: solid;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+</style>
+@endpush
 
 @section('content')
 <div class="container-fluid">
-  @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-  @endif
-
   <div class="card">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div><i class="fas fa-map-marked-alt mr-2"></i>Mapa y Contacto</div>
-      <a href="{{ route('landing.map.create') }}"
-         style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-        <i class="fas fa-plus"></i> Nuevo
-      </a>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table id="map-table" class="table table-striped w-100">
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th>Ubicación</th>
-              <th>Contactos</th>
-              <th>Horario</th>
-              <th>Botón</th>
-              <th>Colores</th>
-              <th>Estado Mapa</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($maps as $map)
-            <tr>
-              <!-- Título -->
-              <td>
-                @if($map->titulo_active)
-                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                @else
-                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                @endif
-                <div class="mt-2">{{ $map->titulo }}</div>
-              </td>
-              <!-- Ubicación -->
-              <td>
-                <div class="d-flex flex-column small gap-3">
-                  <div class="d-flex flex-wrap align-items-center gap-2">
-                    <strong>Ciudad:</strong>
-                    @if($map->ciudad_active)
-                      <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                    @else
-                      <span class="border border-dark text-muted px-2 py-1 rounded">Inactivo</span>
-                    @endif
-                    <span>{{ $map->ciudad }}</span>
-                  </div>
 
-                  <div class="d-flex flex-wrap align-items-center gap-2">
-                    <strong>Dirección:</strong>
-                    @if($map->direccion_active)
-                      <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                    @else
-                      <span class="border border-dark text-muted px-2 py-1 rounded">Inactivo</span>
-                    @endif
-                    <span>{{ Str::limit($map->direccion, 30) }}</span>
-                  </div>
+
+    <div class="card-header bg-secondary text-white">
+      <div class="row w-100 align-items-center">
+        <div class="col">
+          <i class="fas fa-map-marked-alt mr-2"></i>
+          <span>Previsualización Mapa + Contacto</span>
+        </div>
+        <div class="col-auto ms-auto">
+          <a href="{{ route('landing.map.create') }}"
+            style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;">
+            <i class="fas fa-plus"></i> Nuevo
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      @php
+          use App\Models\Map;
+          $maps = Map::orderByDesc('created_at')->get();
+      @endphp
+
+      @if($maps->isEmpty())
+        <div class="alert alert-info">No hay registros de mapas disponibles.</div>
+      @else
+        @foreach($maps as $index => $map)
+          @php
+              $coords = explode(',', $map->coordenadas_mapa ?? '');
+              $lat = trim($coords[0] ?? '0');
+              $lng = trim($coords[1] ?? '0');
+              $reverse = $index % 2 !== 0;
+          @endphp
+
+          <div class="admin-map-wrapper">
+            <div class="row align-items-center">
+              <div class="col-md-6 {{ $reverse ? 'order-md-2' : '' }}">
+<div id="map-{{ $map->id_map }}" class="map-border" style="border-color: {{ $map->color_mapa }}; height: 300px;"></div>
+                
+              </div>
+
+              <div class="col-md-6">
+                <div class="rounded shadow-lg p-4 mt-4 mt-md-0" style="background-color: {{ $map->color_tarjeta }}; color: {{ $map->color_texto_tarjeta }}">
+                  @if($map->titulo_active)
+                    <p class="text-uppercase small opacity-75">{{ $map->titulo }}</p>
+                  @endif
+
+                  @if($map->ciudad_active)
+                    <h4 class="fw-bold">{{ $map->ciudad }}</h4>
+                  @endif
+
+                  @if($map->direccion_active)
+                    <p class="mb-2">{{ $map->direccion }}</p>
+                  @endif
+
+                  @if($map->contactos_active && $map->contactos)
+                    <div class="border-top pt-2" style="border-color: {{ $map->color_texto_tarjeta }}">
+                      <p class="mb-1 fw-semibold small" style="color: {{ $map->boton_color }}">CONTACTOS</p>
+                      @foreach(explode(',', $map->contactos) as $contacto)
+                        <p class="mb-0">{{ trim($contacto) }}</p>
+                      @endforeach
+                    </div>
+                  @endif
+
+                  @if($map->horario_active && $map->horario)
+                    <div class="mt-2 d-flex align-items-start gap-2 text-sm p-2 rounded">
+                      <i class="fas fa-clock mt-1"></i>
+                      <p class="mb-0">{{ $map->horario }}</p>
+                    </div>
+                  @endif
+
+                  @if($map->boton_active && $map->texto_boton)
+                    <a href="{{ $map->url_boton ?? '#' }}"
+                       class="btn btn-sm mt-3"
+                       style="background-color: {{ $map->boton_color }}; color: {{ $map->boton_color_texto }}">
+                      {{ $map->texto_boton }} →
+                    </a>
+                  @endif
                 </div>
-              </td>
-              
-              <!-- Contactos -->
-              <td>
-                @if($map->contactos_active)
-                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                @else
-                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                @endif
-                <div class="mt-2 small">
-                  @foreach(explode(',', $map->contactos) as $contacto)
-                    <span class="d-block">{{ '*'. $contacto }}</span>
-                  @endforeach
-                </div>
-              </td>
-              
-              <!-- Horario -->
-              <td>
-                @if($map->horario_active)
-                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                @else
-                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                @endif
-                <div class="mt-2 small">{{ Str::limit($map->horario, 30) }}</div>
-              </td>
-              
-              <!-- Botón -->
-              <td>
-                @if($map->boton_active)
-                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                @else
-                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                @endif
-                <div class="mt-2 small">
-                  <span class="d-block"><strong>Texto:</strong> {{ $map->texto_boton }}</span>
-                  <span class="d-block"><strong>Enlace:</strong> {{ Str::limit($map->url_boton, 20) }}</span>
-                </div>
-              </td>
-              
-              <!-- Colores -->
-              <td>
-                <div class="d-flex flex-column gap-1 small">
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->boton_color_texto }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Texto Botón
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->boton_color }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Fondo Botón
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->color_tarjeta }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Fondo Tarjeta
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->color_texto_tarjeta }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Texto Tarjeta
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="display:inline-block;width:15px;height:15px;background-color:{{ $map->color_mapa }};border-radius:50%;border:1px solid #ccc;"></span>
-                    Color Mapa
-                  </div>
-                </div>
-              </td>
-              
-              <!-- Estado -->
-              <td>
-                @if($map->map_active)
-                  <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
-                @else
-                  <span class="border border-dark text-grey px-2 py-1 rounded">Inactivo</span>
-                @endif
-              </td>
-              
-              <!-- Acciones -->
-              <td>
-                <div class="d-flex gap-1">
-                  <a href="{{ route('landing.map.edit', $map->id_map) }}" class="btn btn-outline-info btn-sm text-info me-1" title="Editar">
-                    <i class="fas fa-pen"></i>
+
+                <!-- Acciones -->
+                <div class="mt-3 d-flex gap-2">
+                  <a href="{{ route('landing.map.edit', $map->id_map) }}" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-pen"></i> 
                   </a>
-                  <form action="{{ route('landing.map.destroy', $map->id_map) }}" method="POST" class="delete-form">
+                  <form action="{{ route('landing.map.destroy', $map->id_map) }}"
+                        method="POST"
+                        class="delete-form d-inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-outline-info btn-sm text-info me-1 ml-1" title="Eliminar">
-                      <i class="fas fa-trash-alt"></i>
+                    <button type="submit" class="btn btn-outline-info btn-sm">
+                      <i class="fas fa-trash"></i> 
                     </button>
                   </form>
                 </div>
-              </td>
-            </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
+
+              </div>
+            </div>
+          </div>
+
+          @push('scripts')
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+              var map = L.map('map-{{ $map->id_map }}').setView([{{ $lat }}, {{ $lng }}], 15);
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+              }).addTo(map);
+              L.marker([{{ $lat }}, {{ $lng }}]).addTo(map)
+                .bindPopup('{{ $map->titulo ?? 'Ubicación' }}')
+                .openPopup();
+            });
+          </script>
+          @endpush
+        @endforeach
+      @endif
     </div>
   </div>
 </div>
 @endsection
 
-@push('styles')
-<style>
-  .badge {
-    font-size: 0.75em;
-    padding: 0.35em 0.65em;
-  }
-  #map-table td {
-    vertical-align: middle;
-  }
-</style>
-<style>
-     table.dataTable td,
-    table.dataTable th {
-      border: none !important;
-    }
-
-    table.dataTable tbody tr {
-      border: none !important;
-    }
-
-    table.dataTable {
-      border-top: 2px solid #dee2e6;
-      border-bottom: 2px solid #dee2e6;
-    }
-
-    .dataTables_paginate .pagination .page-item.active a.page-link {
-      background-color: #17a2b8 !important; 
-      color:rgb(255, 255, 255) !important;
-      border-color: #17a2b8 !important; 
-    }
-
-  
-    .dataTables_paginate .pagination .page-item .page-link {
-      background-color: #eeeeee;
-      color: #17a2b8 !important;
-      border-color: #eeeeee;
-    }
-    
-</style>
-@endpush
-
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  $('#map-table').DataTable({
-    language: {
-      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-    },
-    responsive: true,
-    searching: true,
-    paging: true,
-    info: true,
-    ordering: true,
-    columnDefs: [
-      { orderable: false, targets: [5, 7] } // Deshabilitar ordenación para colores y acciones
-    ]
-  });
-
-  // Confirmación para eliminar
-  $('.delete-form').on('submit', function(e) {
-    e.preventDefault();
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: "¡No podrás revertir esto!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminarlo!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.submit();
-      }
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.submit();
+            }
+          });
+        });
+      });
     });
-  });
-});
-</script>
+  </script>
 @endpush

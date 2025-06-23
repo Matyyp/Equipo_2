@@ -12,8 +12,11 @@ class ServiceLandingController extends Controller
 {
     public function index()
     {
-        return view('tenant.admin.landing.service.index');
+        $services = ServiceLanding::all(); // o paginados: Service::paginate(9)
+
+        return view('tenant.admin.landing.service.index', compact('services'));
     }
+
 
     public function data()
     {
