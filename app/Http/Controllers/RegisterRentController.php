@@ -46,9 +46,13 @@ class RegisterRentController extends Controller
                     <i class="fas fa-car-crash"></i>
                 </a>';
             }
-            $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Ver">
+            $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info mr-1" title="Ver">
                 <i class="fas fa-eye"></i>
             </a>';
+
+            $contratoBtn = '<a href="' . route('register_rents.contrato_pdf', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Generar Contrato" target="_blank">
+                    <i class="fas fa-file-pdf"></i>
+                </a>';
             $reseñaBtn = ($r->userRatings && $r->userRatings->isEmpty())
                 ? '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" title="Añadir Reseña">
                     <i class="fas fa-star"></i>
@@ -58,7 +62,7 @@ class RegisterRentController extends Controller
                     <i class="fas fa-check-circle"></i>
                 </button>' : '';
 
-            return $accidentBtn . $verBtn . $reseñaBtn . $completarBtn;
+            return $accidentBtn . $verBtn . $contratoBtn . $reseñaBtn . $completarBtn;
         })
         ->addColumn('status', fn($r) => $r->status === 'completado' 
             ? '<span class="border border-success text-success px-2 py-1 rounded">Completado</span>' 
