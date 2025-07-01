@@ -90,42 +90,52 @@
 @endsection
 
 @push('scripts')
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-  <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
-  <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    $('#cars-table').DataTable({
-      processing: true,
-      serverSide: true,
-      ajax: {
-        url: '{{ route("rental-cars.data") }}'
-      },
-      columns: [
-        { data: 'marca',    name: 'brand.name_brand', responsivePriority: 1 },
-        { data: 'modelo',   name: 'model.name_model', responsivePriority: 2 },
-        { data: 'year',     name: 'year', responsivePriority: 3 },
-        { data: 'estado',   name: 'is_active', orderable: false, searchable: false, responsivePriority: 4 },
-        { data: 'sucursal', name: 'sucursal', responsivePriority: 5 },
-        { data: 'price',    name: 'price_per_day', responsivePriority: 6 },
-        {
-          data: 'acciones',
-          name: 'acciones',
-          orderable: false,
-          searchable: false,
-          className: 'text-center',
-          responsivePriority: 10 // Más baja prioridad, para ocultarse primero
-        }
-      ],
-      order: [[0, 'asc']],
-      language: {
-        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-      },
-      responsive: true
-    });
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const table = $('#cars-table').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: '{{ route("rental-cars.data") }}'
+    },
+    columns: [
+      { data: 'marca',    name: 'brand.name_brand', responsivePriority: 1 },
+      { data: 'modelo',   name: 'model.name_model', responsivePriority: 2 },
+      { data: 'year',     name: 'year', responsivePriority: 3 },
+      { data: 'estado',   name: 'is_active', orderable: false, searchable: false, responsivePriority: 4 },
+      { data: 'sucursal', name: 'sucursal', responsivePriority: 5 },
+      { data: 'price',    name: 'price_per_day', responsivePriority: 6 },
+      {
+        data: 'acciones',
+        name: 'acciones',
+        orderable: false,
+        searchable: false,
+        className: 'text-center',
+        responsivePriority: 10
+      }
+    ],
+    order: [[0, 'asc']],
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+    },
+    responsive: true,
+    drawCallback: function(settings) {
+      // Inicializar tooltips cada vez que se redibuja la tabla
+      $('[data-toggle="tooltip"]').tooltip();
+    }
   });
-  </script>
+
+  // Inicialización adicional para asegurar que funcionen los tooltips
+  $(document).on('mouseover', '[data-toggle="tooltip"]', function() {
+    $(this).tooltip('show');
+  });
+});
+</script>
 @endpush

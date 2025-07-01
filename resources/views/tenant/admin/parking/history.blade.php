@@ -125,6 +125,7 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -135,7 +136,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return new Intl.DateTimeFormat('es-CL').format(d);
   };
 
-  $('#history-table').DataTable({
+  // Inicializar tooltips antes de crear la tabla
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+
+  const table = $('#history-table').DataTable({
     responsive: true,
     processing: true,
     serverSide: false,
@@ -168,20 +174,39 @@ document.addEventListener('DOMContentLoaded', () => {
         searchable: false,
         render: function(id) {
           return `
-            <a href="/contrato/${id}/print" target="_blank" class="btn btn-outline-info btn-sm text-info me-1" title="Contrato">
-              <i class="fas fa-file-contract"></i>
-            </a>
-            <a href="/ticket/${id}/print" class="btn btn-outline-info btn-sm text-info" title="Ticket">
-              <i class="fas fa-ticket-alt"></i>
-            </a>
+            <div class="d-flex">
+              <a href="/contrato/${id}/print" target="_blank" 
+                 class="btn btn-outline-info btn-sm text-info mr-1" 
+                 data-toggle="tooltip" 
+                 data-placement="top" 
+                 title="Generar contrato">
+                <i class="fas fa-file-contract"></i>
+              </a>
+              <a href="/ticket/${id}/print" 
+                 class="btn btn-outline-info btn-sm text-info" 
+                 data-toggle="tooltip" 
+                 data-placement="top" 
+                 title="Generar ticket para llaves del vehículo">
+                <i class="fas fa-ticket-alt"></i>
+              </a>
+            </div>
           `;
         }
       }
     ],
     order: [[5, 'desc']],
-      language: {
-        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-      }
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+    },
+    drawCallback: function(settings) {
+      // Reinicializar tooltips cada vez que se redibuja la tabla
+      $('[data-toggle="tooltip"]').tooltip();
+    }
+  });
+
+  // Manejar el evento de redibujado para móviles
+  table.on('responsive-display', function() {
+    $('[data-toggle="tooltip"]').tooltip();
   });
 });
 </script>
