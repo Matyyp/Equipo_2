@@ -258,26 +258,59 @@
 <script src="https://kit.fontawesome.com/96b81e7f85.js" crossorigin="anonymous"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    let chartBar = null;
-    let chartPie = null;
-    let chartLine = null;
-    let chartCarType = null;
 
-    function renderBarChart(filter = 'daily', branchId = null) {
-        let url = `{{ route('analiticas.chart.data') }}?filter=${filter}`;
-        @if(auth()->user()->hasRole('SuperAdmin'))
-        if (branchId) {
-            url += `&branch_id=${branchId}`;
-        }
-        @endif
+    let filterType = 'daily'; 
+    let branchId = null;
+    @if(auth()->user()->hasRole('SuperAdmin'))
+        branchId = document.getElementById('branchSelectGlobal').value;
+    @endif
+
+    function getDateFilters() {
+        return {
+            dateFrom: document.getElementById('filterDateFromGlobal') ? document.getElementById('filterDateFromGlobal').value : null,
+            dateTo: document.getElementById('filterDateToGlobal') ? document.getElementById('filterDateToGlobal').value : null
+        };
+    }
+
+    function actualizarGraficos() {
+        const { dateFrom, dateTo } = getDateFilters();
+        renderBarChart(filterType, branchId, dateFrom, dateTo);
+        renderParkingChart(branchId, dateFrom, dateTo);
+        renderLineChart(filterType, branchId, dateFrom, dateTo);
+        renderCarTypeRanking(branchId, dateFrom, dateTo);
+        fetchTopUsers(branchId, dateFrom, dateTo);
+    }
+
+   
+
+    @if(auth()->user()->hasRole('SuperAdmin'))
+    document.getElementById('branchSelectGlobal').addEventListener('change', function () {
+        branchId = this.value;
+        actualizarGraficos();
+    });
+    @endif
+
+    if (document.getElementById('filterDateFromGlobal')) {
+        document.getElementById('filterDateFromGlobal').addEventListener('change', actualizarGraficos);
+    }
+    if (document.getElementById('filterDateToGlobal')) {
+        document.getElementById('filterDateToGlobal').addEventListener('change', actualizarGraficos);
+    }
+
+    // BARRAS
+    function renderBarChart(filter, branchId, dateFrom, dateTo) {
+        let url = `/analiticas/chart-data?filter=${filter}`;
+        if (dateFrom) url += `&date_from=${dateFrom}`;
+        if (dateTo) url += `&date_to=${dateTo}`;
+        if (branchId) url += `&branch_id=${branchId}`;
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                if (chartBar) chartBar.destroy();
-                if (data.labels.length) {
+                if (window.chartBar) window.chartBar.destroy();
+                if (data.labels && data.values && data.labels.length) {
                     const ctx = document.getElementById('chartTotalValue').getContext('2d');
-                    chartBar = new Chart(ctx, {
+                    window.chartBar = new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: data.labels,
@@ -293,40 +326,33 @@ document.addEventListener('DOMContentLoaded', function () {
                             responsive: true,
                             maintainAspectRatio: false,
                             scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    title: { display: true, text: 'Ingresos ($)' }
-                                },
-                                x: {
-                                    title: { display: true, text: filter === 'weekly' ? 'Semana' : 'Fecha' }
-                                }
+                                y: { beginAtZero: true, title: { display: true, text: 'Ingresos ($)' } },
+                                x: { title: { display: true, text: filter === 'weekly' ? 'Semana' : 'Fecha' } }
                             }
                         }
                     });
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error('BarChart:', err));
     }
 
-    function renderParkingChart(branchId = null) {
-        let url = `{{ route('analiticas.chart.data') }}?filter=daily`;
-        @if(auth()->user()->hasRole('SuperAdmin'))
-        if (branchId) {
-            url += `&branch_id=${branchId}`;
-        }
-        @endif
+    // TORTA
+    function renderParkingChart(branchId, dateFrom, dateTo) {
+        let url = `/analiticas/chart-data?filter=daily`;
+        if (dateFrom) url += `&date_from=${dateFrom}`;
+        if (dateTo) url += `&date_to=${dateTo}`;
+        if (branchId) url += `&branch_id=${branchId}`;
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                if (chartPie) chartPie.destroy();
+                if (window.chartPie) window.chartPie.destroy();
                 if (data.parking) {
                     const total = data.parking.ocupados + data.parking.disponibles;
                     const ocupados = data.parking.ocupados;
                     const disponibles = data.parking.disponibles;
-
                     const pieCtx = document.getElementById('chartParking').getContext('2d');
-                    chartPie = new Chart(pieCtx, {
+                    window.chartPie = new Chart(pieCtx, {
                         type: 'doughnut',
                         data: {
                             labels: [
@@ -352,7 +378,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                         boxWidth: 20,
                                         boxHeight: 10,
                                         padding: 12,
-                                        usePointStyle: false,
                                         font: { size: 13 },
                                         generateLabels: function (chart) {
                                             const data = chart.data;
@@ -375,25 +400,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('parkingInfo').innerHTML = '';
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error('ParkingChart:', err));
     }
 
-    function renderLineChart(filter = 'daily', branchId = null) {
-        let url = `{{ route('analiticas.chart.line.data') }}?filter=${filter}`;
-        @if(auth()->user()->hasRole('SuperAdmin'))
-        if (branchId) {
-            url += `&branch_id=${branchId}`;
-        }
-        @endif
+    // LINEAL
+    function renderLineChart(filter, branchId, dateFrom, dateTo) {
+        let url = `/analiticas/chart-line-data?filter=${filter}`;
+        if (dateFrom) url += `&date_from=${dateFrom}`;
+        if (dateTo) url += `&date_to=${dateTo}`;
+        if (branchId) url += `&branch_id=${branchId}`;
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                if (chartLine) chartLine.destroy();
-
-                if (data.labels.length) {
+                if (window.chartLine) window.chartLine.destroy();
+                if (data.labels && data.labels.length) {
                     const ctx = document.getElementById('chartLineal').getContext('2d');
-                    chartLine = new Chart(ctx, {
+                    window.chartLine = new Chart(ctx, {
                         type: 'line',
                         data: {
                             labels: data.labels,
@@ -422,13 +445,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             responsive: true,
                             maintainAspectRatio: false,
                             scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    title: { display: true, text: 'Precio ($)' }
-                                },
-                                x: {
-                                    title: { display: true, text: filter === 'weekly' ? 'Semana' : 'Fecha' }
-                                }
+                                y: { beginAtZero: true, title: { display: true, text: 'Precio ($)' } },
+                                x: { title: { display: true, text: filter === 'weekly' ? 'Semana' : 'Fecha' } }
                             },
                             plugins: {
                                 legend: {
@@ -444,146 +462,76 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error('LineChart:', err));
     }
 
-    // Gráfico ranking de autos más arrendados
-    function renderCarTypeRanking(branchId = null) {
-        let url = `{{ route('analiticas.car.type.ranking') }}`;
-        @if(auth()->user()->hasRole('SuperAdmin'))
-        if (branchId) {
-            url += `?branch_id=${branchId}`;
-        }
-        @endif
+    // RANKING AUTOS
+    function renderCarTypeRanking(branchId, dateFrom, dateTo) {
+    let url = `{{ route('analiticas.car.type.ranking') }}`;
+    let params = [];
+    @if(auth()->user()->hasRole('SuperAdmin'))
+        if (branchId) params.push(`branch_id=${branchId}`);
+    @endif
+    if (dateFrom) params.push(`date_from=${dateFrom}`);
+    if (dateTo) params.push(`date_to=${dateTo}`);
+    if (params.length) url += '?' + params.join('&');
 
-        fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                if (chartCarType) chartCarType.destroy();
-                if (data.labels.length) {
-                    const colors = [
-                        '#3b82f6', '#f59e42', '#10b981', '#f87171', '#a78bfa',
-                        '#fbbf24', '#34d399', '#f472b6', '#6366f1', '#facc15',
-                        '#4ade80', '#c026d3', '#eab308', '#f43f5e', '#0ea5e9'
-                    ];
-                    const borderColors = [
-                        '#2563eb', '#ea580c', '#059669', '#dc2626', '#7c3aed',
-                        '#b45309', '#059669', '#be185d', '#4f46e5', '#a16207',
-                        '#22c55e', '#a21caf', '#ca8a04', '#be123c', '#0369a1'
-                    ];
-                    const ctx = document.getElementById('chartCarType').getContext('2d');
-                    chartCarType = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: data.labels,
-                            datasets: [{
-                                label: 'Cantidad de Arriendos',
-                                data: data.values,
-                                backgroundColor: colors.slice(0, data.labels.length),
-                                borderColor: borderColors.slice(0, data.labels.length),
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            indexAxis: 'y',
-                            scales: {
-                                x: { beginAtZero: true, title: { display: true, text: 'Cantidad' } },
-                                y: { title: { display: true, text: 'Tipo de Auto' } }
-                            }
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            if (window.chartCarType && typeof window.chartCarType.destroy === 'function') {
+                window.chartCarType.destroy();
+            }
+            if (data.labels && data.values && data.labels.length) {
+                const colors = ['#3b82f6','#f59e42','#10b981','#f87171','#a78bfa'];
+                const borderColors = ['#2563eb','#ea580c','#059669','#dc2626','#7c3aed'];
+                const ctx = document.getElementById('chartCarType').getContext('2d');
+                window.chartCarType = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Cantidad de Arriendos',
+                            data: data.values,
+                            backgroundColor: colors.slice(0, data.labels.length),
+                            borderColor: borderColors.slice(0, data.labels.length),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: { beginAtZero: true, title: { display: true, text: 'Cantidad' } },
+                            y: { title: { display: true, text: 'Tipo de Auto' } }
                         }
-                    });
-                }
-            })
-            .catch(err => console.error(err));
-    }
-    let chartTopUsers = null;
+                    }
+                });
+            } else {
+                // Limpia el canvas si no hay datos
+                const ctx = document.getElementById('chartCarType').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            }
+        })
+        .catch(err => {
+            console.error('Error en renderCarTypeRanking:', err);
+        });
+}
 
-
-
-
-document.getElementById('closeUserRatingsModal').addEventListener('click', function() {
-    document.getElementById('userRatingsModal').classList.add('hidden');
-});
-
-@if(auth()->user()->hasRole('SuperAdmin'))
-    let currentBranchIdUsers = document.getElementById('branchSelectUsers').value;
-    document.getElementById('branchSelectUsers').addEventListener('change', function () {
-        currentBranchIdUsers = this.value;
-        renderTopUsersRanking(currentBranchIdUsers);
-    });
-@else
-    let currentBranchIdUsers = null;
-@endif
-
-
-    
-    // Inicialización: cada gráfico con su propio filtro de sucursal
-    @if(auth()->user()->hasRole('SuperAdmin'))
-        let currentBranchIdBar = document.getElementById('branchSelectBar').value;
-        let currentBranchIdLineal = document.getElementById('branchSelectLineal').value;
-        let currentBranchIdParking = document.getElementById('branchSelectParking').value;
-        let currentBranchIdCarType = document.getElementById('branchSelectCarType').value;
-
-    @else
-        let currentBranchIdBar = null;
-        let currentBranchIdLineal = null;
-        let currentBranchIdParking = null;
-        let currentBranchIdCarType = null;
-
-    @endif
-
-    renderBarChart(document.getElementById('filterType').value, currentBranchIdBar);
-    renderParkingChart(currentBranchIdParking);
-    renderLineChart(document.getElementById('filterType').value, currentBranchIdLineal);
-    renderCarTypeRanking(currentBranchIdCarType);
-
-
-    document.getElementById('filterType').addEventListener('change', function () {
-        renderBarChart(this.value, currentBranchIdBar);
-        renderLineChart(this.value, currentBranchIdLineal);
-    });
-
-    @if(auth()->user()->hasRole('SuperAdmin'))
-    document.getElementById('branchSelectBar').addEventListener('change', function () {
-        currentBranchIdBar = this.value;
-        renderBarChart(document.getElementById('filterType').value, currentBranchIdBar);
-    });
-    document.getElementById('branchSelectLineal').addEventListener('change', function () {
-        currentBranchIdLineal = this.value;
-        renderLineChart(document.getElementById('filterType').value, currentBranchIdLineal);
-    });
-    document.getElementById('branchSelectParking').addEventListener('change', function () {
-        currentBranchIdParking = this.value;
-        renderParkingChart(currentBranchIdParking);
-    });
-    document.getElementById('branchSelectCarType').addEventListener('change', function () {
-        currentBranchIdCarType = this.value;
-        renderCarTypeRanking(currentBranchIdCarType);
-    });
-    @endif
-});
-</script>
-@endpush
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    let allUsers = [];
-
-    function fetchTopUsers(branchId = null) {
-        let url = `{{ route('analiticas.top.users.ranking') }}`;
-        @if(auth()->user()->hasRole('SuperAdmin'))
-        if (branchId) {
-            url += `?branch_id=${branchId}`;
-        }
-        @endif
+    // RANKING USUARIOS
+    function fetchTopUsers(branchId, dateFrom, dateTo) {
+        let url = `/analiticas/top-users-ranking`;
+        let params = [];
+        if (branchId) params.push(`branch_id=${branchId}`);
+        if (dateFrom) params.push(`date_from=${dateFrom}`);
+        if (dateTo) params.push(`date_to=${dateTo}`);
+        if (params.length) url += '?' + params.join('&');
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                allUsers = data.users;
-                renderUserList(allUsers);
+                renderUserList(data.users);
             });
     }
 
@@ -612,9 +560,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
                 <div class="user-right" title="Cantidad de arriendos">${u.total}</div>
                 <div class="user-rating-col">
-<button class="btn btn-outline-info btn-sm text-info ml-1 " data-client-rut="${u.client_rut}" data-client-name="${u.client_name}" title="Ver calificaciones">
-    <i class="fas fa-star"></i>
-</button>
+                    <button class="btn btn-outline-info btn-sm text-info ml-1 " data-client-rut="${u.client_rut}" data-client-name="${u.client_name}" title="Ver calificaciones">
+                        <i class="fas fa-star"></i>
+                    </button>
                 </div>
             `;
             li.querySelector('.btn-outline-info').addEventListener('click', function() {
@@ -626,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // MODAL LOGIC
     function showUserRatings(clientRut, clientName) {
-        let url = `{{ url('analiticas/user-ratings') }}/${clientRut}`;
+        let url = `/analiticas/user-ratings/${clientRut}`;
         fetch(url)
             .then(res => res.json())
             .then(data => {
@@ -655,18 +603,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    @if(auth()->user()->hasRole('SuperAdmin'))
-        let currentBranchIdUsers = document.getElementById('branchSelectUsers') ? document.getElementById('branchSelectUsers').value : null;
-        if (document.getElementById('branchSelectUsers')) {
-            document.getElementById('branchSelectUsers').addEventListener('change', function () {
-                currentBranchIdUsers = this.value;
-                fetchTopUsers(currentBranchIdUsers);
-            });
-        }
-        fetchTopUsers(currentBranchIdUsers);
-    @else
-        fetchTopUsers();
-    @endif
+    // Inicialización general
+    actualizarGraficos();
 });
 </script>
 @endpush
@@ -675,106 +613,48 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="p-0">
     <div class="contenedor-padre ">
         <div class="contenedor ">
-        <!-- Card gráfico de barras -->
-        <div class="bg-white  rounded-lg shadow p-4  mb-2">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Ingresos</h3>
-                <div class="flex items-center gap-2">
-                    <select id="filterType" class="border border-gray-300 rounded text-sm px-2 py-1">
-                        <option value="daily">Diario</option>
-                        <option value="weekly">Semanal</option>
-                    </select>
-                    @if(auth()->user()->hasRole('SuperAdmin'))
-                        <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectBar" class="border border-gray-300 rounded text-sm px-2 py-1">
-                            @foreach(\App\Models\BranchOffice::all() as $branch)
-                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                            @endforeach
-                        </select>
-                    @endif
+            <!-- Card gráfico de barras -->
+            <div class="bg-white  rounded-lg shadow p-4  mb-2">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold">Ingresos</h3>
+                </div>
+                <div class="relative" style="height: 320px;">
+                    <canvas id="chartTotalValue"></canvas>
                 </div>
             </div>
-            <div class="relative" style="height: 250px;">
-                <canvas id="chartTotalValue"></canvas>
+            <!-- Card ranking de autos más arrendados -->
+            <div class="bg-white rounded-lg shadow p-4   mb-2">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold">Tipos de auto más arrendados</h3>
+                </div>
+                <div class="relative" style="height: 320px;">
+                    <canvas id="chartCarType"></canvas>
+                </div>
+            </div>
+            <!-- Card gráfico de torta -->
+            <div class="bg-white rounded-lg shadow p-4  mb-2">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold">Disponibilidad estacionamientos</h3>
+                </div>
+                <div class="relative" style="height: 250px;">
+                    <canvas id="chartParking"></canvas>
+                </div>
+                <div id="parkingInfo" class="text-center text-sm mt-3 font-medium text-gray-700"></div>
+            </div>
+            <!-- Card gráfico lineal -->
+            <div class="bg-white  rounded-lg shadow p-4  mb-2">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold">Estacionamientos (azul) vs Rentas (rojo)</h3>
+                </div>
+                <div class="relative" style="height: 320px;">
+                    <canvas id="chartLineal"></canvas>
+                </div>
             </div>
         </div>
-        <!-- Card ranking de autos más arrendados -->
-        <div class="bg-white rounded-lg shadow p-4   mb-2">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Tipos de auto más arrendados</h3>
-                @if(auth()->user()->hasRole('SuperAdmin'))
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectCarType" class="border border-gray-300 rounded text-sm px-2 py-1">
-                            @foreach(\App\Models\BranchOffice::all() as $branch)
-                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
-            </div>
-            <div class="relative" style="height: 250px;">
-                <canvas id="chartCarType"></canvas>
-            </div>
-        </div>
-
-        
-
-        <!-- Card gráfico de torta -->
-        <div class="bg-white rounded-lg shadow p-4  mb-2">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Disponibilidad estacionamientos</h3>
-                @if(auth()->user()->hasRole('SuperAdmin'))
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectParking" class="border border-gray-300 rounded text-sm px-2 py-1">
-                            @foreach(\App\Models\BranchOffice::all() as $branch)
-                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
-            </div>
-            <div class="relative" style="height: 250px;">
-                <canvas id="chartParking"></canvas>
-            </div>
-            <div id="parkingInfo" class="text-center text-sm mt-3 font-medium text-gray-700"></div>
-        </div>
-<!-- Card gráfico lineal -->
-        <div class="bg-white  rounded-lg shadow p-4  mb-2">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Estacionamientos (azul) vs Rentas (rojo)</h3>
-                @if(auth()->user()->hasRole('SuperAdmin'))
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectLineal" class="border border-gray-300 rounded text-sm px-2 py-1">
-                            @foreach(\App\Models\BranchOffice::all() as $branch)
-                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
-            </div>
-            <div class="relative" style="height: 250px;">
-                <canvas id="chartLineal"></canvas>
-            </div>
-        </div>
-        
-    </div>
-    <div class="contenedor2 ">    
+        <div class="contenedor2 ">    
             <div class="bg-white rounded-lg shadow p-4 mb-2 ">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="text-sm font-semibold">Usuarios que más arrendaron autos</h3>
-                    @if(auth()->user()->hasRole('SuperAdmin'))
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm">Sucursal:</span>
-                            <select id="branchSelectUsers" class="border border-gray-300 rounded text-sm px-2 py-1">
-                                @foreach(\App\Models\BranchOffice::all() as $branch)
-                                    <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    @endif
                 </div>
                 <ul id="userRankingList" class="divide-y divide-gray-200"></ul>
             </div>
@@ -786,8 +666,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             </div>
         </div>
-</div>
-
-     
+    </div>
 </div> 
 @endsection

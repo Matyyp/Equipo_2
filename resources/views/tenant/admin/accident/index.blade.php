@@ -1,11 +1,11 @@
 @extends('tenant.layouts.admin')
 
-@section('title','Accidentes del Vehículo')
-@section('page_title','Listado de Accidentes')
+@section('title','Siniestros del Vehículo')
+@section('page_title','Listado de Siniestros')
 
 @push('styles')
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css"> {{-- Agregado CSS responsive --}}
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css">
   <style>
     table.dataTable td, table.dataTable th { border: none !important; }
     table.dataTable tbody tr { border: none !important; }
@@ -41,12 +41,30 @@
       background: #565e64 !important;
       color: #fff !important;
     }
-    /* Controlar ancho y texto para responsividad */
     table.dataTable td {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 180px;
+    }
+    @media (max-width: 576px) {
+      .modal-dialog {
+        max-width: 100vw;
+        margin: 0;
+      }
+      .modal-content {
+        border-radius: 0;
+        min-height: 100vh;
+      }
+      .modal-body {
+        padding: 0.5rem;
+      }
+      .modal .carousel-inner .carousel-item img {
+        width: 100vw;
+        height: auto;
+        max-width: 100vw;
+        object-fit: contain;
+      }
     }
   </style>
 @endpush
@@ -57,7 +75,7 @@
     <div class="card-header bg-secondary text-white">
       <div class="d-flex justify-content-between align-items-center w-100">
         <div>
-          <i class="fas fa-car-crash mr-2"></i>Accidentes del Vehículo
+          <i class="fas fa-car-crash mr-2"></i>Siniestros del Vehículo
           @if(isset($rentalCar))
             <span class="ml-2">| <b>Marca:</b> {{ $rentalCar->brand->name_brand ?? '' }} | <b>Modelo:</b> {{ $rentalCar->model->name_model ?? '' }}</span>
           @endif
@@ -98,7 +116,7 @@
           <thead class="thead-light">
             <tr>
                 <th>Número de arriendo</th>
-                <th>Nombre Accidente</th>
+                <th>Nombre Siniestro</th>
                 <th>Descripción</th>
                 <th>N° Factura</th>
                 <th>Descripción término</th>
@@ -109,7 +127,50 @@
             </tr>
           </thead>
           <tbody>
-            {{-- DataTables poblará --}}
+            @foreach($accidents as $a)
+            <tr>
+              <td>{{ $a->id_rent ?? '-' }}</td>
+              <td>{{ $a->name_accident }}</td>
+              <td>{{ $a->description }}</td>
+              <td>{{ $a->bill_number }}</td>
+              <td>{{ $a->description_accident_term }}</td>
+              <td>
+                @if($a->photos->count() > 0)
+                  <button type="button" class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#modal-photo-{{ $a->id }}">
+                    <i class="fas fa-image"></i> Ver Fotos
+                  </button>
+                @else
+                  <span class="text-muted">Sin foto</span>
+                @endif
+              </td>
+              <td>
+                @if($a->status === 'in progress')
+                  <span class="border border-secondary text-secondary px-2 py-1 rounded d-inline-flex align-items-center" style="height: 31px;">En progreso</span>
+                @else
+                  <span class="border border-success text-success px-2 py-1 rounded d-inline-flex align-items-center" style="height: 31px;">Completado</span>
+                @endif
+              </td>
+              <td>{{ $a->created_at ? $a->created_at->format('Y-m-d H:i') : '' }}</td>
+              <td class="text-center">
+                <a href="{{ route('accidente.edit', $a->id) }}" class="btn btn-sm btn-outline-info" title="Editar"><i class="fas fa-pen"></i></a>
+                <form action="{{ route('accidente.destroy', $a->id) }}" method="POST" style="display:inline-block;" class="form-delete-accident" data-id="{{ $a->id }}">
+                  @csrf
+                  @method('DELETE')
+                  <button type="button" class="btn btn-sm btn-outline-info btn-delete-accident" data-id="{{ $a->id }}" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+                @if($a->status === 'in progress')
+                  <button class="btn btn-sm btn-outline-info btn-mark-complete" data-id="{{ $a->id }}" title="Marcar como completado">
+                    <i class="fas fa-check"></i>
+                  </button>
+                @endif
+                <a href="{{ route('accidente.downloadPdf', $a->id) }}" class="btn btn-sm btn-outline-info" title="Descargar PDF" target="_blank">
+                  <i class="fas fa-file-pdf"></i>
+                </a>
+              </td>
+            </tr>
+            @endforeach
           </tbody>
         </table>
         <div class="datatable-return-btn-wrapper">
@@ -121,6 +182,55 @@
     </div>
   </div>
 </div>
+
+<!-- MODALES DE FOTOS FUERA DE LA TABLA -->
+@foreach($accidents as $a)
+  <div class="modal fade" id="modal-photo-{{ $a->id }}" tabindex="-1" role="dialog" aria-labelledby="modal-photo-{{ $a->id }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-photo-{{ $a->id }}Label">Fotos del Siniestro</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          @if($a->photos->count() > 0)
+            <div id="carousel-{{ $a->id }}" class="carousel slide" data-ride="carousel">
+              @if($a->photos->count() > 1)
+                <ol class="carousel-indicators">
+                  @foreach($a->photos as $i => $photo)
+                    <li data-target="#carousel-{{ $a->id }}" data-slide-to="{{ $i }}" class="{{ $i === 0 ? 'active' : '' }}"></li>
+                  @endforeach
+                </ol>
+              @endif
+              <div class="carousel-inner">
+                @foreach($a->photos as $i => $photo)
+                  <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
+                    <img src="{{ tenant_asset($photo->photo) }}" alt="Foto siniestro" style="max-width:100%;height:auto;border-radius:4px;border:1px solid #ddd;">
+                  </div>
+                @endforeach
+              </div>
+              @if($a->photos->count() > 1)
+                <a class="carousel-control-prev" href="#carousel-{{ $a->id }}" role="button" data-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Anterior</span>
+                </a>
+                <a class="carousel-control-next" href="#carousel-{{ $a->id }}" role="button" data-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Siguiente</span>
+                </a>
+              @endif
+            </div>
+          @else
+            <span class="text-muted">Sin fotos</span>
+          @endif
+        </div>
+      </div>
+    </div>
+  </div>
+@endforeach
+
 @endsection
 
 @push('scripts')
@@ -134,33 +244,7 @@
 <script>
   $(document).ready(function() {
     var table = $('#accidents-table').DataTable({
-      processing: true,
-      serverSide: true,
       responsive: true,
-      ajax: {
-        url: '{{ route("accidente.data") }}',
-        data: function (d) {
-          d.rental_car_id = '{{ $rentalCar->id ?? "" }}';
-        }
-      },
-      columns: [
-        { data: 'id_rent', responsivePriority: 1 },
-        { data: 'name_accident', responsivePriority: 2 },
-        { data: 'description', responsivePriority: 5 },
-        { data: 'bill_number', responsivePriority: 6 },
-        { data: 'description_accident_term', responsivePriority: 7 },
-        { data: 'photo', orderable: false, searchable: false, responsivePriority: 100 },
-        { data: 'status', responsivePriority: 3 },
-        { data: 'created_at', responsivePriority: 4 },
-        {
-          data: 'acciones',
-          orderable: false,
-          searchable: false,
-          className: 'text-center',
-          responsivePriority: 100
-        }
-      ],
-      order: [[7, 'desc']],
       language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
     });
 
@@ -169,10 +253,10 @@
       var id = $(this).data('id');
       Swal.fire({
         title: '¿Marcar como completado?',
-        text: "¿Seguro que deseas marcar este accidente como completado?",
+        text: "¿Seguro que deseas marcar este siniestro como completado?",
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#17a2b8',
+        confirmButtonColor: '#007bff',
         cancelButtonColor: '#888',
         confirmButtonText: 'Sí, marcar',
         cancelButtonText: 'Cancelar'
@@ -186,15 +270,17 @@
             },
             success: function(response) {
               if(response.success) {
-                table.ajax.reload(null, false);
                 Swal.fire({
                   icon: 'success',
                   title: '¡Completado!',
-                  text: 'El accidente ha sido marcado como completado.',
+                  text: 'El siniestro ha sido marcado como completado.',
                   confirmButtonColor: '#17a2b8'
+                }).then(() => {
+                  location.reload();
                 });
               }
             }
+
           });
         }
       });
@@ -210,7 +296,7 @@
         text: "¡Esta acción no se puede deshacer!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#17a2b8',
+        confirmButtonColor: '#007bff',
         cancelButtonColor: '#888',
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'

@@ -29,7 +29,7 @@
 
         <dt class="col-sm-3">Estado</dt>
         <dd class="col-sm-9">
-          @if($rentalCar->is_active)
+          @if($rentalCar->visual_status === 'activo')
             <span class="border border-success text-success px-2 py-1 rounded">Activo</span>
           @else
             <span class="border border-secondary text-secondary px-2 py-1 rounded">Inactivo</span>
