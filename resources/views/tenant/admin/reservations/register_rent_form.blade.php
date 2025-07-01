@@ -40,6 +40,11 @@
               <input type="text" id="rut" class="form-control" value="{{ $reservation->rut }}" readonly>
             </div>
 
+            <div class="form-group">
+              <label for="phone">Teléfono</label>
+              <input type="text" id="phone" class="form-control" value="{{ $reservation->phone }}" readonly>
+            </div>
+
             <input type="hidden" name="return_in" value="{{ (int) $reservation->branchOffice->id_branch_offices }}">
 
             <div class="form-group">

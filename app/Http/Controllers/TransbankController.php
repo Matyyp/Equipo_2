@@ -18,6 +18,7 @@ class TransbankController extends Controller
     {
         $data = $request->validate([
             'rut'              => 'required|string|max:20',
+            'phone'            => 'required|string|max:20',
             'branch_office_id' => 'required|exists:branch_offices,id_branch',
             'start_date'       => 'required|date|after_or_equal:today',
             'end_date'         => 'required|date|after_or_equal:start_date',
@@ -49,6 +50,7 @@ class TransbankController extends Controller
                 'user_id'          => Auth::id(),
                 'car_id'           => $car->id,
                 'rut'              => $data['rut'],
+                'phone'            => $data['phone'],
                 'branch_office_id' => $data['branch_office_id'],
                 'start_date'       => $data['start_date'],
                 'end_date'         => $data['end_date'],
@@ -94,6 +96,7 @@ class TransbankController extends Controller
                 'user_id'          => $data['user_id'],
                 'car_id'           => $data['car_id'],
                 'rut'              => $data['rut'],
+                'phone'          => $data['phone'],
                 'branch_office_id' => $data['branch_office_id'],
                 'start_date'       => $data['start_date'],
                 'end_date'         => $data['end_date'],

@@ -110,6 +110,7 @@ class ReservationController extends Controller
         $data['client_rut'] = $reservation->rut;
         $data['client_name'] = $reservation->user->name;
         $data['client_email'] = $reservation->user->email;
+        $data['number_phone'] = $reservation->phone;
 
         \App\Models\RegisterRent::create($data);
 

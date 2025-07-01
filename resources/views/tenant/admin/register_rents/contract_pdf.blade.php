@@ -110,28 +110,26 @@
         <td>{{ $modelo }}</td>
     </tr>
     <tr>
-        <td class="espaciado-horizontal">PATENTE</td>
-        <td>{{ $patente }}</td>
         <td class="espaciado-horizontal">KM SALIDA</td>
         <td>{{ $km_exit }}</td>
-    </tr>
-    <tr>
         <td class="espaciado-horizontal">COMBUSTIBLE SALIDA</td>
         <td>{{ $combustible }}</td>
+    </tr>
+    <tr>
         <td class="espaciado-horizontal">GARANTÍA</td>
         <td>${{ number_format($garantia, 0, ',', '.') }}</td>
-    </tr>
-    <tr>
         <td class="espaciado-horizontal">PAGO TOTAL</td>
         <td>${{ number_format($pago, 0, ',', '.') }}</td>
-        <td class="espaciado-horizontal">INICIO</td>
-        <td>{{ \Carbon\Carbon::parse($inicio)->format('d-m-Y') }}</td>
     </tr>
     <tr>
+        <td class="espaciado-horizontal">INICIO</td>
+        <td>{{ \Carbon\Carbon::parse($inicio)->format('d-m-Y') }}</td>
         <td class="espaciado-horizontal">TÉRMINO</td>
         <td>{{ \Carbon\Carbon::parse($termino)->format('d-m-Y') }}</td>
+    </tr>
+    <tr>
         <td class="espaciado-horizontal">OBSERVACIONES</td>
-        <td>{{ $observacion }}</td>
+        <td colspan="3">{{ $observacion }}</td>
     </tr>
 </table>
 

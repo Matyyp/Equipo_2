@@ -204,8 +204,10 @@
   document.addEventListener('DOMContentLoaded', function () {
     const emailInput = document.querySelector('input[name="email"]');
     const nameInput = document.querySelector('input[name="name"]');
+
     emailInput.addEventListener('blur', function () {
       const email = emailInput.value.trim();
+
       if (email.length > 0) {
         fetch(`/buscar-cliente?email=${encodeURIComponent(email)}`)
           .then(response => response.json())
@@ -215,7 +217,10 @@
               nameInput.readOnly = true;
               nameInput.classList.add('bg-light');
             } else {
-              nameInput.value = '';
+              // Solo limpiar si estaba en modo readonly (autocompletado)
+              if (nameInput.readOnly) {
+                nameInput.value = '';
+              }
               nameInput.readOnly = false;
               nameInput.classList.remove('bg-light');
             }

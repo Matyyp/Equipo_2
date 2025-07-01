@@ -107,7 +107,20 @@
           @error('rut')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror
         </div>
 
-        {{-- Nombre --}}
+        {{-- Teléfono --}}
+        <div>
+          <label for="phone" class="block font-medium text-gray-700">Teléfono</label>
+          <input
+            type="text"
+            name="phone"
+            id="phone"
+            value="{{ old('phone') }}"
+            class="w-full border rounded p-2 @error('phone') border-red-500 @enderror"
+            placeholder="+56 9 1234 5678"
+            required
+          >
+          @error('phone')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror
+        </div>
 
         {{-- Email --}}
         <div>
