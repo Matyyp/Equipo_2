@@ -1005,6 +1005,7 @@ public function update(Request $request, $id)
             'patente'  => $patente,
             'inicio'   => $inicio,
             'termino'  => $termino,
+            'lavado'   => $parking->id_service
         ])
         ->setPaper([0, 0, 300, 125]) // ~10.5 cm ancho x ~4.4 cm alto
         ->output();

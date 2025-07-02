@@ -175,9 +175,12 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 $(function(){
+  // Inicialización de DataTable (sin cambios)
   $('#rents-table').DataTable({
     processing: true,
     serverSide: true,
@@ -195,18 +198,41 @@ $(function(){
     order: [[4, 'desc']],
     language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
     responsive: true,
+    drawCallback: function(settings) {
+      // Inicializar tooltips
+      $('[data-toggle="tooltip"]').tooltip();
+    }
   });
-});
-</script>
 
-<script>
-$(document).on('click', 'button[data-target="#ratingModal"]', function () {
-  const rentId = $(this).data('id');
-  $('#rating_rent_id').val(rentId);
-});
-</script>
+  // SweetAlert para el botón eliminar (nueva adición)
+  $(document).on('click', 'form[onsubmit="return confirm(\'¿Eliminar?\')"] button[type="submit"]', function(e) {
+    e.preventDefault();
+    const form = $(this).closest('form');
+    
+    Swal.fire({
+      title: '¿Confirmar eliminación?',
+      text: "Esta acción no se puede deshacer",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.attr('onsubmit', ''); // Elimina el confirm nativo
+        form.submit();
+      }
+    });
+  });
 
-<script>
+  // Tus scripts existentes (sin cambios)
+  $(document).on('click', 'button[data-target="#ratingModal"]', function () {
+    const rentId = $(this).data('id');
+    $('#rating_rent_id').val(rentId);
+  });
+
   document.addEventListener('DOMContentLoaded', function () {
     const stars = document.querySelectorAll('.star-icon');
     const criterioGroup = document.getElementById('criterio-group');
@@ -215,8 +241,6 @@ $(document).on('click', 'button[data-target="#ratingModal"]', function () {
     stars.forEach(star => {
       star.addEventListener('click', function () {
         const rating = parseInt(this.getAttribute('data-value'));
-
-        // Marcar estrellas
         stars.forEach(s => {
           s.classList.remove('text-warning');
           s.classList.add('text-muted');
@@ -225,21 +249,16 @@ $(document).on('click', 'button[data-target="#ratingModal"]', function () {
           stars[i].classList.remove('text-muted');
           stars[i].classList.add('text-warning');
         }
-
-        // Actualizar input hidden
         starsInput.value = rating;
-
-        // Mostrar criterio si estrellas < 5
         if (rating < 5) {
           criterioGroup.classList.remove('d-none');
         } else {
           criterioGroup.classList.add('d-none');
-          document.getElementById('criterio-select').value = ''; // Limpiar criterio
+          document.getElementById('criterio-select').value = '';
         }
       });
     });
 
-    // Al abrir modal, reiniciar selección
     $('#ratingModal').on('show.bs.modal', function (event) {
       stars.forEach(s => s.classList.remove('text-warning'));
       stars.forEach(s => s.classList.add('text-muted'));
@@ -247,14 +266,12 @@ $(document).on('click', 'button[data-target="#ratingModal"]', function () {
       criterioGroup.classList.add('d-none');
     });
   });
-</script>
 
-<script>
   $(document).on('click', '.completar-btn', function () {
     let id = $(this).data('id');
     $('#renta_id').val(id);
     $('#form-completar-renta').attr('action', '/registro-renta/completar/' + id);
   });
+});
 </script>
-
 @endpush
