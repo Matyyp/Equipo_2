@@ -6,7 +6,6 @@ use App\Models\RentalCar;
 use App\Models\Brand;
 use App\Models\ModelCar;
 use App\Models\BranchOffice;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -22,19 +21,13 @@ class RentalCarController extends Controller
 
     public function data(Request $request)
     {
-        return DataTables::of(RentalCar::with(['brand','model','branchOffice','accidents'])) // agrega accidents a with
+        return DataTables::of(RentalCar::with(['brand','model','branchOffice','accidents']))
             ->addColumn('marca', fn($c) => $c->brand->name_brand)
             ->addColumn('modelo', fn($c) => $c->model->name_model)
             ->addColumn('year',   fn($c) => $c->year)
             ->addColumn('estado', function($c) {
-                // Si tiene algún accidente "in progress", forzar Inactivo visualmente
-                $hasInProgressAccident = $c->accidents->contains(function($acc) {
-                    return $acc->status === 'in progress';
-                });
-                if ($hasInProgressAccident) {
-                    return '<span class="border border-secondary text-secondary px-2 py-1 rounded">Inactivo</span>';
-                }
-                return $c->is_active
+                // Usar el accesor visual_status del modelo
+                return $c->visual_status === 'activo'
                     ? '<span class="border border-success text-success px-2 py-1 rounded">Activo</span>'
                     : '<span class="border border-secondary text-secondary px-2 py-1 rounded">Inactivo</span>';
             })
@@ -71,7 +64,6 @@ class RentalCarController extends Controller
 
     public function create()
     {
-        // Para los selects de marca y modelo
         $brands = Brand::pluck('name_brand', 'id_brand');
         $models = ModelCar::pluck('name_model', 'id_model');
         $branches = BranchOffice::pluck('name_branch_offices', 'id_branch');
@@ -97,7 +89,6 @@ class RentalCarController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                // esto usa el disco "public" tenantizado
                 $path = $file->store('rental_cars', 'public');
                 $rentalCar->images()->create([
                     'path' => $path,
@@ -111,12 +102,20 @@ class RentalCarController extends Controller
 
     public function show(RentalCar $rentalCar)
     {
-        $rentalCar->load(['brand', 'model', 'images', 'branchOffice']);
+        $rentalCar->load(['brand', 'model', 'images', 'branchOffice', 'accidents']);
         return view('tenant.admin.rental_cars.show', compact('rentalCar'));
     }
 
     public function edit(RentalCar $rentalCar)
     {
+        // Asegúrate de cargar los accidentes
+        $rentalCar->load(['accidents']);
+
+        // Si tiene accidente en progreso, forzar is_active a 0 SOLO para el formulario
+        if ($rentalCar->accidents->contains(fn($a) => $a->status === 'in progress')) {
+            $rentalCar->is_active = 0;
+        }
+
         $brands   = Brand::pluck('name_brand', 'id_brand');
         $models   = ModelCar::pluck('name_model', 'id_model');
         $branches = BranchOffice::pluck('name_branch_offices', 'id_branch');
@@ -126,7 +125,6 @@ class RentalCarController extends Controller
             compact('rentalCar','brands','models','branches')
         );
     }
-
 
     public function update(Request $request, RentalCar $rentalCar)
     {

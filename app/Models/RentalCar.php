@@ -47,4 +47,14 @@ class RentalCar extends Model
     {
         return $this->hasMany(\App\Models\RegisterRent::class, 'rental_car_id', 'id');
     }
+        public function getVisualStatusAttribute()
+    {
+        // Asegura que la relación está cargada para evitar queries extra
+        $accidents = $this->relationLoaded('accidents') ? $this->accidents : $this->accidents()->get();
+
+        if ($accidents->contains(fn($a) => $a->status === 'in progress')) {
+            return 'inactivo';
+        }
+        return $this->is_active ? 'activo' : 'inactivo';
+    }
 }
