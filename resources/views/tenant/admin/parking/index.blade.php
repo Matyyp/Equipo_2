@@ -603,16 +603,18 @@ $(function () {
                 render: function(row) {
                     return `
                         <div >
-                            <a href="${row.contract_url }" target="_blank" class="btn btn-sm btn-outline-info text-info" title="Contrato">
+                            <a href="${row.contract_url }" target="_blank" class="btn btn-sm btn-outline-info text-info" data-toggle="tooltip" data-placement="top" title="Generar contrato">
                                 <i class="fas fa-file-contract"></i>
                             </a>
-                            <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-info text-info" title="Ticket">
+                            <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-info text-info"
+                             data-toggle="tooltip" data-placement="top" title="Generar ticket para llaves del vehículo">
                                 <i class="fas fa-ticket-alt"></i>
                             </a>
-                            <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-info text-info" title="Editar">
+                            <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-info text-info"
+                             data-toggle="tooltip" data-placement="top" title="Editar registro">
                                 <i class="fas fa-pen"></i>
                             </a>
-                            <button class="btn btn-sm btn-outline-info btn-checkout text-info" 
+                            <button class="btn btn-sm btn-outline-info btn-checkout text-info" data-toggle="tooltip" data-placement="top"
                                 title="Check-Out"
                                 data-id="${row.id_parking_register}"
                                 data-total="${row.total_value}"
@@ -620,14 +622,15 @@ $(function () {
                                 data-row='${JSON.stringify(row)}'>
                                 <i class="fas fa-door-open"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-info btn-extra-services text-info" 
-                                title="Servicios Extra"
+                            <button class="btn btn-sm btn-outline-info btn-extra-services text-info" data-toggle="tooltip" data-placement="top"
+                                title="Agregar servicios extra"
                                 data-id="${row.id_parking_register}"
                                 data-row='${JSON.stringify(row)}'>
                                 <i class="fas fa-plus-circle"></i>
                             </button>
                             <button 
-                                onclick="sendWhatsappContractLink(${row.id_parking_register})"
+                                onclick="sendWhatsappContractLink(${row.id_parking_register})" data-toggle="tooltip" data-placement="top"
+                                title="Enviar contrato por WhatsApp"
                                 class="btn btn-sm btn-outline-info btn-extra-services text-info">
                                 <i class="fab fa-whatsapp"></i>
                             </button>
@@ -1189,7 +1192,14 @@ function sendWhatsappContractLink(id) {
     .catch(() => alert('Error al generar el enlace.'));
 }
 
-
+$(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    $('#parking-table').on('draw.dt', function() {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+});
 
 </script>
+
 @endpush

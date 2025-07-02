@@ -42,23 +42,23 @@ class RegisterRentController extends Controller
             $accidentBtn = '';
             if ($r->rentalCar) {
                 $accidentUrl = route('accidente.create', ['id_rent' => $r->id]);
-                $accidentBtn = '<a href="' . $accidentUrl . '" class="btn btn-outline-info btn-sm text-info mr-1" title="Registrar Accidente">
+                $accidentBtn = '<a href="' . $accidentUrl . '" class="btn btn-outline-info btn-sm text-info mr-1" data-toggle="tooltip" data-placement="top" title="Registrar siniestro">
                     <i class="fas fa-car-crash"></i>
                 </a>';
             }
-            $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info mr-1" title="Ver">
+            $verBtn = '<a href="' . route('registro-renta.show', $r->id) . '" class="btn btn-outline-info btn-sm text-info mr-1" data-toggle="tooltip" data-placement="top" title="Ver">
                 <i class="fas fa-eye"></i>
             </a>';
 
-            $contratoBtn = '<a href="' . route('register_rents.contrato_pdf', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" title="Generar Contrato" target="_blank">
+            $contratoBtn = '<a href="' . route('register_rents.contrato_pdf', $r->id) . '" class="btn btn-outline-info btn-sm text-info me-1" data-toggle="tooltip" data-placement="top" title="Generar Contrato" target="_blank">
                     <i class="fas fa-file-pdf"></i>
                 </a>';
             $reseñaBtn = ($r->userRatings && $r->userRatings->isEmpty())
-                ? '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" title="Añadir Reseña">
+                ? '<button class="btn btn-outline-info btn-sm text-info ml-1" data-id="' . $r->id . '" data-toggle="modal" data-target="#ratingModal" data-toggle="tooltip" data-placement="top" title="Añadir Reseña">
                     <i class="fas fa-star"></i>
                 </button>' : '';
             $completarBtn = $r->status === 'en_progreso'
-                ? '<button class="btn btn-outline-info btn-sm text-info ml-1 completar-btn" data-id="' . $r->id . '" data-toggle="modal" data-target="#completarModal">
+                ? '<button class="btn btn-outline-info btn-sm text-info ml-1 completar-btn" data-id="' . $r->id . '" data-toggle="modal" data-target="#completarModal" data-toggle="tooltip" data-placement="top" title="Completar">
                     <i class="fas fa-check-circle"></i>
                 </button>' : '';
 

@@ -182,14 +182,14 @@ public function generateContractWhatsappLink(ParkingRegister $parkingRegister)
     // Genera el enlace firmado para el contrato con validez corta
         $contractUrl = URL::temporarySignedRoute(
             'contrato.print',
-            now()->addMinutes(4),
+            now()->addMinutes(3),
             ['parking' => $parkingRegister->getKey()],
             true // forzar incluir el host actual
         );
 
     $message = "Hola {$owner->name}, gracias por estacionarte en nuestro Rent a car. Aquí está tu contrato:\n\n" .
                "Contrato: " . $contractUrl .
-               "\n\nEl enlace expirará en 2 minutos.";
+               "\n\nEl enlace expirará en 3 minutos.";
 
     $whatsappUrl = "https://wa.me/{$phoneDigitsOnly}?text=" . urlencode($message);
 
@@ -590,84 +590,87 @@ public function renew(Request $request, $id)
         //
     }
 
-    public function edit($id)
-    {
-        $user = auth()->user();
+public function edit($id)
+{
+    $user = auth()->user();
 
-        $parking = ParkingRegister::findOrFail($id);
+    $parking = ParkingRegister::findOrFail($id);
 
-        $park = Park::with([
-            'park_car.car_belongs.belongs_owner',
-            'park_car.car_brand',
-            'park_car.car_model',
-        ])->find($parking->id_park);
+    $park = Park::with([
+        'park_car.car_belongs.belongs_owner',
+        'park_car.car_brand',
+        'park_car.car_model',
+    ])->find($parking->id_park);
 
-        if (!$park) {
-            abort(404, 'No se encontró el parque asociado al registro.');
-        }
-
-        $car = $park->park_car;
-        $brands = optional($car->car_brand)->name_brand ?? 'Sin marca';
-        $models = optional($car->car_model)->name_model ?? 'Sin modelo';
-        $owner = optional($car->car_belongs->first())->belongs_owner ?? null;
-
-        $service = Service::find($park->id_service);
-
-        // Consulta base para servicios de estacionamiento
-        $query = Service::with('service_branch_office.branch_office_contract')
-            ->whereIn('type_service', ['parking_daily', 'parking_annual'])
-            ->where('status', 'available');
-
-        // SuperAdmin puede ver todos, otros solo su sucursal
-        if (!$user->hasRole('SuperAdmin')) {
-            $query->where('id_branch_office', $park->id_branch_office);
-        }
-
-        $parkingServices = $query->get();
-
-        // Verifica si hay al menos un contrato activo
-        $hasContract = false;
-        foreach ($parkingServices as $svc) {
-            $contract = $svc->service_branch_office->branch_office_contract->first();
-
-            if ($contract) {
-                $exists = $svc->type_service === 'parking_daily'
-                    ? \App\Models\DailyContract::where('id_contract', $contract->id_contract)->exists()
-                    : \App\Models\AnnualContract::where('id_contract', $contract->id_contract)->exists();
-
-                if ($exists) {
-                    $hasContract = true;
-                    break;
-                }
-            }
-        }
-
-        // Lavados disponibles
-        $carWashServices = Service::where('type_service', 'car_wash')
-            ->where('status', 'available')
-            ->where('id_branch_office', $park->id_branch_office)
-            ->get();
-
-        // Verificar si ya hay un lavado asignado
-        $lavadoAsignado = null;
-        if ($parking->id_service) {
-            $lavado = Service::find($parking->id_service);
-            if ($lavado && $lavado->type_service === 'car_wash') {
-                $lavadoAsignado = $lavado->id_service;
-            }
-        }
-
-        // SuperAdmin puede seleccionar sucursal
-        $branches = $user->hasRole('SuperAdmin')
-            ? BranchOffice::where('status', 'active')->get()
-            : [];
-
-        return view('tenant.admin.parking.edit', compact(
-            'parking', 'car', 'owner', 'service', 'brands', 'models',
-            'parkingServices', 'carWashServices', 'lavadoAsignado',
-            'branches', 'hasContract'
-        ));
+    if (!$park) {
+        abort(404, 'No se encontró el parque asociado al registro.');
     }
+
+    $car = $park->park_car;
+    $brands = optional($car->car_brand)->name_brand ?? 'Sin marca';
+    $models = optional($car->car_model)->name_model ?? 'Sin modelo';
+    $owner = optional($car->car_belongs->first())->belongs_owner ?? null;
+
+    $service = Service::find($park->id_service);
+
+    // Consulta base para servicios de estacionamiento
+    $query = Service::with('service_branch_office.branch_office_contract')
+        ->whereIn('type_service', ['parking_daily', 'parking_annual'])
+        ->where('status', 'available');
+
+    // SuperAdmin puede ver todos, otros solo su sucursal
+    if (!$user->hasRole('SuperAdmin')) {
+        $query->where('id_branch_office', $park->id_branch_office);
+    }
+
+    $parkingServices = $query->get();
+
+    // Verifica si hay al menos un contrato activo (optimizado)
+    $hasContract = false;
+
+    foreach ($parkingServices as $svc) {
+        $contracts = collect($svc->service_branch_office->branch_office_contract ?? []);
+
+        foreach ($contracts as $contract) {
+            $exists = match ($svc->type_service) {
+                'parking_daily' => \App\Models\DailyContract::where('id_contract', $contract->id_contract)->exists(),
+                'parking_annual' => \App\Models\AnnualContract::where('id_contract', $contract->id_contract)->exists(),
+                default => false,
+            };
+
+            if ($exists) {
+                $hasContract = true;
+                break 2; // salir de ambos foreach
+            }
+        }
+    }
+
+    // Lavados disponibles
+    $carWashServices = Service::where('type_service', 'car_wash')
+        ->where('status', 'available')
+        ->where('id_branch_office', $park->id_branch_office)
+        ->get();
+
+    // Verificar si ya hay un lavado asignado
+    $lavadoAsignado = null;
+    if ($parking->id_service) {
+        $lavado = Service::find($parking->id_service);
+        if ($lavado && $lavado->type_service === 'car_wash') {
+            $lavadoAsignado = $lavado->id_service;
+        }
+    }
+
+    // SuperAdmin puede seleccionar sucursal
+    $branches = $user->hasRole('SuperAdmin')
+        ? BranchOffice::where('status', 'active')->get()
+        : [];
+
+    return view('tenant.admin.parking.edit', compact(
+        'parking', 'car', 'owner', 'service', 'brands', 'models',
+        'parkingServices', 'carWashServices', 'lavadoAsignado',
+        'branches', 'hasContract'
+    ));
+}
 
 
 
@@ -1002,6 +1005,7 @@ public function update(Request $request, $id)
             'patente'  => $patente,
             'inicio'   => $inicio,
             'termino'  => $termino,
+            'lavado'   => $parking->id_service
         ])
         ->setPaper([0, 0, 300, 125]) // ~10.5 cm ancho x ~4.4 cm alto
         ->output();
