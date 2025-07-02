@@ -616,88 +616,45 @@ document.addEventListener('DOMContentLoaded', function () {
             <!-- Card gráfico de barras -->
             <div class="bg-white  rounded-lg shadow p-4  mb-2">
                 <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-sm font-semibold">Ingresos</h3>
+                    <h3 class="text-sm font-semibold">Ingresos estacionamiento</h3>
+                </div>
+                <div class="relative" style="height: 320px;">
+                    <canvas id="chartTotalValue"></canvas>
                 </div>
             </div>
-            <div class="relative" style="height: 250px;">
-                <canvas id="chartTotalValue"></canvas>
+            <!-- Card ranking de autos más arrendados -->
+            <div class="bg-white rounded-lg shadow p-4   mb-2">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold">Tipos de vehículos más arrendados</h3>
+                </div>
+                <div class="relative" style="height: 320px;">
+                    <canvas id="chartCarType"></canvas>
+                </div>
             </div>
-        </div>
-        <!-- Card ranking de autos más arrendados -->
-        <div class="bg-white rounded-lg shadow p-4   mb-2">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Tipos de vehículo más arrendados</h3>
-                @if(auth()->user()->hasRole('SuperAdmin'))
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectCarType" class="border border-gray-300 rounded text-sm px-2 py-1">
-                            @foreach(\App\Models\BranchOffice::all() as $branch)
-                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
+            <!-- Card gráfico de torta -->
+            <div class="bg-white rounded-lg shadow p-4  mb-2">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold">Disponibilidad estacionamientos</h3>
+                </div>
+                <div class="relative" style="height: 250px;">
+                    <canvas id="chartParking"></canvas>
+                </div>
+                <div id="parkingInfo" class="text-center text-sm mt-3 font-medium text-gray-700"></div>
             </div>
-            <div class="relative" style="height: 250px;">
-                <canvas id="chartCarType"></canvas>
-            </div>
-        </div>
-
-        
-
-        <!-- Card gráfico de torta -->
-        <div class="bg-white rounded-lg shadow p-4  mb-2">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Disponibilidad estacionamientos</h3>
-                @if(auth()->user()->hasRole('SuperAdmin'))
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectParking" class="border border-gray-300 rounded text-sm px-2 py-1">
-                            @foreach(\App\Models\BranchOffice::all() as $branch)
-                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
-            </div>
-            <div class="relative" style="height: 250px;">
-                <canvas id="chartParking"></canvas>
-            </div>
-            <div id="parkingInfo" class="text-center text-sm mt-3 font-medium text-gray-700"></div>
-        </div>
-<!-- Card gráfico lineal -->
-        <div class="bg-white  rounded-lg shadow p-4  mb-2">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Estacionamientos (azul) vs Rentas (rojo)</h3>
-                @if(auth()->user()->hasRole('SuperAdmin'))
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm">Sucursal:</span>
-                        <select id="branchSelectLineal" class="border border-gray-300 rounded text-sm px-2 py-1">
-                            @foreach(\App\Models\BranchOffice::all() as $branch)
-                                <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
-            </div>
-            <div class="relative" style="height: 250px;">
-                <canvas id="chartLineal"></canvas>
+            <!-- Card gráfico lineal -->
+            <div class="bg-white  rounded-lg shadow p-4  mb-2">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold">Estacionamientos (azul) vs Rentas (rojo)</h3>
+                </div>
+                <div class="relative" style="height: 320px;">
+                    <canvas id="chartLineal"></canvas>
+                </div>
             </div>
         </div>
         <div class="contenedor2 ">    
             <div class="bg-white rounded-lg shadow p-4 mb-2 ">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="text-sm font-semibold">Usuarios que más arrendaron vehículos</h3>
-                    @if(auth()->user()->hasRole('SuperAdmin'))
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm">Sucursal:</span>
-                            <select id="branchSelectUsers" class="border border-gray-300 rounded text-sm px-2 py-1">
-                                @foreach(\App\Models\BranchOffice::all() as $branch)
-                                    <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    @endif
                 </div>
                 <ul id="userRankingList" class="divide-y divide-gray-200"></ul>
             </div>
