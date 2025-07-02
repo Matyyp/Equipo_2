@@ -65,7 +65,7 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="font-weight-bold text-muted small">Auto</label>
+                    <label class="font-weight-bold text-muted small">vehículo</label>
                     <p class="form-control-plaintext border-bottom pb-2">
                       {{ optional($register->rentalCar->brand)->name_brand }}
                       {{ optional($register->rentalCar->model)->name_model }}

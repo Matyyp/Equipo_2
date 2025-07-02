@@ -29,7 +29,7 @@
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <div>
-        <i class="fas fa-car mr-2"></i> Registrar Arriendo Manual
+        <i class="fas fa-car mr-2"></i> Registrar arriendo de vehículo 
       </div>
     </div>
 
@@ -51,9 +51,9 @@
       <h5 class="mt-3 border-bottom pb-2 text-info"><i class="fas fa-car"></i> Datos del Vehículo</h5>
       <div class="row">
         <div class="col-md-6">
-          <label class="form-label text-dark fw-bold">Auto</label>
+          <label class="form-label text-dark fw-bold">Vehículo</label>
           <select name="id_car" id="id_car" class="form-control" required>
-            <option value="">Seleccione un auto</option>
+            <option value="">Seleccione un vehículo</option>
             @foreach ($cars as $car)
               <option value="{{ $car->id }}" data-price="{{ $car->price_per_day }}">
                 {{ $car->brand->name_brand }} {{ $car->model->name_model }}

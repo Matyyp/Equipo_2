@@ -1,8 +1,8 @@
 {{-- resources/views/tenant/admin/rental_cars/index.blade.php --}}
 @extends('tenant.layouts.admin')
 
-@section('title', 'Autos de Arriendo')
-@section('page_title', 'Autos de Arriendo')
+@section('title', 'vehículos de Arriendo')
+@section('page_title', 'vehículos de Arriendo')
 
 @push('styles')
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" />
@@ -62,7 +62,7 @@
 
   <div class="card">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <div><i class="fas fa-car mr-2"></i>Autos de Arriendo</div>
+      <div><i class="fas fa-car mr-2"></i>Vehículos de Arriendo</div>
       <a href="{{ route('rental-cars.create') }}"
          style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
         <i class="fas fa-plus"></i> Nuevo

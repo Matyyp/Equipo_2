@@ -181,6 +181,21 @@
           @error('end_date')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror
         </div>
 
+        {{-- Aceptación de condiciones --}}
+        <div class="flex items-start gap-2">
+          <input
+            type="checkbox"
+            id="accept_terms"
+            name="accept_terms"
+            class="mt-1"
+            required
+          >
+          <label for="accept_terms" class="text-sm text-gray-700 leading-tight">
+            Acepto que se solicitarán más datos personales al momento de retirar el vehículo y que 
+            <span class="font-semibold text-gray-900">la garantía deberá pagarse únicamente con tarjeta de crédito</span>.
+          </label>
+        </div>
+
         <button
             type="submit"
             class="mt-auto w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"

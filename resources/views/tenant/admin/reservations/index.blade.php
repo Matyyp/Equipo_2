@@ -64,7 +64,7 @@
               <th class="control"></th>
               <th>RUT</th>
               <th>Cliente</th>
-              <th>Auto</th>
+              <th>Vehículo</th>
               <th>Sucursal</th>
               <th>Desde</th>
               <th>Hasta</th>

@@ -701,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <!-- Card ranking de autos más arrendados -->
         <div class="bg-white rounded-lg shadow p-4   mb-2">
             <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-semibold">Tipos de auto más arrendados</h3>
+                <h3 class="text-sm font-semibold">Tipos de vehículo más arrendados</h3>
                 @if(auth()->user()->hasRole('SuperAdmin'))
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Sucursal:</span>
@@ -764,7 +764,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="contenedor2 ">    
             <div class="bg-white rounded-lg shadow p-4 mb-2 ">
                 <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-sm font-semibold">Usuarios que más arrendaron autos</h3>
+                    <h3 class="text-sm font-semibold">Usuarios que más arrendaron vehículos</h3>
                     @if(auth()->user()->hasRole('SuperAdmin'))
                         <div class="flex items-center gap-2">
                             <span class="text-sm">Sucursal:</span>

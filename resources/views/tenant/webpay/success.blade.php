@@ -30,6 +30,14 @@
             </div>
         </div>
 
+        <div class="mt-6 p-4 bg-info border-l-4 border-yellow-500 rounded">
+            <p class="text-sm">
+                <strong>Recuerda:</strong> al momento de retirar el vehículo, se solicitarán datos personales adicionales y 
+                <strong>la garantía deberá pagarse únicamente con tarjeta de crédito</strong>. 
+                No olvides presentar tu <strong>cédula de identidad</strong> y <strong>licencia de conducir vigente</strong>.
+            </p>
+        </div>
+
         <div class="mt-6 text-center">
             <a href="{{ url('/') }}" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg">
                 Volver al inicio

@@ -1,8 +1,8 @@
 {{-- resources/views/tenant/admin/rental_cars/show.blade.php --}}
 @extends('tenant.layouts.admin')
 
-@section('title', 'Ver Auto de Arriendo')
-@section('page_title', 'Ver Auto de Arriendo')
+@section('title', 'Ver vehículo de Arriendo')
+@section('page_title', 'Ver vehículo de Arriendo')
 
 @section('content')
 <div class="container-fluid">
@@ -84,7 +84,7 @@
     </div>
   @else
     <div class="alert alert-info">
-      No hay imágenes disponibles para este auto.
+      No hay imágenes disponibles para este vehículo.
     </div>
   @endif
   <div class="d-flex justify-content-end">

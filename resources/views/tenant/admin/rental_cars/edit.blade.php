@@ -1,7 +1,7 @@
 @extends('tenant.layouts.admin')
 
-@section('title', 'Editar Auto de Arriendo')
-@section('page_title', 'Editar Auto de Arriendo')
+@section('title', 'Editar vehículo de Arriendo')
+@section('page_title', 'Editar vehículo de Arriendo')
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

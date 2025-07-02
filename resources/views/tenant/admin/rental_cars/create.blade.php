@@ -1,7 +1,7 @@
 @extends('tenant.layouts.admin')
 
 @section('title', 'Crear Auto de Arriendo')
-@section('page_title', 'Crear Auto de Arriendo')
+@section('page_title', 'Crear vehículo de Arriendo')
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -21,7 +21,7 @@
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex align-items-center">
       <i class="fas fa-car mr-2"></i>
-      <h5 class="mb-0">Nuevo Auto de Arriendo</h5>
+      <h5 class="mb-0">Nuevo vehículo de Arriendo</h5>
     </div>
     <div class="card-body">
 

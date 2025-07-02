@@ -69,7 +69,7 @@
             <tr>
               <th>RUT</th>
               <th>Cliente</th>
-              <th>Auto</th>
+              <th>Vehículo</th>
               <th>Sucursal</th>
               <th>Desde</th>
               <th>Hasta</th>
@@ -117,7 +117,7 @@
               <option value="">Seleccione un criterio</option>
               <option value="Impuntual">Impuntual</option>
               <option value="Sin respeto">Sin respeto</option>
-              <option value="Mal uso del auto">Mal uso del auto</option>
+              <option value="Mal uso del auto">Mal uso del vehículo</option>
               <option value="Otro">Otro</option>
             </select>
           </div>
