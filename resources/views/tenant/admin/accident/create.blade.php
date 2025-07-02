@@ -1,13 +1,13 @@
 @extends('tenant.layouts.admin')
 
-@section('title','Registrar Accidente')
-@section('page_title','Nuevo Accidente')
+@section('title','Registrar Siniestro')
+@section('page_title','Nuevo Siniestro')
 
 @section('content')
 <div class="container-fluid">
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            <i class="fas fa-car-crash"></i> Nuevo Registro de Accidente
+            <i class="fas fa-car-crash"></i> Nuevo Registro de Siniestro
         </div>
         <div class="card-body">
             {{-- Mensajes de error --}}
@@ -25,7 +25,7 @@
             @if((isset($registerRents) && $registerRents->isEmpty()) && (!isset($selectedRent) || !$selectedRent))
                 <div class="alert alert-warning text-center">
                     <b>No existen arriendos registrados.</b><br>
-                    Debe registrar un arriendo antes de poder crear un accidente.
+                    Debe registrar un arriendo antes de poder crear un siniestro.
                 </div>
             @else
             <form action="{{ route('accidente.store') }}" method="POST" enctype="multipart/form-data">
@@ -74,7 +74,7 @@
 
                 {{-- ... resto del formulario igual ... --}}
                 <div class="mb-3">
-                    <label for="name_accident">Nombre Accidente</label>
+                    <label for="name_accident">Nombre Siniestro</label>
                     <input type="text" class="form-control" name="name_accident" value="{{ old('name_accident') }}" required>
                 </div>
                 <div class="mb-3">
@@ -97,7 +97,7 @@
                 <div class="mb-3">
                     <label for="status">Estado</label>
                     <input type="text" class="form-control" value="En progreso" disabled>
-                    <small class="form-text text-muted">El accidente se crea siempre como "En progreso".</small>
+                    <small class="form-text text-muted">El siniestro se crea siempre como "En progreso".</small>
                 </div>
 
                 <div class="form-group row justify-content-end">
@@ -107,7 +107,7 @@
                         </a>
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-info" id="submit-btn">
+                        <button type="submit" class="btn btn-primary" id="submit-btn">
                             Guardar
                         </button>
                     </div>

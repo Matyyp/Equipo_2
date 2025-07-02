@@ -192,7 +192,6 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         Route::get('accidente',         [AccidentController::class, 'index'])->name('accidente.index');
         Route::get('accidente/data',    [AccidentController::class, 'data'])->name('accidente.data');
         Route::get('accidente/create',  [AccidentController::class, 'create'])->name('accidente.create');
-        
         Route::post('accidente',        [AccidentController::class, 'store'])->name('accidente.store');
         Route::get('accidente/{accidente}/edit', [AccidentController::class, 'edit'])->name('accidente.edit');
         Route::put('accidente/{accidente}', [AccidentController::class, 'update'])->name('accidente.update');
@@ -206,13 +205,14 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
     // Modulo ventas
     Route::middleware(['auth', 'permission:ventas.access'])->group(function () {
         Route::resource('pagos', PaymentRecordController::class)->names('payment');
+        
+        // Dashboard Analíticas
         Route::get('/analiticas', [DashboardController::class, 'index'])->name('analiticas');
         Route::get('/analiticas/chart-data', [DashboardController::class, 'chartData'])->name('analiticas.chart.data');
         Route::get('/analiticas/chart-line-data', [DashboardController::class, 'chartLineData'])->name('analiticas.chart.line.data');
-        Route::get('/dashboard/car-type-ranking', [DashboardController::class, 'carTypeRanking'])->name('analiticas.car.type.ranking');
-        Route::get('/dashboard/top-users-ranking', [DashboardController::class, 'topUsersRanking'])->name('analiticas.top.users.ranking');
-        Route::get('analiticas/top-users-ranking', [DashboardController::class, 'topUsersRanking'])->name('analiticas.top.users.ranking');
-        Route::get('analiticas/user-ratings/{client_rut}', [DashboardController::class, 'userRatings'])->name('analiticas.user.ratings');
+        Route::get('/analiticas/car-type-ranking', [DashboardController::class, 'carTypeRanking'])->name('analiticas.car.type.ranking');
+        Route::get('/analiticas/top-users-ranking', [DashboardController::class, 'topUsersRanking'])->name('analiticas.top.users.ranking');
+        Route::get('/analiticas/user-ratings/{client_rut}', [DashboardController::class, 'userRatings'])->name('analiticas.user.ratings');
     });
     // Módulo Costos de Servicios Básicos 
     Route::middleware(['auth', 'permission:cost_basic_service.access'])->group(function () {

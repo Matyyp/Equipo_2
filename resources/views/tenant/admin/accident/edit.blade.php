@@ -1,7 +1,7 @@
 @extends('tenant.layouts.admin')
 
-@section('title','Editar Accidente')
-@section('page_title','Editar Accidente')
+@section('title','Editar Siniestro')
+@section('page_title','Editar Siniestro')
 
 @section('content')
 <style>
@@ -49,7 +49,7 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header bg-secondary text-white">
-            <i class="fas fa-car-crash"></i> Editar Registro de Accidente
+            <i class="fas fa-car-crash"></i> Editar Registro de Siniestro
         </div>
         <div class="card-body">
             {{-- Mensajes de error --}}
@@ -97,7 +97,7 @@
                     <input type="text" class="form-control" value="{{ $accidente->status === 'in progress' ? 'En progreso' : 'Completado' }}" disabled>
                 </div>
                 <div class="mb-3">
-                    <label for="name_accident">Nombre Accidente</label>
+                    <label for="name_accident">Nombre Siniestro</label>
                     <input type="text" class="form-control" name="name_accident" value="{{ old('name_accident', $accidente->name_accident) }}" required>
                 </div>
                 <div class="mb-3">
@@ -128,8 +128,8 @@
                         </a>
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-info" id="submit-btn">
-                            Guardar
+                        <button type="submit" class="btn btn-primary" id="submit-btn">
+                            Actualizar
                         </button>
                     </div>
                 </div>
@@ -141,7 +141,7 @@
                 <div class="d-flex flex-wrap align-items-center">
                     @foreach($photos as $photo)
                         <div class="accident-photo-wrap">
-                            <img src="{{ tenant_asset($photo->photo) }}" alt="Foto accidente">
+                            <img src="{{ tenant_asset($photo->photo) }}" alt="Foto siniestro">
                             <div class="accident-photo-delete">
                                 <form action="{{ route('accidente.photo.destroy', ['accidente' => $accidente->id, 'photo' => $photo->id]) }}" method="POST">
                                     @csrf

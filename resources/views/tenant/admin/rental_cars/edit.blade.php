@@ -176,19 +176,30 @@
         </div>
 
         {{-- Estado --}}
-        <div class="form-group mb-4">
-          <label>Estado</label>
-          <div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="is_active" id="is_active_1" value="1" {{ old('is_active', $rentalCar->is_active) == '1' ? 'checked' : '' }}>
-              <label class="form-check-label" for="is_active_1">Activo</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="is_active" id="is_active_0" value="0" {{ old('is_active', $rentalCar->is_active) == '0' ? 'checked' : '' }}>
-              <label class="form-check-label" for="is_active_0">Inactivo</label>
-            </div>
-          </div>
-        </div>
+<div class="form-group mb-4">
+  <label>Estado</label>
+  <div>
+    @php
+      $accidenteEnCurso = $rentalCar->accidents->contains(fn($a) => $a->status === 'in progress');
+    @endphp
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="is_active" id="is_active_1" value="1"
+        {{ old('is_active', $rentalCar->is_active) == '1' ? 'checked' : '' }}
+        @if($accidenteEnCurso) disabled @endif>
+      <label class="form-check-label" for="is_active_1">Activo</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="is_active" id="is_active_0" value="0"
+        {{ old('is_active', $rentalCar->is_active) == '0' ? 'checked' : '' }}>
+      <label class="form-check-label" for="is_active_0">Inactivo</label>
+    </div>
+    @if($accidenteEnCurso)
+      <div class="small text-danger mt-2">
+        No puedes activar este auto mientras tenga un accidente en curso.
+      </div>
+    @endif
+  </div>
+</div>
 
         {{-- Imágenes existentes --}}
         @if($rentalCar->images->isNotEmpty())

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte de Accidente</title>
+    <title>Reporte de Siniestro</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -71,11 +71,11 @@
         @endif
     </div>
 
-    <h1>Reporte de Accidente</h1>
+    <h1>Reporte de Siniestro</h1>
     
     <table>
         <tr>
-            <td class="label">Nombre Accidente:</td>
+            <td class="label">Nombre Siniestro:</td>
             <td>{{ $accidente->name_accident }}</td>
         </tr>
         <tr>
@@ -111,7 +111,7 @@
             <td>{{ $accidente->created_at }}</td>
         </tr>
         <tr>
-            <td class="label">Fotos del accidente:</td>
+            <td class="label">Fotos del siniestro:</td>
             <td>
                 @if(isset($photosBase64) && count($photosBase64) > 0)
                     @php

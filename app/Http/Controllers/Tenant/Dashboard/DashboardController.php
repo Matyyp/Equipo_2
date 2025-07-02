@@ -16,21 +16,24 @@ class DashboardController extends Controller
     {
         return view('tenant.admin.sale.analytics');
     }
-public function mantencionesAlert(MaintenanceAlertService $service)
-{
-    $alertData = $service->getUpcoming();
 
-    return view('tenant.admin.dashboard', [
-        'mantencionesProximas' => $alertData['entries'],
-        'mantencionesTotal' => $alertData['total'],
-    ]);
-}
+    public function mantencionesAlert(MaintenanceAlertService $service)
+    {
+        $alertData = $service->getUpcoming();
+
+        return view('tenant.admin.dashboard', [
+            'mantencionesProximas' => $alertData['entries'],
+            'mantencionesTotal' => $alertData['total'],
+        ]);
+    }
 
     public function chartData(Request $request): JsonResponse
     {
         $filter = $request->get('filter', 'daily');
         $user = auth()->user();
         $branchId = $request->get('branch_id');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
 
         // --- Lógica de solo estacionamientos (barras) ---
         $query = DB::table('parking_registers as pr')
@@ -58,6 +61,14 @@ public function mantencionesAlert(MaintenanceAlertService $service)
             $query->where('b.id_branch', $user->id_branch_office);
         }
 
+        // Filtro de fechas
+        if ($dateFrom) {
+            $query->whereDate('pr.start_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $query->whereDate('pr.start_date', '<=', $dateTo);
+        }
+
         if ($filter === 'weekly') {
             $barData = $query
                 ->selectRaw('YEAR(pr.start_date) as year, WEEK(pr.start_date, 3) as week, SUM(pr.total_value) as total')
@@ -80,45 +91,45 @@ public function mantencionesAlert(MaintenanceAlertService $service)
 
         // --- Estacionamientos activos
         $activeQuery = DB::table('parks as p')
-    ->join('services as s', 'p.id_service', '=', 's.id_service')
-    ->where('s.type_service', 'parking_daily')
-    ->where('p.status', 'parked');
+            ->join('services as s', 'p.id_service', '=', 's.id_service')
+            ->where('s.type_service', 'parking_daily')
+            ->where('p.status', 'parked');
 
-    if ($user->hasRole('SuperAdmin')) {
-        if ($branchId) {
-            $activeQuery->where('s.id_branch_office', $branchId);
-        }
-    } else {
-        $activeQuery->where('s.id_branch_office', $user->id_branch_office);
-    }
-
-    $activeCount = $activeQuery->count();
-
-    // Obtener número de estacionamientos dinámicamente desde la sucursal
-    if ($user->hasRole('SuperAdmin')) {
-        if ($branchId) {
-            $totalSpots = \DB::table('branch_offices')
-                ->where('id_branch', $branchId)
-                ->value('number_parkings') ?? 0;
+        if ($user->hasRole('SuperAdmin')) {
+            if ($branchId) {
+                $activeQuery->where('s.id_branch_office', $branchId);
+            }
         } else {
-            $totalSpots = \DB::table('branch_offices')->sum('number_parkings');
+            $activeQuery->where('s.id_branch_office', $user->id_branch_office);
         }
-    } else {
-        $totalSpots = \DB::table('branch_offices')
-            ->where('id_branch', $user->id_branch_office)
-            ->value('number_parkings') ?? 0;
-    }
 
-    $availableCount = max(0, $totalSpots - $activeCount);
+        $activeCount = $activeQuery->count();
 
-    return response()->json([
-        'labels' => $labels,
-        'values' => $values,
-        'parking' => [
-            'ocupados' => $activeCount,
-            'disponibles' => $availableCount,
-        ]
-    ]);
+        // Obtener número de estacionamientos dinámicamente desde la sucursal
+        if ($user->hasRole('SuperAdmin')) {
+            if ($branchId) {
+                $totalSpots = \DB::table('branch_offices')
+                    ->where('id_branch', $branchId)
+                    ->value('number_parkings') ?? 0;
+            } else {
+                $totalSpots = \DB::table('branch_offices')->sum('number_parkings');
+            }
+        } else {
+            $totalSpots = \DB::table('branch_offices')
+                ->where('id_branch', $user->id_branch_office)
+                ->value('number_parkings') ?? 0;
+        }
+
+        $availableCount = max(0, $totalSpots - $activeCount);
+
+        return response()->json([
+            'labels' => $labels,
+            'values' => $values,
+            'parking' => [
+                'ocupados' => $activeCount,
+                'disponibles' => $availableCount,
+            ]
+        ]);
     }
 
     // NUEVA FUNCIÓN para el gráfico lineal
@@ -128,6 +139,8 @@ public function mantencionesAlert(MaintenanceAlertService $service)
             $filter = $request->get('filter', 'daily');
             $user = auth()->user();
             $branchId = $request->get('branch_id');
+            $dateFrom = $request->get('date_from');
+            $dateTo = $request->get('date_to');
 
             // --- Parking (Estacionamientos) ---
             $parkingQuery = DB::table('parking_registers as pr')
@@ -137,7 +150,6 @@ public function mantencionesAlert(MaintenanceAlertService $service)
                 ->where('s.type_service', 'parking_daily')
                 ->where('pr.status', 'paid');
 
-            // Filtro de sucursal para parking
             if ($user->hasRole('SuperAdmin')) {
                 if ($branchId) {
                     $parkingQuery->where('b.id_branch', $branchId);
@@ -154,7 +166,15 @@ public function mantencionesAlert(MaintenanceAlertService $service)
                 $branchId = $user->id_branch_office; // Para rentas también
             }
 
-            // --- Rentas (pasan por rental_cars para branch) ---
+            // Filtro de fechas para parking
+            if ($dateFrom) {
+                $parkingQuery->whereDate('pr.start_date', '>=', $dateFrom);
+            }
+            if ($dateTo) {
+                $parkingQuery->whereDate('pr.start_date', '<=', $dateTo);
+            }
+
+            // --- Rentas ---
             $rentQuery = DB::table('register_rents as rr')
                 ->join('rental_cars as rc', 'rr.rental_car_id', '=', 'rc.id');
 
@@ -164,6 +184,14 @@ public function mantencionesAlert(MaintenanceAlertService $service)
                 }
             } else {
                 $rentQuery->where('rc.branch_office_id', $user->id_branch_office);
+            }
+
+            // Filtro de fechas para rentas
+            if ($dateFrom) {
+                $rentQuery->whereDate('rr.start_date', '>=', $dateFrom);
+            }
+            if ($dateTo) {
+                $rentQuery->whereDate('rr.start_date', '<=', $dateTo);
             }
 
             if ($filter === 'weekly') {
@@ -251,56 +279,6 @@ public function mantencionesAlert(MaintenanceAlertService $service)
                 'trace' => $e->getTraceAsString(),
             ], 500);
         }
-    
-
-    if ($filter === 'weekly') {
-        $barData = $query
-            ->selectRaw('YEAR(pr.start_date) as year, WEEK(pr.start_date, 3) as week, SUM(pr.total_value) as total')
-            ->groupByRaw('YEAR(pr.start_date), WEEK(pr.start_date, 3)')
-            ->orderByRaw('YEAR(pr.start_date), WEEK(pr.start_date, 3)')
-            ->get();
-
-        $labels = $barData->map(fn($row) => "Semana {$row->week} ({$row->year})");
-        $values = $barData->pluck('total');
-    } else {
-        $barData = $query
-            ->selectRaw('DATE(pr.start_date) as date, SUM(pr.total_value) as total')
-            ->groupByRaw('DATE(pr.start_date)')
-            ->orderBy('date')
-            ->get();
-
-        $labels = $barData->pluck('date');
-        $values = $barData->pluck('total');
-    }
-
-    // --- Estacionamientos activos
-    $activeQuery = DB::table('parks as p')
-        ->join('services as s', 'p.id_service', '=', 's.id_service')
-        ->where('s.type_service', 'parking_daily')
-        ->where('p.status', 'parked');
-
-    if ($user->hasRole('SuperAdmin')) {
-        if ($branchId) {
-            $activeQuery->where('s.id_branch_office', $branchId);
-        }
-    } else {
-        $activeQuery->where('s.id_branch_office', $user->id_branch_office);
-    }
-
-    $activeCount = $activeQuery->count();
-
-    
-    $totalSpots = 50;
-    $availableCount = max(0, $totalSpots - $activeCount);
-
-    return response()->json([
-        'labels' => $labels,
-        'values' => $values,
-        'parking' => [
-            'ocupados' => $activeCount,
-            'disponibles' => $availableCount,
-        ]
-    ]);
     }
 
     public function getRentsDataDashboard()
@@ -327,12 +305,14 @@ public function mantencionesAlert(MaintenanceAlertService $service)
             ->rawColumns(['acciones', 'status'])
             ->toJson();
     }
+
     public function carTypeRanking(Request $request): JsonResponse
     {
         $user = auth()->user();
         $branchId = $request->get('branch_id');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
 
-        // Query para ranking: cuenta de rentas agrupadas por tipo de auto (modelo y/o marca)
         $carTypeQuery = \DB::table('register_rents as rr')
             ->join('rental_cars as rc', 'rr.rental_car_id', '=', 'rc.id')
             ->join('brands as b', 'rc.brand_id', '=', 'b.id_brand')
@@ -341,13 +321,20 @@ public function mantencionesAlert(MaintenanceAlertService $service)
             ->groupBy('b.name_brand', 'm.name_model')
             ->orderByDesc('total');
 
-        // Si hay filtro de sucursal
         if ($user->hasRole('SuperAdmin')) {
             if ($branchId) {
                 $carTypeQuery->where('rc.branch_office_id', $branchId);
             }
         } else {
             $carTypeQuery->where('rc.branch_office_id', $user->id_branch_office);
+        }
+
+        // Filtro de fechas
+        if ($dateFrom) {
+            $carTypeQuery->whereDate('rr.start_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $carTypeQuery->whereDate('rr.start_date', '<=', $dateTo);
         }
 
         $ranking = $carTypeQuery->limit(10)->get();
@@ -357,42 +344,52 @@ public function mantencionesAlert(MaintenanceAlertService $service)
             'values' => $ranking->pluck('total'),
         ]);
     }
-public function topUsersRanking(Request $request): JsonResponse
-{
-    $user = auth()->user();
-    $branchId = $request->get('branch_id');
 
-    $query = \DB::table('register_rents as rr')
-        ->selectRaw('rr.client_name, rr.client_email, COUNT(*) as total, rr.client_rut')
-        ->groupBy('rr.client_name', 'rr.client_email', 'rr.client_rut')
-        ->orderByDesc('total');
+    public function topUsersRanking(Request $request): JsonResponse
+    {
+        $user = auth()->user();
+        $branchId = $request->get('branch_id');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
 
-    // Filtro de sucursal si aplica (si tienes branch_id en rental_cars, puedes hacer join como en otros)
-    if ($user->hasRole('SuperAdmin')) {
-        if ($branchId) {
+        $query = \DB::table('register_rents as rr')
+            ->selectRaw('rr.client_name, rr.client_email, COUNT(*) as total, rr.client_rut')
+            ->groupBy('rr.client_name', 'rr.client_email', 'rr.client_rut')
+            ->orderByDesc('total');
+
+        if ($user->hasRole('SuperAdmin')) {
+            if ($branchId) {
+                $query->join('rental_cars as rc', 'rr.rental_car_id', '=', 'rc.id');
+                $query->where('rc.branch_office_id', $branchId);
+            }
+        } else {
             $query->join('rental_cars as rc', 'rr.rental_car_id', '=', 'rc.id');
-            $query->where('rc.branch_office_id', $branchId);
+            $query->where('rc.branch_office_id', $user->id_branch_office);
         }
-    } else {
-        $query->join('rental_cars as rc', 'rr.rental_car_id', '=', 'rc.id');
-        $query->where('rc.branch_office_id', $user->id_branch_office);
+
+        // Filtro de fechas
+        if ($dateFrom) {
+            $query->whereDate('rr.start_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $query->whereDate('rr.start_date', '<=', $dateTo);
+        }
+
+        $ranking = $query->limit(10)->get();
+
+        return response()->json([
+            'users' => $ranking
+        ]);
     }
 
-    $ranking = $query->limit(10)->get();
+    public function userRatings(Request $request, $client_rut)
+    {
+        $ratings = \App\Models\UserRating::whereHas('rent', function($q) use ($client_rut) {
+            $q->where('client_rut', $client_rut);
+        })->orderByDesc('id')->get();
 
-    return response()->json([
-        'users' => $ranking
-    ]);
+        return response()->json([
+            'ratings' => $ratings
+        ]);
+    }
 }
-public function userRatings(Request $request, $client_rut)
-{
-    $ratings = \App\Models\UserRating::whereHas('rent', function($q) use ($client_rut) {
-        $q->where('client_rut', $client_rut);
-    })->orderByDesc('id')->get();
-
-    return response()->json([
-        'ratings' => $ratings
-    ]);
-}
-}
-

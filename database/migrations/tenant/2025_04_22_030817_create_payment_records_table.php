@@ -16,19 +16,18 @@ return new class extends Migration
             $table->unsignedBigInteger('id_service');
             $table->foreign('id_service')
                 ->references('id_service')
-                ->on('payments')
+                ->on('services') // <-- Cambiado a 'services'
                 ->onDelete('cascade');
             $table->unsignedBigInteger('id_voucher')->nullable();
             $table->foreign('id_voucher')
                 ->references('id_voucher')
-                ->on('payments')
+                ->on('payments') // <-- Dejamos esto igual como pediste
                 ->onDelete('cascade');
             $table->integer('amount');
-            $table->integer('id_parking_register');
-            $table->string('type_payment'); 
+            $table->unsignedBigInteger('id_parking_register')->nullable(); // <-- unsigned y nullable para más flexibilidad
+            $table->string('type_payment');
             $table->date('payment_date');
             $table->timestamps();
-
         });
     }
 
