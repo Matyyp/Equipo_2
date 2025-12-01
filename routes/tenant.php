@@ -40,7 +40,7 @@ use App\Http\Controllers\MapController;
 use App\Http\Controllers\ServiceLandingController;
 use App\Http\Controllers\ContainerImageLandingController;
 use App\Http\Controllers\AccidentController;
-
+use App\Http\Controllers\WhatsAppController;
 
 use App\Http\Controllers\UserRatingController;
 
@@ -164,10 +164,15 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         ->name('estacionamiento.searchPhone');
         Route::get('estacionamiento/history', [ParkingController::class, 'history'])
         ->name('estacionamiento.history');
-        Route::get('/ticket/{parking}/print', [ParkingController::class, 'printTicket'])
-        ->name('ticket.print');
+        Route::post('estacionamiento/tickets/print', [ParkingController::class, 'printTicket'])
+        ->name('tickets.print');
         Route::get('parking/{parking}/send-whatsapp', [ParkingController::class, 'sendContractWhatsApp'])
         ->name('parking.send_whatsapp');
+        Route::get('estacionamiento/tickets', [ParkingController::class, 'infoTicket'])
+        ->name('estacionamiento.ticket');
+        Route::get('/admin/whatsapp', [WhatsAppController::class, 'dashboard'])->name('whatsapp.dashboard');
+        Route::post('/admin/whatsapp/logout', [WhatsAppController::class, 'logout'])->name('whatsapp.logout');
+        Route::post('/admin/whatsapp/send', [WhatsAppController::class, 'send'])->name('whatsapp.send');
         
 
 

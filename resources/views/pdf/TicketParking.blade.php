@@ -1,76 +1,87 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <title>Ticket de Arriendo</title>
+    <meta charset="UTF-8">
+    <title>Tickets Verticales Full</title>
     <style>
         @page {
-            size: 300pt 125pt;
-            margin: 0;
-            padding: 0;
+            size: A4 portrait;
+            margin: 0; 
         }
+
         body {
             margin: 0;
             padding: 0;
-            width: 300pt;
-            height: 125pt;
-            font-family: 'Courier New', monospace;
-            font-size: 7pt;
+            font-family: "Courier New", monospace;
+            font-size: 12pt; 
+        }
+
+        .hoja {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ticket-columna {
+            float: left;
+            width: 1.9cm;  
+            height: 24cm;  
+            box-sizing: border-box; 
+            position: relative; 
+            page-break-inside: avoid;
+        }
+
+        .contenido-rotado {
+            width: 24cm;  
+            height: 1.9cm; 
+            position: absolute;
+            bottom: 0;
+            left: 10px; 
+            transform-origin: bottom left; 
+            transform: rotate(-90deg);
+            display: flex;
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 4mm; 
             box-sizing: border-box;
         }
-        header, footer {
-            width: 100%;
-            text-align: center;
-            font-weight: bold;
-            font-size: 6pt;
-            padding: 0;
+
+        .seccion { white-space: nowrap; }
+        .texto-centro { text-align: center; width: 100%; }
+        .patente-box { border: 1px solid #000; padding: 1px 3px; font-weight: bold; }
+
+        .salto-pagina {
+            clear: both;          
+            page-break-after: always; 
+            height: 0;
+            margin: 0;
+            display: block;
+            visibility: hidden;
         }
-        header {
-            border-bottom: 1px dashed #000;
-            margin-top: 11pt;
-            padding-bottom: 6pt; /* espacio hacia abajo */
-        }
-        .content {
-            padding-left: 10pt;
-            padding-right: 10pt;
-            margin-top: 6pt;
-        }
-        footer {
-            border-top: 1px dashed #000;
-            margin-top: 6pt;
-            padding-top: 6pt; /* espacio hacia arriba */
-        }
-        .line {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            margin-bottom: 0.5pt;
-            margin-top: 3pt;
-        }
-        .label {
-            font-weight: bold;
-            margin-right: 2pt;
-            display: inline;
-        }
-        .value {
-            display: inline;
-        }
+
     </style>
 </head>
 <body>
-    <header>TICKET DE ESTACIONAMIENTO</header>
 
-    <div class="content">
-        <div class="line"><span class="label">Cliente:</span><span class="value">{{ $nombre }}</span></div>
-        <div class="line"><span class="label">Teléfono:</span><span class="value">{{ $telefono }}</span></div>
-        <div class="line"><span class="label">Vehículo:</span><span class="value">{{ $marca }} {{ $modelo }}</span></div>
-        <div class="line"><span class="label">Patente:</span><span class="value">{{ $patente }}</span></div>
-        <div class="line"><span class="label">Periodo:</span><span class="value">{{ $inicio }} a {{ $termino }}</span></div>
-        <div class="line"><span class="label">Lavado:</span><span class="value">{{ $lavado ? 'Sí' : 'No' }}</span></div>
-    </div>
+<div class="hoja">
+    @foreach($tickets as $t)
+        <div class="ticket-columna">
+            <div class="contenido-rotado">
+                <div class="seccion texto-centro">
+                    <span class="patente-box"></span>{{ $t['telefono'] }} - {{$t['nombre'] }} - {{ $t['patente'] }} - {{ Str::limit($t['modelo'], 10) }}</span><br>
 
-    <footer>
-        {{ now()->format('d/m/Y H:i') }}
-    </footer>
+                    <span style="font-size: 10pt;"> {{ $t['inicio'] }} al {{ $t['termino'] }}  / Lavado: <b>{{ $t['lavado'] ? 'SÍ' : 'NO' }}</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- LÓGICA DE SALTO: --}}
+        {{-- Si el contador es múltiplo de 10 (10, 20, 30...) Y no es el último ticket --}}
+        @if($loop->iteration % 10 == 0 && !$loop->last)
+            <div class="salto-pagina"></div>
+        @endif
+
+    @endforeach
+</div>
+
 </body>
 </html>

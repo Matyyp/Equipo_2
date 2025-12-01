@@ -156,7 +156,47 @@ public function index(Request $request)
     $empresaExiste = Business::exists();
     $sucursalExiste = BranchOffice::exists();
 
-    return view('tenant.admin.parking.index', compact('empresaExiste', 'sucursalExiste'));
+        $user = auth()->user();
+
+    // Consulta base para servicios
+    $query = Service::with('service_branch_office.branch_office_contract')
+        ->whereIn('type_service', ['parking_daily', 'parking_annual'])
+        ->where('status', 'available');
+
+    // Si no es SuperAdmin, limitar por sucursal
+    if (!$user->hasRole('SuperAdmin')) {
+        $query->where('id_branch_office', $user->id_branch_office);
+    }
+
+    $parkingServices = $query->get();
+
+    $hasContract = false;
+
+    foreach ($parkingServices as $svc) {
+        $contracts = $svc->service_branch_office->branch_office_contract ?? collect();
+
+        foreach ($contracts as $contract) {
+            $isValid = match ($svc->type_service) {
+                'parking_daily' => DailyContract::where('id_contract', $contract->id_contract)->exists(),
+                'parking_annual' => AnnualContract::where('id_contract', $contract->id_contract)->exists(),
+                default => false,
+            };
+
+            if ($isValid) {
+                $hasContract = true;
+                break 2; // Sale de ambos foreach
+            }
+        }
+    }
+
+    $parks = Park::with('park_car')->get();
+
+    // Cargar todas las sucursales si es SuperAdmin
+    $branches = $user->hasRole('SuperAdmin')
+        ? BranchOffice::all()
+        : null;
+
+    return view('tenant.admin.parking.index', compact('empresaExiste', 'sucursalExiste', 'parkingServices', 'parks', 'hasContract', 'branches'));
 }
 
 public function generateContractWhatsappLink(ParkingRegister $parkingRegister)
@@ -970,49 +1010,74 @@ public function update(Request $request, $id)
 
 
 
-    public function printTicket($parkingId)
+    public function printTicket(Request $request)
     {
-        $parking = ParkingRegister::with([
-            'parking_register_register.register_parking.parking_service.service_branch_office.branch_office_business',
-            'parking_register_generates.generates_contract_parking.contract_parking_contract.contract_presents.presents_contact_information',
-        ])->findOrFail($parkingId);
+        $ids = $request->input('registros', []);
 
-        $client = Park::where('id', $parking->id_park)
-            ->with([
-                'park_car.car_belongs.belongs_owner',
-                'park_car.car_model',
-                'park_car.car_brand'
-            ])
-            ->firstOrFail();
+        if (empty($ids)) {
+            return back()->with('error', 'Debe seleccionar al menos un registro.');
+        }
 
-        // Datos base
-        $nombre   = $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible';
-        $telefono = $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible';
-        $marca    = $client->park_car->car_brand->name_brand ?? 'No disponible';
-        $modelo   = $client->park_car->car_model->name_model ?? 'No disponible';
-        $patente  = $client->park_car->patent ?? 'No disponible';
+        $parkings = ParkingRegister::whereIn('id_parking_register', $ids)->get();
 
-        // Fechas formateadas
-        $inicio  = Carbon::parse($parking->start_date)->format('d-m-Y');
-        $termino = Carbon::parse($parking->end_date)->format('d-m-Y');
+        $tickets = [];
 
-        // Generar PDF tipo ticket horizontal
-        $pdfContent = PDF::loadView('pdf.TicketParking', [
-            'nombre'   => $nombre,
-            'telefono' => $telefono,
-            'marca'    => $marca,
-            'modelo'   => $modelo,
-            'patente'  => $patente,
-            'inicio'   => $inicio,
-            'termino'  => $termino,
-            'lavado'   => $parking->id_service
+        foreach ($parkings as $parking) {
+            $client = Park::where('id', $parking->id_park)
+                ->with([
+                    'park_car.car_belongs.belongs_owner',
+                    'park_car.car_model',
+                    'park_car.car_brand'
+                ])
+                ->first();
+
+            if (!$client) continue;
+
+            $tickets[] = [
+                'nombre'   => $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible',
+                'telefono' => $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible',
+                'marca'    => $client->park_car->car_brand->name_brand ?? 'No disponible',
+                'modelo'   => $client->park_car->car_model->name_model ?? 'No disponible',
+                'patente'  => $client->park_car->patent ?? 'No disponible',
+                'inicio'   => \Carbon\Carbon::parse($parking->start_date)->format('d-m-Y'),
+                'termino'  => \Carbon\Carbon::parse($parking->end_date)->format('d-m-Y'),
+                'lavado'   => $parking->id_service
+            ];
+        }
+
+        $pdf = \PDF::loadView('pdf.TicketParking', compact('tickets'))
+                ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('tickets.pdf');
+    }
+
+    public function infoTicket()
+    {
+        $registros = ParkingRegister::with([
+            'park.park_car.car_belongs.belongs_owner',
+            'park.park_car.car_brand',
+            'park.park_car.car_model'
         ])
-        ->setPaper([0, 0, 300, 125]) // ~10.5 cm ancho x ~4.4 cm alto
-        ->output();
+        ->whereHas('park', function ($q) {
+            $q->where('status', 'parked');
+        })
+        ->get()
+        ->map(function ($reg) {
 
-        $pdfBase64 = base64_encode($pdfContent);
+            $park  = $reg->park;
+            $car   = $park?->park_car;
+            $owner = $car?->car_belongs->first()?->belongs_owner;
 
-        return view('pdf.print_contrato', compact('pdfBase64'));
+            return [
+                'id'          => $reg->id_parking_register,
+                'owner_name'  => $owner?->name ?? 'Sin nombre',
+                'patent'      => $car?->patent ?? 'N/A',
+                'start_date'  => $reg->start_date,
+                'end_date'    => $reg->end_date,
+            ];
+        });
+
+        return view('tenant.admin.parking.ticket', compact('registros'));
     }
 
     public function removeAddon($addonId)
@@ -1078,7 +1143,7 @@ public function update(Request $request, $id)
                 'payment'      => $paymentRecord->type_payment,
                 'amount'       => $paymentRecord->amount,
                 'id_register'  => $paymentRecord->id_parking_register,
-                'discount'     => 0, // Ajusta si hay lógica de descuento
+                'discount'     => 0,
                 'created_at'   => now(),
                 'updated_at'   => now(),
             ]);
@@ -1113,7 +1178,6 @@ public function getServicesByBranch(Request $request)
     $filteredServices = [];
 
     foreach ($services as $svc) {
-        // Elimina first() para recorrer TODOS los contratos
         foreach ($svc->service_branch_office->branch_office_contract as $contract) {
             $hasValidContract = false;
 
@@ -1127,9 +1191,9 @@ public function getServicesByBranch(Request $request)
                 $filteredServices[] = [
                     'id_service' => $svc->id_service,
                     'name' => $svc->name,
-                    'type_service' => $svc->type_service // Opcional: útil para lógica frontend
+                    'type_service' => $svc->type_service
                 ];
-                break; // Salir del loop de contratos si se encuentra uno válido
+                break; 
             }
         }
     }
@@ -1148,10 +1212,8 @@ public function getServicesByBranch(Request $request)
     public function getExtraServices(Request $request)
     {
         try {
-            // Determinar la sucursal según el rol
             $branchId = auth()->user()->id_branch_office;
             
-            // SuperAdmin puede especificar sucursal
             if (auth()->user()->hasRole('SuperAdmin') && $request->has('id_branch')) {
                 $branchId = $request->input('id_branch');
             }
@@ -1181,17 +1243,15 @@ public function getServicesByBranch(Request $request)
             $register = ParkingRegister::findOrFail($id);
             $extraServices = $request->input('extra_services', []);
             
-            // 1. Calcular nuevo total
             $newTotal = $register->total_value;
             $servicesToStore = [];
             
             foreach ($extraServices as $service) {
-                // Validación básica
+
                 if (!isset($service['id']) || !isset($service['price'])) {
                     continue;
                 }
                 
-                // Agregar a addons (si es necesario)
                 Addon::create([
                     'id_parking_register' => $id,
                     'id_service' => $service['id'],
@@ -1199,9 +1259,8 @@ public function getServicesByBranch(Request $request)
                     'updated_at' => now()
                 ]);
                 
-                // Preparar datos para guardar en el registro
                 $servicesToStore[] = [
-                    'id' => $service['id'],  // Nota: ahora es 'id' en lugar de 'id_service'
+                    'id' => $service['id'], 
                     'name' => $service['name'] ?? '',
                     'price' => $service['price']
                 ];
@@ -1209,7 +1268,6 @@ public function getServicesByBranch(Request $request)
                 $newTotal += $service['price'];
             }
             
-            // 2. Actualizar el registro
             $register->update([
                 'extra_services' => $servicesToStore,
                 'total_value' => $newTotal

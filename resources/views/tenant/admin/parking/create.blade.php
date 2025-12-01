@@ -1,7 +1,7 @@
 @extends('tenant.layouts.admin')
 
-@section('title', 'Registro de Estacionamiento')
-@section('page_title', 'Registro de Estacionamiento')
+@section('title', 'Ingreso de estacionamiento')
+@section('page_title', 'Ingreso de estacionamiento')
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
@@ -25,7 +25,6 @@
   }
 </style>
 @endpush
-
 @section('content')
 <div class="container-fluid">
   <div class="card shadow-sm">
@@ -93,96 +92,101 @@
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group col-12 col-md-6">
-            <label for="name">Nombre</label>
-            <input type="text" id="name" placeholder="Ej: Juan Perez" name="name" class="form-control" title="Debe ingresar el nombre del cliente" required>
-          </div>
-          <div class="form-group col-12 col-md-6">
-            <label for="phone">Teléfono</label>
-            <input type="text" id="phone" name="phone" placeholder="Ej: 912345678" class="form-control" pattern="^[0-9]{9}$" maxlength="9" inputmode="numeric" title="Debe ingresar exactamente 9 dígitos" required>
-          </div>
-        </div>
+      <div class="form-row">
+          {{-- Columna 1: Nombre + Teléfono --}}
+          <div class="col-12 col-lg-4">
+              <div class="form-group">
+                  <label for="name">Nombre</label>
+                  <input type="text" id="name" placeholder="Ej: Juan Perez" name="name" class="form-control" required>
+              </div>
 
-        <div class="form-row">
-          <div class="form-group col-12 col-md-6">
-            <label for="start_date">Fecha de Inicio</label>
-            <input type="date" id="start_date" name="start_date" class="form-control" title="Ingrese una fecha" required>
+              <div class="form-group">
+                  <label for="phone">Teléfono</label>
+                  <input type="text" id="phone" name="phone" placeholder="Ej: 912345678"
+                        class="form-control" pattern="^[0-9]{9}$" maxlength="9" inputmode="numeric" required>
+              </div>
           </div>
-          <div class="form-group col-12 col-md-6">
-            <label for="end_date">Fecha de Término</label>
-            <input type="date" id="end_date" name="end_date" class="form-control" title="Ingrese una fecha" required>
+
+          {{-- Columna 2: Marca + Modelo --}}
+          <div class="col-12 col-lg-4">
+              <div class="form-group">
+                  <label for="brand_name">Marca</label>
+                  <input type="text" id="brand_name" placeholder="Ej: Toyota" name="brand_name"
+                        class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                  <label for="model_name">Modelo</label>
+                  <input type="text" id="model_name" placeholder="Ej: Yaris" name="model_name"
+                        class="form-control" required>
+              </div>
           </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group col-12 col-md-6">
-            <label for="arrival_km">Km Entrada (opcional)</label>
-            <input type="number" placeholder="Ej: 5000" id="arrival_km" name="arrival_km" class="form-control" min="0">
+          {{-- Columna 3: Fecha inicio + Fecha término --}}
+          <div class="col-12 col-lg-4">
+              <div class="form-group">
+                  <label for="start_date">Fecha de Inicio</label>
+                  <input type="date" id="start_date" name="start_date" class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                  <label for="end_date">Fecha de Término</label>
+                  <input type="date" id="end_date" name="end_date" class="form-control" required>
+              </div>
           </div>
-          <div class="form-group col-12 col-md-6">
-            <label for="km_exit">Km Salida (opcional)</label>
-            <input type="number" placeholder="Ej: 8000" id="km_exit" name="km_exit" class="form-control" min="0">
+      </div>
+
+
+      <div class="form-row">
+
+          {{-- COLUMNA 1: Sucursal (solo SuperAdmin) --}}
+          @role('SuperAdmin')
+          <div class="form-group col-12 col-lg-4">
+              <label for="branch_office_id">Sucursal</label>
+              <select id="branch_office_id" name="branch_office_id"
+                      class="selectpicker form-control" data-live-search="true" required>
+                  <option value="">Seleccione una sucursal</option>
+                  @foreach($branches as $branch)
+                      <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
+                  @endforeach
+              </select>
           </div>
-        </div>
+          @endrole
 
-        <div class="form-row">
-          <div class="form-group col-12 col-md-6">
-            <label for="brand_name">Marca</label>
-            <input type="text" id="brand_name" placeholder="Ej: Toyota" name="brand_name" class="form-control" title="Ingrese la Marca del vehículo" required>
+          {{-- COLUMNA 2: Tipo de Estacionamiento --}}
+          <div class="form-group col-12 col-lg-4">
+              <label for="service_id">Tipo de Estacionamiento</label>
+              <select id="service_id" name="service_id"
+                      class="selectpicker form-control" data-live-search="true" required>
+                  <option value="">Seleccione el tipo de estacionamiento</option>
+                  @unless(auth()->user()->hasRole('SuperAdmin'))
+                      @foreach($parkingServices as $svc)
+                          <option value="{{ $svc->id_service }}">{{ $svc->name }}</option>
+                      @endforeach
+                  @endunless
+              </select>
           </div>
-          <div class="form-group col-12 col-md-6">
-            <label for="model_name">Modelo</label>
-            <input type="text" id="model_name" placeholder="Ej: Yaris" name="model_name" class="form-control" title="Ingrese la Modelo del vehículo" required>
+
+          {{-- COLUMNA 3: Lavado + tipo de lavado --}}
+          <div class="form-group col-12 col-lg-4">
+              <label class="d-block">Lavado</label>
+
+              <div class="form-check mb-2">
+                  <input type="checkbox" id="wash_service" name="wash_service" class="form-check-input">
+                  <label for="wash_service" class="form-check-label">Incluye Servicio de Lavado</label>
+              </div>
+
+              <div id="wash-type-group" style="display: none;">
+                  <label for="wash_type">Tipo de Lavado</label>
+                  <select name="wash_type" id="wash_type" class="form-control">
+                      <option value="">Seleccione un tipo de lavado</option>
+                  </select>
+              </div>
           </div>
-        </div>
 
-        @role('SuperAdmin')
-        <div class="form-group">
-          <label for="branch_office_id">Sucursal</label>
-          <select id="branch_office_id" name="branch_office_id" class="selectpicker form-control" data-live-search="true" required>
-            <option value="">Seleccione una sucursal</option>
-            @foreach($branches as $branch)
-              <option value="{{ $branch->id_branch }}">{{ $branch->name_branch_offices }}</option>
-            @endforeach
-          </select>
-        </div>
-        @endrole
-
-        <div class="form-group">
-          <label for="service_id">Tipo de Estacionamiento</label>
-          <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
-            <option value="">Seleccione el tipo de estacionamiento</option>
-            @unless(auth()->user()->hasRole('SuperAdmin'))
-              @foreach($parkingServices as $svc)
-                @role('SuperAdmin')
-                  $('#service_id').prop('disabled', true).selectpicker('refresh');
-                @endrole
-
-                <option value="{{ $svc->id_service }}">{{ $svc->name }}</option>
-              @endforeach
-            @endunless
-          </select>
-        </div>
-
-        <div class="form-check mb-4">
-          <input type="checkbox" id="wash_service" name="wash_service" class="form-check-input">
-          <label for="wash_service" class="form-check-label">Incluye Servicio de Lavado</label>
-        </div>
-        <div id="wash-type-group" class="form-group" style="display: none;">
-          <label for="wash_type">Tipo de Lavado</label>
-          <select name="wash_type" id="wash_type" class="form-control">
-            <option value="">Seleccione un tipo de lavado</option>
-          </select>
-        </div>
-
+      </div>
 
         <div class="form-group row justify-content-end">
-          <div class="col-auto">
-            <a href="{{ route('estacionamiento.index') }}" class="btn btn-secondary mr-1">
-                Cancelar
-            </a>
-          </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary" id="submit-btn">
                 Guardar
