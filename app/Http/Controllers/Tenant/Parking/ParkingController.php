@@ -199,49 +199,6 @@ public function index(Request $request)
     return view('tenant.admin.parking.index', compact('empresaExiste', 'sucursalExiste', 'parkingServices', 'parks', 'hasContract', 'branches'));
 }
 
-public function generateContractWhatsappLink($parkingId)
-{
-    try {
-        // 1. Necesitamos buscar el teléfono del dueño (Esto no lo devuelve 'print', así que lo buscamos rápido)
-        $parking = ParkingRegister::findOrFail($parkingId);
-        $park = Park::find($parking->id_park);
-        $owner = $park?->park_car?->car_belongs->first()?->belongs_owner;
-
-        $phone = $owner?->number_phone;
-        $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
-
-        if ($phoneDigitsOnly && !str_starts_with($phoneDigitsOnly, '56')) {
-            $phoneDigitsOnly = '56' . $phoneDigitsOnly;
-        }
-
-        if (!$phoneDigitsOnly) {
-            return response()->json(['success' => false, 'message' => 'Cliente sin teléfono.']);
-        }
-
-        // 2. REUTILIZAMOS TU LÓGICA DE PDF
-        // Llamamos a print pasando 'true' como segundo parámetro para obtener el código
-        $pdfBase64 = $this->print($parkingId, true);
-
-        // 3. ENVIAR A NODE.JS
-        $response = Http::timeout(60)->post('http://localhost:3000/send-pdf-base64', [
-            'number'    => $phoneDigitsOnly,
-            'pdfBase64' => $pdfBase64, // Aquí va el PDF que generó tu función print
-            'fileName'  => "Contrato_{$parkingId}.pdf",
-            'caption'   => "Hola {$owner->name}, aquí tienes tu contrato 📄"
-        ]);
-
-        if ($response->successful()) {
-            return response()->json(['success' => true, 'message' => 'Enviado correctamente']);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Error Node: ' . $response->body()]);
-        }
-
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
-    }
-}
-
-
 
 public function sendPaymentReminderWhatsApp(Request $request, $parkingId)
 {
@@ -510,9 +467,12 @@ public function create()
             'id_contract'          => $id_contract,
             'id_parking_register'  => $parking->id_parking_register
         ]);
+
+        $this->generateContractWhatsappLink($parking->id_parking_register);
     
         return redirect()->route('estacionamiento.index')->with('success', 'Registro creado correctamente');
     }
+
 public function renew(Request $request, $id)
 {
     $request->validate([
@@ -1296,5 +1256,45 @@ public function getServicesByBranch(Request $request)
             ], 500);
         }
     }
+
+    public function generateContractWhatsappLink($parkingId)
+    {
+        try {
+            // 1. Necesitamos buscar el teléfono del dueño (Esto no lo devuelve 'print', así que lo buscamos rápido)
+            $parking = ParkingRegister::findOrFail($parkingId);
+            $park = Park::find($parking->id_park);
+            $owner = $park?->park_car?->car_belongs->first()?->belongs_owner;
+
+            $phone = $owner?->number_phone;
+            $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
+
+            if ($phoneDigitsOnly && !str_starts_with($phoneDigitsOnly, '56')) {
+                $phoneDigitsOnly = '56' . $phoneDigitsOnly;
+            }
+
+            if (!$phoneDigitsOnly) {
+                return response()->json(['success' => false, 'message' => 'Cliente sin teléfono.']);
+            }
+
+            $pdfBase64 = $this->print($parkingId, true);
+
+            $response = Http::timeout(60)->post('http://localhost:3000/send-pdf-base64', [
+                'number'    => $phoneDigitsOnly,
+                'pdfBase64' => $pdfBase64,
+                'fileName'  => "Contrato_{$parkingId}.pdf",
+                'caption'   => "Hola {$owner->name}, aquí tienes tu contrato 📄"
+            ]);
+
+            if ($response->successful()) {
+                return response()->json(['success' => true, 'message' => 'Enviado correctamente']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Error Node: ' . $response->body()]);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
 }
 

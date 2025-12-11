@@ -338,6 +338,13 @@
                                     </a>
                                 </li>
                                 @endrole
+                                @role('SuperAdmin')
+                                <li class="nav-item">
+                                    <a href="{{ route('whatsapp.index') }}" class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
+                                        <i class="fas fa-user-shield nav-icon"></i><p>WhatsApp</p>
+                                    </a>
+                                </li>
+                                @endrole
                                 @can('mantenedores.access')
                                 <li class="nav-item">
                                     <a href="{{ route('empresa.index') }}" class="nav-link {{ request()->routeIs('empresa.index') ? 'active' : '' }}">
