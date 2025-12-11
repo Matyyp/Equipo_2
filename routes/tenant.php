@@ -170,9 +170,13 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         ->name('parking.send_whatsapp');
         Route::get('estacionamiento/tickets', [ParkingController::class, 'infoTicket'])
         ->name('estacionamiento.ticket');
-        Route::get('/admin/whatsapp', [WhatsAppController::class, 'dashboard'])->name('whatsapp.dashboard');
-        Route::post('/admin/whatsapp/logout', [WhatsAppController::class, 'logout'])->name('whatsapp.logout');
-        Route::post('/admin/whatsapp/send', [WhatsAppController::class, 'send'])->name('whatsapp.send');
+        Route::get('/probar-whatsapp', [WhatsappController::class, 'enviarMensajePrueba']);
+        // Vista principal
+        Route::get('/whatsapp/config', [WhatsappController::class, 'index'])->name('whatsapp.index');
+        
+        // Rutas API internas para el AJAX
+        Route::get('/whatsapp/status', [WhatsappController::class, 'checkStatus'])->name('whatsapp.status');
+        Route::get('/whatsapp/logout', [WhatsappController::class, 'disconnect'])->name('whatsapp.logout');
         
 
 

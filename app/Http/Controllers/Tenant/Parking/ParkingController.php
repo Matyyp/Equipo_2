@@ -26,7 +26,7 @@ use App\Models\Business;
 use App\Models\Addon;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
@@ -199,44 +199,46 @@ public function index(Request $request)
     return view('tenant.admin.parking.index', compact('empresaExiste', 'sucursalExiste', 'parkingServices', 'parks', 'hasContract', 'branches'));
 }
 
-public function generateContractWhatsappLink(ParkingRegister $parkingRegister)
+public function generateContractWhatsappLink($parkingId)
 {
-    $park = Park::find($parkingRegister->id_park);
-    $car = $park?->park_car;
-    $owner = $car?->car_belongs->first()?->belongs_owner;
+    try {
+        // 1. Necesitamos buscar el teléfono del dueño (Esto no lo devuelve 'print', así que lo buscamos rápido)
+        $parking = ParkingRegister::findOrFail($parkingId);
+        $park = Park::find($parking->id_park);
+        $owner = $park?->park_car?->car_belongs->first()?->belongs_owner;
 
-    $phone = $owner?->number_phone;
-    $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
+        $phone = $owner?->number_phone;
+        $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
 
-    if ($phoneDigitsOnly && !str_starts_with($phoneDigitsOnly, '56')) {
-        $phoneDigitsOnly = '56' . $phoneDigitsOnly;
-    }
+        if ($phoneDigitsOnly && !str_starts_with($phoneDigitsOnly, '56')) {
+            $phoneDigitsOnly = '56' . $phoneDigitsOnly;
+        }
 
-    if (!$phoneDigitsOnly || !$owner) {
-        return response()->json([
-            'success' => false,
-            'message' => 'No se pudo obtener el teléfono o propietario.',
+        if (!$phoneDigitsOnly) {
+            return response()->json(['success' => false, 'message' => 'Cliente sin teléfono.']);
+        }
+
+        // 2. REUTILIZAMOS TU LÓGICA DE PDF
+        // Llamamos a print pasando 'true' como segundo parámetro para obtener el código
+        $pdfBase64 = $this->print($parkingId, true);
+
+        // 3. ENVIAR A NODE.JS
+        $response = Http::timeout(60)->post('http://localhost:3000/send-pdf-base64', [
+            'number'    => $phoneDigitsOnly,
+            'pdfBase64' => $pdfBase64, // Aquí va el PDF que generó tu función print
+            'fileName'  => "Contrato_{$parkingId}.pdf",
+            'caption'   => "Hola {$owner->name}, aquí tienes tu contrato 📄"
         ]);
+
+        if ($response->successful()) {
+            return response()->json(['success' => true, 'message' => 'Enviado correctamente']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Error Node: ' . $response->body()]);
+        }
+
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
     }
-
-    // Genera el enlace firmado para el contrato con validez corta
-        $contractUrl = URL::temporarySignedRoute(
-            'contrato.print',
-            now()->addMinutes(3),
-            ['parking' => $parkingRegister->getKey()],
-            true // forzar incluir el host actual
-        );
-
-    $message = "Hola {$owner->name}, gracias por estacionarte en nuestro Rent a car. Aquí está tu contrato:\n\n" .
-               "Contrato: " . $contractUrl .
-               "\n\nEl enlace expirará en 3 minutos.";
-
-    $whatsappUrl = "https://wa.me/{$phoneDigitsOnly}?text=" . urlencode($message);
-
-    return response()->json([
-        'success' => true,
-        'url' => $whatsappUrl,
-    ]);
 }
 
 
@@ -900,7 +902,7 @@ public function update(Request $request, $id)
 
         
 
-    public function print($parkingId)
+    public function print($parkingId,$returnBase64 = false)
     {
         $parking = ParkingRegister::with([
             'parking_register_register.register_parking.parking_service.service_branch_office.branch_office_business',
@@ -1005,6 +1007,11 @@ public function update(Request $request, $id)
     
         $pdfBase64 = base64_encode($pdfContent);
     
+        if ($returnBase64) {
+            return $pdfBase64;
+        }
+
+        // Si es normal, devuelve la vista como siempre
         return view('pdf.print_contrato', compact('pdfBase64'));
     }
 

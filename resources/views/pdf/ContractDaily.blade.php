@@ -66,13 +66,29 @@
         margin-bottom: 15px;
     }
 
-.footer-pagina1 {
-    width: 100%;
-    font-size: 12px;
-    text-align: center;
-    margin-top: 5px;
-}
+    .firmas {
+        margin-top: 60px;
+        clear: both;
+    }
 
+    .firma-box {
+        text-align: center;
+        width: 50%;
+        float: left;
+    }
+
+    .logo-top {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .footer-pagina1 {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        font-size: 12px;
+        text-align: center;
+    }
 
     @media print {
         @page {
@@ -87,40 +103,45 @@
             position: relative;
         }
 
+        .logo-top {
+            position: absolute;
+            top: 0 !important;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 1000;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .logo-top img {
+            max-height: 50px;
+            height: auto;
+            width: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .footer-pagina1 {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+        }
     }
     </style>
 </head>
 <body>
 
-<!-- Dentro de logo-top -->
 <div class="logo-top">
-    <table style="width: 100%; border: none; text-align: left;">
-        <tr>
-            <!-- Columna izquierda: logo -->
-            <td style="width: 60%; vertical-align: top; border: none;">
-                <img src="{{ $url_logo }}" alt="Logo Empresa" style="max-height: 200px;">
-            </td>
-
-            <!-- Columna derecha: datos contacto -->
-            <td style="width: 40%; vertical-align: top; border: none; text-align: right; font-size: 15px;">
-                <div style="margin-top: 6px; font-weight: bold;">RENÉ SANDOVAL PÉREZ</div>
-                <div style="margin-top: 4px;">RUT: 8.232.253-1</div>
-                <div style="height: 1px; background-color: black; width: 100%; margin: 6px 0;"></div>
-                <div style="margin-top: 6px; font-weight: bold;">DIRECCIÓN:</div>
-                <div style="margin-top: 4px;">Calle Mackena N°768, Balmaceda</div>
-                <div style="margin-top: 4px;">Comuna de Coyhaique</div>
-                <div style="height: 1px; background-color: black; width: 100%; margin: 6px 0;"></div>
-                <div style="margin-top: 4px;">+56 9 95110639 +56 9 42644477 +56 9 79196825</div>
-                <div style="margin-top: 4px;">rentacarencoyhaique@gmail.com</div>
-                <div style="margin-top: 4px;">www.rentacarencoyhaique2.cl</div>
-            </td>
-        </tr>
-    </table>
+    <img src="{{ $url_logo }}" alt="Logo Empresa" style="height: 180px; width: auto;">
 </div>
 
-
 <div class="titulo">
-    <h3>COMPROBANTE DE CUSTODIA PRIVADA</h3>
+    <h3>CONTRATO DE CUSTODIA PRIVADA</h3>
     <h3>DE VEHÍCULO PARTICULAR</h3>
 </div>
 
@@ -131,36 +152,33 @@
 <table>
     <tr>
         <td class="espaciado-horizontal" style="width: 25%;">MARCA:</td>
-        <td style="width: 25%;"></td>
-        <td class="espaciado-horizontal" style="width: 25%;">INGRESO CUSTODIA:</td>
-        <td style="width: 25%;"></td>
+        <td style="width: 25%;">{{ $marca }}</td>
+        <td class="espaciado-horizontal" style="width: 25%;">INICIO CONTRATO:</td>
+        <td style="width: 25%;">{{ $inicio }}</td>
     </tr>
     <tr>
         <td class="espaciado-horizontal">MODELO:</td>
-        <td></td>
-        <td class="espaciado-horizontal">TÉRMINO CUSTODIA:</td>
-        <td></td>
+        <td>{{ $modelo }}</td>
+        <td class="espaciado-horizontal">TÉRMINO CONTRATO:</td>
+        <td>{{ $termino }}</td>
     </tr>
     <tr>
         <td class="espaciado-horizontal">PATENTE:</td>
-        <td></td>
-        <td class="espaciado-horizontal">DÍAS:</td>
-        <td></td>
+        <td>{{ $patente }}</td>
+        <td colspan="2" rowspan="3"></td>
     </tr>
     <tr>
-        <td colspan="2" rowspan="2" style="padding: 8px; vertical-align: top;">OBSERVACIÓN:</td>
-        <td class="espaciado-horizontal">EXTRA:</td>
-        <td></td>
+        <td class="espaciado-horizontal">KM. AL LLEGAR: </td>
+        <td>{{$km_arrival}}</td>
     </tr>
     <tr>
-        <td class="espaciado-horizontal">VALOR TOTAL:</td>
-        <td></td>
+        <td class="espaciado-horizontal">KM. SALIDA: </td>
+        <td>{{$km_exit}}</td>
     </tr>
     <tr>
         <td colspan="2" style="padding: 8px;">
             CUSTODIA EN:<br>
-            Calle Mackena N°768, Balmaceda: <br>
-            Comuna de Coyhaique.
+            {{ $direccion_sucursal }}
         </td>
         <td colspan="2" style="text-align: center; padding: 8px;">
             <div style="font-weight: bold; font-size: 16px;">IMPORTANTE</div>
@@ -171,26 +189,46 @@
         </td>
     </tr>
     <tr>
-        <td colspan="1">NOMBRE DEL PROPIETARIO: </td>
-        <td colspan="3"> </td>
+        <td colspan="4">NOMBRE DEL PROPIETARIO: {{ $nombre }} </td>
     </tr>
     <tr>
-        <td colspan="1">TELÉFONO CONTACTO:</td>
-        <td colspan="3"></td>
+        <td colspan="4">DIRECCIÓN: </td>
     </tr>
     <tr>
-        <td colspan="4" style="font-weight: bold; font-size: 12px; padding: 8px; background-color: #f5f5f5;">
-            EL VALOR DE ESTACIONAMIENTO DIARIO, SE DEBE CONSIDERAR DESDE EL DÍA QUE INGRESA EL VEHÍCULO, HASTA EL DÍA QUE SE RETIRA MISMO VEHÍCULO, INDEPENDIENTE DE CUANTAS HORAS HAYA ESTADO SU VEHÍCULO EN EL RECINTO
+        <td>RUT N°</td>
+        <td></td>
+        <td>VALOR TOTAL:</td>
+        <td>{{ '$' . number_format($valor_total, 0, ',', '.') }}</td>
+    </tr>
+    <tr>
+        <td colspan="4">TELÉFONO CONTACTO: {{ $telefono }}</td>
+    </tr>
+    <tr>
+        <td colspan="2">VALOR ESTACIONAMIENTO</td>
+        <td colspan="2">{{ '$' . number_format($valor_estacionamiento, 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span></td>
+    </tr>
+
+    @if($servicio_lavado)
+    <tr>
+        <td colspan="2">{{ strtoupper($servicio_lavado['nombre']) }}</td>
+        <td colspan="2">{{ '$' . number_format($servicio_lavado['precio'], 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span></td>
+    </tr>
+    @endif
+
+    <tr>
+        <td colspan="4">
+            <div style="font-weight: bold; text-align: center; margin-bottom: 6px;">SERVICIOS EXTRA</div>
+            @if($servicios_extra && count($servicios_extra) > 0)
+                @foreach($servicios_extra as $servicio)
+                    <span style="font-weight: bold;">{{ strtoupper($servicio['nombre']) }} - </span>
+                    ${{ number_format($servicio['precio'], 0, ',', '.') }} <span style="color: gray;">(Iva incluido)</span> |
+                @endforeach
+            @else
+                No hay servicios extra
+            @endif
         </td>
     </tr>
-    <tr>
-        <td colspan="2">VALOR DIARIO</td>
-        <td colspan="2"> <span style="font-size: 12px;">(Iva incluido) $3.000</span> </td>
-    </tr>
-    <tr>
-        <td colspan="2">LAVADO</td>
-        <td colspan="2"> <span style="font-size:12px;">(Iva incluido)</span></td>
-    </tr>
+
     <tr>
         <td colspan="4" style="text-align: center; padding: 14px;">
             <span style="color: red; font-weight: bold; font-size: 22px; text-transform: uppercase;">
@@ -223,8 +261,8 @@
 
     <table style="width: 100%; font-size: 12px; text-align: center; border: none; margin-top: 40px;">
         <tr>
-            <td style="width: 45%; border: none; padding-top: 6px; font-weight: bold;">
-                s
+            <td style="width: 45%; border: none; border-top: 1px solid black; padding-top: 6px; font-weight: bold;">
+                NOMBRE, FIRMA Y RUT DEL ARRENDADO
             </td>
             <td style="width: 10%; border: none;"></td>
             <td style="width: 45%; border: none; border-top: 1px solid black; padding-top: 6px; font-weight: bold;">
@@ -234,6 +272,54 @@
     </table>
 </div>
 
+<div class="page-break"></div>
+
+<div style="position: relative; min-height: 100vh; padding-bottom: 150px;"> <!-- Añadido padding-bottom para el footer -->
+
+    <!-- Nota importante -->
+    <div style="border: 1px solid black; padding: 10px; font-size: 12px; text-align: justify; text-transform: uppercase; margin-bottom: 15px;">
+        <span style="color: red; font-weight: bold;">NOTA IMPORTANTE:</span>
+        "Toda garantía por daños que pueda producirse mientras el vehículo indicado precedentemente, esté en el recinto Calle {{ $direccion_sucursal }}, se perderá en forma inmediata, desde el momento en que el dueño o titular del vehículo en custodia privada, facilite dicho vehículo a un tercero, siendo este familiar, amigo u otra condición"
+    </div>
+
+    <!-- Título normas -->
+    <div style="font-weight: bold; text-transform: uppercase; font-size: 14px; margin: 15px 0; text-align: center;">
+        PARA MEJOR ENTENDIMIENTO, SE DEBERÁ OBSERVAR LAS SIGUIENTES NORMAS
+    </div>
+
+    <div style="height: 2px; background-color: black; width: 100%; margin: 10px 0;"></div>
+
+    <!-- Lista de reglas mejorada -->
+    <div style="font-size: 12px; margin-top: 10px;">
+        @foreach($reglas as $i => $regla)
+            <div style="margin-bottom: 8px; page-break-inside: avoid; word-wrap: break-word; white-space: normal; line-height: 1.4;">
+                <strong>{{ $i + 1 }}.</strong> {{ $regla->description }}
+            </div>
+        @endforeach
+    </div>
+    <!-- Footer (manteniendo tu estructura actual) -->
+    <div style="position: absolute; bottom: 20px; width: 100%; font-size: 12px;">
+        <div style="height: 2px; background-color: black; width: 100%; margin: 10px 0;"></div>
+        
+        <table style="width: 100%; border: none; text-align: left;">
+            <tr>
+                <td style="width: 50%; vertical-align: top; border: none;">
+                    <img src="{{ $url_logo }}" alt="Logo Empresa" style="max-height: 80px;">
+                </td>
+                <td style="width: 50%; vertical-align: top; border: none; text-align: right;">
+                    <div style="height: 1px; background-color: black; width: 100%; margin: 6px 0;"></div>
+                    <div style="margin-top: 6px; font-weight: bold;">DIRECCIÓN DE SUCURSAL</div>
+                    <div style="margin-top: 4px;">{{ $direccion_sucursal }}</div>
+                    <div style="height: 1px; background-color: black; width: 100%; margin: 6px 0;"></div>
+                    <div style="margin-top: 6px; font-weight: bold;">Datos de contacto</div>
+                    @foreach($datos_contacto as $contacto)
+                    <p style="margin: 4px 0;">{{ $contacto['tipo'] }}: {{ $contacto['dato'] }}</p>
+                    @endforeach
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
 </body>
 </html>
-
