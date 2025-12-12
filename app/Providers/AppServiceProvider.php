@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 use App\Models\Setting;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,5 +34,15 @@ class AppServiceProvider extends ServiceProvider
                 'mail.from.name'    => $name,
             ]);
         }
+
+        View::composer('vendor.mail.html.*', function ($view) {
+            if (isset($view->tenantLogo)) {
+                $view->with('tenantLogo', $view->tenantLogo);
+            }
+
+            if (isset($view->tenantCompanyName)) {
+                $view->with('tenantCompanyName', $view->tenantCompanyName);
+            }
+        });
     }
 }

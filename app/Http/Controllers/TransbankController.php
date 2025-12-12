@@ -55,42 +55,10 @@ class TransbankController extends Controller
             ]
         ]);
 
-        $start = Carbon::parse($data['start_date']);
-        $end = Carbon::parse($data['end_date']);
-        $days = $start->diffInDays($end) + 1; 
+        //aqui modificado esto es de la funcion confirm
+        $data = session('reservation_data');
 
-        $amount = $car->price_per_day * $days;
-        $buyOrder = uniqid('ORD-');
-        $sessionId = uniqid('SES-');
-        session(['webpay_session_id' => $sessionId]);
-        $returnUrl = route('webpay.confirm');
-
-        $response = WebpayPlus::transaction()->create($buyOrder, $sessionId, $amount, $returnUrl);
-
-        session(['webpay_token' => $response->getToken()]);
-
-        return redirect($response->getUrl() . '?token_ws=' . $response->getToken());
-    }
-
-    public function confirm(Request $request)
-    {
-        $token = $request->input('token_ws');
-
-        if (!$token) {
-            return redirect()->route('landings.available')->with('error', 'Token de pago inválido.');
-        }
-
-        $response = WebpayPlus::transaction()->commit($token);
-
-        if ($response->isApproved()) {
-            $data = session('reservation_data');
-
-            if (!$data) {
-                return redirect()->route('landings.available')->with('error', 'No se encontraron datos de reserva.');
-            }
-
-            // Crear la reserva
-            $reservation = Reservation::create([
+        $reservation = Reservation::create([
                 'user_id'          => $data['user_id'],
                 'car_id'           => $data['car_id'],
                 'rut'              => $data['rut'],
@@ -99,34 +67,92 @@ class TransbankController extends Controller
                 'end_date'         => $data['end_date'],
                 'status'           => 'pending',
             ]);
+        session()->forget(['reservation_data', 'webpay_token']);
 
-            // Registrar el pago
-            $payment = ReservationPayment::create([
-                'reservation_id'      => $reservation->id,
-                'token'               => $token,
-                'session_id' => session('webpay_session_id'), 
-                'amount'              => $response->getAmount(),
-                'authorization_code'  => $response->getAuthorizationCode(),
-                'payment_type'        => $response->getPaymentTypeCode(),
-                'response_code'       => $response->getResponseCode(),
-                'buy_order' => $response->getBuyOrder(),
-            ]);
+        $reservation->load(['car.brand', 'car.model', 'branchOffice.business']);
+        $businessName = optional($reservation->branchOffice->business)->name_business ?? 'Nombre no disponible';
 
-            /// Limpiar sesión
-            session()->forget(['reservation_data', 'webpay_token']);
-
-            $reservation->load(['car.brand', 'car.model', 'branchOffice.business']);
-            $businessName = optional($reservation->branchOffice->business)->name_business ?? 'Nombre no disponible';
-
-            // Envio de correo
-            $user = Auth::user();
-            if ($user && $user->email) {
-                Mail::to($user->email)->send(new ReservationConfirmed($reservation, $payment, $businessName));
-            }
-
-            return view('webpay.success', compact('reservation', 'payment'));
+        $user = Auth::user();
+        if ($user && $user->email) {
+            Mail::to($user->email)->send(new ReservationConfirmed($reservation, $businessName));
         }
 
-        return view('webpay.failure');
+        return view('webpay.success', compact('reservation'));
+
+        //Hasta aqui
+
+        // $start = Carbon::parse($data['start_date']);
+        // $end = Carbon::parse($data['end_date']);
+        // $days = $start->diffInDays($end) + 1; 
+
+        // $amount = $car->price_per_day * $days;
+        // $buyOrder = uniqid('ORD-');
+        // $sessionId = uniqid('SES-');
+        // session(['webpay_session_id' => $sessionId]);
+        // $returnUrl = route('webpay.confirm');
+
+        // $response = WebpayPlus::transaction()->create($buyOrder, $sessionId, $amount, $returnUrl);
+
+        // session(['webpay_token' => $response->getToken()]);
+
+        // return redirect($response->getUrl() . '?token_ws=' . $response->getToken());
+    }
+
+    public function confirm(Request $request)
+    {
+        $token = $request->input('token_ws');
+
+        // if (!$token) {
+        //     return redirect()->route('landings.available')->with('error', 'Token de pago inválido.');
+        // }
+
+        // $response = WebpayPlus::transaction()->commit($token);
+
+        // if ($response->isApproved()) {
+        //     $data = session('reservation_data');
+
+        //     if (!$data) {
+        //         return redirect()->route('landings.available')->with('error', 'No se encontraron datos de reserva.');
+        //     }
+
+        //     // Crear la reserva
+        //     $reservation = Reservation::create([
+        //         'user_id'          => $data['user_id'],
+        //         'car_id'           => $data['car_id'],
+        //         'rut'              => $data['rut'],
+        //         'branch_office_id' => $data['branch_office_id'],
+        //         'start_date'       => $data['start_date'],
+        //         'end_date'         => $data['end_date'],
+        //         'status'           => 'pending',
+        //     ]);
+
+        //     // Registrar el pago
+        //     $payment = ReservationPayment::create([
+        //         'reservation_id'      => $reservation->id,
+        //         'token'               => $token,
+        //         'session_id' => session('webpay_session_id'), 
+        //         'amount'              => $response->getAmount(),
+        //         'authorization_code'  => $response->getAuthorizationCode(),
+        //         'payment_type'        => $response->getPaymentTypeCode(),
+        //         'response_code'       => $response->getResponseCode(),
+        //         'buy_order' => $response->getBuyOrder(),
+        //     ]);
+
+        //     /// Limpiar sesión
+        //     session()->forget(['reservation_data', 'webpay_token']);
+
+        //     $reservation->load(['car.brand', 'car.model', 'branchOffice.business']);
+        //     $businessName = optional($reservation->branchOffice->business)->name_business ?? 'Nombre no disponible';
+
+        //     // Envio de correo
+        //     $user = Auth::user();
+        //     if ($user && $user->email) {
+        //         Mail::to($user->email)->send(new ReservationConfirmed($reservation, $payment, $businessName));
+        //     }
+
+        //     return view('webpay.success', compact('reservation', 'payment'));
+        // }
+
+        // return view('webpay.failure');
     }
 }

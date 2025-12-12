@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-xl mx-auto py-12">
-    <h2 class="text-2xl font-bold text-center text-green-600 mb-6">¡Pago exitoso!</h2>
+    <h2 class="text-2xl font-bold text-center text-green-600 mb-6">¡Solictud de reserva fue un exitoso!</h2>
 
     <div class="bg-white shadow-md rounded-lg p-6">
         <div class="border rounded-lg p-4 bg-gray-50 space-y-4">
@@ -19,15 +19,10 @@
                 {{ \Carbon\Carbon::parse($reservation->end_date)->format('d/m/Y') }}
             </div>
 
-            <div>
-                <span class="font-semibold">Total:</span>
-                ${{ number_format($payment->amount, 0, ',', '.') }}
+             <div>
+                <span class="font-semibold">Nos comunicaremos con usted para completar la solicitud!</span>
             </div>
 
-            <div>
-                <span class="font-semibold">Número de orden:</span>
-                {{ $payment->buy_order ?? 'No disponible' }}
-            </div>
         </div>
 
         <div class="mt-6 text-center">

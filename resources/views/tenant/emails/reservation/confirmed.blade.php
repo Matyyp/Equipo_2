@@ -1,9 +1,8 @@
 @component('mail::message')
 # ¡Tu reserva ha sido confirmada!
 
-Gracias por confiar en nosotros. Aquí tienes un resumen de tu reserva:
+Gracias por confiar en nosotros. Aquí tienes un resumen de tu solicitud, pronto nos pondremos en contacto con usted para completar la solicitud:
 
-- **Número de orden:** {{ $payment->buy_order ?? 'No disponible' }}
 - **Auto:** 
   {{ optional($reservation->car->brand)->name_brand ?? 'Marca no disponible' }} 
   {{ optional($reservation->car->model)->name_model ?? 'Modelo no disponible' }}

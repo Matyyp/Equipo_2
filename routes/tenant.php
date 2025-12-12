@@ -239,8 +239,10 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
 
 
     //transbank
-    Route::post('/webpay/init/{car}', [TransbankController::class, 'init'])->name('webpay.init');
-    Route::get('/webpay/confirm', [TransbankController::class, 'confirm'])->name('webpay.confirm');
+    // Route::post('/webpay/init/{car}', [TransbankController::class, 'init'])->name('webpay.init');
+    // Route::get('/webpay/confirm', [TransbankController::class, 'confirm'])->name('webpay.confirm');
+    //Reemplazo de transbank
+    Route::post('/reserva/iniciando/{car}', [TransbankController::class, 'init'])->name('webpay.init');
     
     // Modulo de reservas
     Route::middleware(['auth', 'permission:reservas.access'])->group(function () {

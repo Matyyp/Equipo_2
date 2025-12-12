@@ -3,61 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <title>Tickets Verticales Full</title>
-    <style>
+<style>
         @page {
-            size: A4 portrait;
-            margin: 0; 
+            size:letter portrait; /* A4 Vertical */
+            margin: 0;         /* IMPORTANTE: Margen 0 para controlar todo nosotros */
         }
 
         body {
             margin: 0;
             padding: 0;
             font-family: "Courier New", monospace;
-            font-size: 12pt; 
+            font-size: 11pt;
         }
 
         .hoja {
             width: 100%;
-            height: 100%;
+            position: relative;
         }
 
         .ticket-columna {
             float: left;
+            /* Ajustamos el ancho para que entren exactamente 10 u 11 en A4 (21cm) */
             width: 1.9cm;  
-            height: 24cm;  
-            box-sizing: border-box; 
+            height: 27.9cm; /* Altura total de la hoja */
+            overflow: hidden;
             position: relative; 
-            page-break-inside: avoid;
+            padding: 0;
+            margin: 0/* Necesario para que lo de adentro se posicione bien */
         }
 
         .contenido-rotado {
-            width: 24cm;  
-            height: 1.9cm; 
+            /* Dimensiones invertidas: El ancho aquí será la altura visual del ticket */
+            width: 26cm;  
+            height: 1.9cm;
+            /* POSICIONAMIENTO MAGISTRAL */
             position: absolute;
-            bottom: 0;
-            left: 10px; 
-            transform-origin: bottom left; 
-            transform: rotate(-90deg);
-            display: flex;
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 0 4mm; 
-            box-sizing: border-box;
+            top: 0;      /* Anclamos arriba */
+            left: 0;     /* Anclamos a la izquierda */
+
+            /* TRUCO: Rotamos desde la esquina superior izquierda.
+               Al rotar -90deg, el ticket se "sale" hacia arriba y a la izquierda.
+               Usamos translateX y translateY para volver a meterlo en la columna.
+            */
+            transform-origin: top left;
+            transform: rotate(-90deg) translateX(-29cm); 
+            /* translateX negativo empuja el ticket hacia abajo visualmente */
+            
+            display: block;
+            padding-left: 0; /* Margen "arriba" del ticket (que ahora es izquierda) */
+ /* Centrado vertical del texto */
+            white-space: nowrap;
         }
 
-        .seccion { white-space: nowrap; }
-        .texto-centro { text-align: center; width: 100%; }
-        .patente-box { border: 1px solid #000; padding: 1px 3px; font-weight: bold; }
+        .texto-ticket {
+            display: inline-block;
+            vertical-align: middle;
+            
+        }
+
+        .patente-box { 
+            padding: 0px 0px; 
+            font-weight: bold; 
+            margin-left: 7.2cm;
+            line-height: 1.3cm;
+        }
+        .patente-box-dos { 
+            padding: 0; 
+            font-weight: bold;
+            margin: 0; 
+            margin-left: 7.2cm;
+            margin-top: -0.4cm;
+        }
 
         .salto-pagina {
-            clear: both;          
-            page-break-after: always; 
+            clear: both;
+            page-break-after: always;
             height: 0;
-            margin: 0;
             display: block;
-            visibility: hidden;
         }
-
     </style>
 </head>
 <body>
@@ -67,9 +90,8 @@
         <div class="ticket-columna">
             <div class="contenido-rotado">
                 <div class="seccion texto-centro">
-                    <span class="patente-box"></span>{{ $t['telefono'] }} - {{$t['nombre'] }} - {{ $t['patente'] }} - {{ Str::limit($t['modelo'], 10) }}</span><br>
-
-                    <span style="font-size: 10pt;"> {{ $t['inicio'] }} al {{ $t['termino'] }}  / Lavado: <b>{{ $t['lavado'] ? 'SÍ' : 'NO' }}</span>
+                    <span class="patente-box">{{ $t['telefono'] }} - {{$t['nombre'] }} - {{ $t['patente'] }} - {{ $t['modelo'] }} </span>
+                    <span class="patente-box-dos">{{ $t['inicio'] }} al {{ $t['termino'] }}  / Lavado: {{ $t['lavado'] ? 'SÍ' : 'NO' }}</span>
                 </div>
             </div>
         </div>

@@ -13,24 +13,30 @@ class ReservationConfirmed extends Mailable
     use Queueable, SerializesModels;
 
     public $reservation;
-    public $payment;
+    // public $payment;
     public $businessName;
+    public $tenantLogo;
+    public $tenantCompanyName;
 
-    public function __construct($reservation, $payment, $businessName)
+    public function __construct($reservation, $businessName) #$payment se saco de la funcion
     {
         $this->reservation = $reservation;
-        $this->payment = $payment;
+        // $this->payment = $payment;
         $this->businessName = $businessName;
+        $this->tenantLogo = optional(tenant())->logo_url ?? null;
+        $this->tenantCompanyName = $businessName;
     }
 
     public function build()
     {
-        return $this->subject('¡Reserva confirmada!')
+        return $this->subject('¡Solictud de reserva enviada!')
                     ->markdown('tenant.emails.reservation.confirmed')
                     ->with([
                         'reservation' => $this->reservation,
-                        'payment' => $this->payment,
+                        // 'payment' => $this->payment,
                         'businessName' => $this->businessName,
+                        'tenantLogo' => $this->tenantLogo,
+                        'tenantCompanyName' => $this->tenantCompanyName,
                     ]);
     }
 }
