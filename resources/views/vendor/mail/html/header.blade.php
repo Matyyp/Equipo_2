@@ -1,6 +1,5 @@
 <tr>
     <td class="header" style="text-align:center;">
-        {{ dd($tenantLogo) }}
 
         @if (!empty($tenantLogo))
             <img src="{{ $tenantLogo }}"
