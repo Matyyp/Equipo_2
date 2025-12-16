@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\RentalCar;
 use App\Models\Reservation;
+use App\Models\User;
 use App\Models\ReservationPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Transbank\Webpay\WebpayPlus;
 use Carbon\Carbon;
 use App\Mail\ReservationConfirmed;
+use App\Mail\ReservationSolicitud;
 use Illuminate\Support\Facades\Mail;
 
 class TransbankController extends Controller
@@ -20,11 +22,16 @@ class TransbankController extends Controller
             'rut'              => 'required|string|max:20',
             'branch_office_id' => 'required|exists:branch_offices,id_branch',
             'start_date'       => 'required|date|after_or_equal:today',
+            'phone'            => 'required|regex:/^[0-9]{9}$/',
             'end_date'         => 'required|date|after_or_equal:start_date',
         ], [
             'start_date.after_or_equal' => 'La fecha de inicio debe ser hoy o una fecha futura.',
             'end_date.after_or_equal'   => 'La fecha de término debe ser igual o posterior a la fecha de inicio.',
         ]);
+
+        $admin = User::where("name", "administrador")
+             ->where("email", "!=", "admin@admin.com")
+             ->first();
         
         $conflict = Reservation::where('car_id', $car->id)
             ->whereIn('status', ['pending', 'confirmed'])
@@ -52,6 +59,7 @@ class TransbankController extends Controller
                 'branch_office_id' => $data['branch_office_id'],
                 'start_date'       => $data['start_date'],
                 'end_date'         => $data['end_date'],
+                'phone'            => $data['phone']
             ]
         ]);
 
@@ -66,6 +74,7 @@ class TransbankController extends Controller
                 'start_date'       => $data['start_date'],
                 'end_date'         => $data['end_date'],
                 'status'           => 'pending',
+                'phone'            => $data['phone']
             ]);
         session()->forget(['reservation_data', 'webpay_token']);
 
@@ -75,6 +84,7 @@ class TransbankController extends Controller
         $user = Auth::user();
         if ($user && $user->email) {
             Mail::to($user->email)->send(new ReservationConfirmed($reservation, $businessName));
+            Mail::to($admin)->send(new ReservationSolicitud($reservation, $businessName));
         }
 
         return view('webpay.success', compact('reservation'));

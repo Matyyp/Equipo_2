@@ -78,7 +78,7 @@
               <input type="text" id="plate" name="plate" 
                     class="form-control" 
                     placeholder="Ej: AB123C" 
-                    minlength="6" maxlength="6" 
+                    minlength="6" maxlength="10" 
                     pattern="[A-Z0-9]{6}" 
                     required>
               <span class="input-group-text">
@@ -91,7 +91,14 @@
             </div>
           </div>
         </div>
-
+        <div class="form-row">
+          <div class="form-group col-12 col-md-6">
+                <div class="form-group">
+                    <label for="personal_extra">Persona que no es dueña del vehiculo, ingrese telefono y nombre (Opcional)</label>
+                    <input type="text" id="personal_extra" placeholder="Ej: 912345678-Pablo Perez" name="personal_extra" class="form-control">
+                </div>
+            </div>
+        </div>
       <div class="form-row">
           {{-- Columna 1: Nombre + Teléfono --}}
           <div class="col-12 col-lg-4">
@@ -183,8 +190,6 @@
                   </select>
               </div>
           </div>
-
-      </div>
 
         <div class="form-group row justify-content-end">
           <div class="col-auto">
@@ -416,17 +421,9 @@ $('#wash_service').on('change', function () {
     }
   });
 
-  const today = new Date().toISOString().slice(0, 10);
-  $('#start_date').attr('min', today);
-  $('#start_date').on('change', function() {
-    $('#end_date').attr('min', $(this).val());
-  });
+
 });
 
-$(document).ready(function() {
-  // Configuración inicial de fechas
-  const today = new Date().toISOString().slice(0, 10);
-  $('#start_date').attr('min', today);
 
 function handleAnnualParking() {
     const startDate = $('#start_date').val();

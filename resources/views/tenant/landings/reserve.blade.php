@@ -106,6 +106,21 @@
           >
           @error('rut')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror
         </div>
+        {{-- Telefono --}}
+        <div>
+          <label for="phone" class="block font-medium text-gray-700">Numero de telefono</label>
+          <input
+            type="text"
+            name="phone"
+            id="phone"
+            class="w-full border rounded p-2 @error('phone') border-red-500 @enderror"
+            placeholder="912345678"
+            maxlength="9"
+            inputmode="numeric"
+            required
+          >
+          @error('phone')<p class="text-red-500 text-sm">{{ $message }}</p>@enderror
+        </div>
 
         {{-- Nombre --}}
 
@@ -142,7 +157,7 @@
         <div>
           <label for="start_date" class="block font-medium text-gray-700">Fecha inicio</label>
           <input
-            type="text"
+            type="number"
             name="start_date"
             id="start_date"
             value="{{ old('start_date') }}"

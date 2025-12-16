@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Content;
 
-class ReservationConfirmed extends Mailable
+class ReservationSolicitud extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -32,11 +32,12 @@ class ReservationConfirmed extends Mailable
         $fromAddress = config('mail.from.address'); 
         $fromName = $this->businessName; 
 
-        return $this->from($fromAddress, $fromName) // <--- ESTA LÍNEA ES LA SOLUCIÓN
-                    ->subject('¡Solictud de reserva enviada!')
-                    ->markdown('tenant.emails.reservation.confirmed')
+        return $this->from($fromAddress, $fromName)
+                    ->subject('¡Una persona acaba enviar una solictud de reserva de arriendo!')
+                    ->markdown('tenant.emails.reservation.soli')
                     ->with([
                         'reservation' => $this->reservation,
+                        // 'payment' => $this->payment,
                         'businessName' => $this->businessName,
                         'tenantLogo' => $this->tenantLogo,
                         'tenantCompanyName' => $this->tenantCompanyName,

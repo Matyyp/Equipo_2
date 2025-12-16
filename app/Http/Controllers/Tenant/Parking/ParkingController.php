@@ -108,7 +108,7 @@ public function index(Request $request)
                 $washedDone = $reg->washed ?? false; 
 
                 return [
-                    'owner_name'    => $owner?->name ?? '-',
+                    'owner_name'    => $reg->personal_extra ? Str::after($reg->personal_extra, '-') : ($owner?->name ?? '-'),
                     'patent'        => $car?->patent ?? '-',
                     'brand_model'   => trim(($brand ?? '') . ' ' . ($model ?? '')),
                     'start_date'    => $reg->start_date ? \Carbon\Carbon::parse($reg->start_date)->format('d-m-Y') : '[NULO]',
@@ -204,6 +204,7 @@ public function sendPaymentReminderWhatsApp(Request $request, $parkingId)
 {
     $reg = ParkingRegister::findOrFail($parkingId);
     $park = Park::find($reg->id_park);
+    
 
     $owner = $park?->park_car?->car_belongs->first()?->belongs_owner;
     if (!$owner) {
@@ -391,6 +392,7 @@ public function create()
             'model_name'   => 'required|string|max:100',
             'service_id'   => 'required|exists:services,id_service',
             'wash_type'    => 'nullable|exists:services,id_service',
+            'personal_extra'=> 'nullable|string|max:200',
         ]);
     
         $brandName = Str::title(trim($data['brand_name']));
@@ -456,6 +458,7 @@ public function create()
             'status'       => 'unpaid',
             'washed'       => '0',
             'id_service'   => $request->input('wash_type'),
+            'personal_extra'=> $data['personal_extra']
         ]);
     
         Register::create([
@@ -697,6 +700,7 @@ public function update(Request $request, $id)
         'wash_type'        => 'nullable|exists:services,id_service',
         'wash_service'     => 'nullable|boolean',
         'branch_office_id' => 'nullable|exists:branch_offices,id_branch',
+        'personal_extra'   => 'nullable|string|max:200',
     ]);
 
     DB::transaction(function () use ($data, $id, $user, $request) {
@@ -782,6 +786,7 @@ public function update(Request $request, $id)
             'total_value' => $total,
             'id_service' => $washServiceId, // Aquí se guarda el servicio de lavado
             'status' => $parking->status,
+            'personal_extra'=> $data['personal_extra'],
             // washed se mantiene como estaba
         ]);
 
@@ -911,8 +916,6 @@ public function update(Request $request, $id)
             ];
         });
 
-
-    
         // Reglas del contrato
         $reglas = $parking->parking_register_generates
             ->flatMap(fn($gen) =>
@@ -938,11 +941,10 @@ public function update(Request $request, $id)
 
             ->toArray();
 
-    
         // PDF
         $pdfContent = PDF::loadView('pdf.ContractDaily', [
-            'nombre'                => $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible',
-            'telefono'              => $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible',
+            'nombre'                => Str::after($parking->personal_extra, '-') ?? $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible',
+            'telefono'              => Str::before($parking->personal_extra, '-') ?? $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible',
             'patente'               => $client->park_car->patent ?? 'No disponible',
             'marca'                 => $client->park_car->car_brand->name_brand ?? 'No disponible',
             'modelo'                => $client->park_car->car_model->name_model ?? 'No disponible',
@@ -1000,20 +1002,31 @@ public function update(Request $request, $id)
 
             if (!$client) continue;
 
+            $extra = $parking->personal_extra;
+            $tieneGuion = !empty($extra) && str_contains($extra, '-');
+
+            $nombreFinal = $tieneGuion 
+                ? trim(Str::after($extra, '-')) 
+                : ($client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible');
+
+            $telefonoFinal = $tieneGuion 
+                ? trim(Str::before($extra, '-')) 
+                : ($client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible');
+
             $tickets[] = [
-                'nombre'   => $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible',
-                'telefono' => $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible',
+                'nombre'   => $nombreFinal,
+                'telefono' => $telefonoFinal,
                 'marca'    => $client->park_car->car_brand->name_brand ?? 'No disponible',
                 'modelo'   => $client->park_car->car_model->name_model ?? 'No disponible',
                 'patente'  => $client->park_car->patent ?? 'No disponible',
                 'inicio'   => \Carbon\Carbon::parse($parking->start_date)->format('d-m-Y'),
                 'termino'  => \Carbon\Carbon::parse($parking->end_date)->format('d-m-Y'),
-                'lavado'   => $parking->id_service
+                'lavado'   => $parking->id_service 
             ];
         }
 
         $pdf = \PDF::loadView('pdf.TicketParking', compact('tickets'))
-                ->setPaper('A4', 'portrait');
+                    ->setPaper('A4', 'portrait');
 
         return $pdf->stream('tickets.pdf');
     }
@@ -1034,10 +1047,15 @@ public function update(Request $request, $id)
             $park  = $reg->park;
             $car   = $park?->park_car;
             $owner = $car?->car_belongs->first()?->belongs_owner;
+            
+            $extraName = null;
+            if (!empty($reg->personal_extra) && str_contains($reg->personal_extra, '-')) {
+                $extraName = Str::after($reg->personal_extra, '-');
+            }
 
             return [
                 'id'          => $reg->id_parking_register,
-                'owner_name'  => $owner?->name ?? 'Sin nombre',
+                'owner_name'  => $extraName ?: ($owner?->name ?? 'Sin nombre'),
                 'patent'      => $car?->patent ?? 'N/A',
                 'start_date'  => $reg->start_date,
                 'end_date'    => $reg->end_date,
@@ -1265,7 +1283,7 @@ public function getServicesByBranch(Request $request)
             $park = Park::find($parking->id_park);
             $owner = $park?->park_car?->car_belongs->first()?->belongs_owner;
 
-            $phone = $owner?->number_phone;
+            $phone = $parking->personal_extra ? Str::before($parking->personal_extra, '-') : ($owner?->phone ?? '-');
             $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
 
             if ($phoneDigitsOnly && !str_starts_with($phoneDigitsOnly, '56')) {

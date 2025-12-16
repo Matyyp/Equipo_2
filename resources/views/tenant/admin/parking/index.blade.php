@@ -611,10 +611,6 @@ $(function () {
                             <a href="${row.contract_url }" target="_blank" class="btn btn-sm btn-outline-info text-info" data-toggle="tooltip" data-placement="top" title="Generar contrato">
                                 <i class="fas fa-file-contract"></i>
                             </a>
-                            <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-info text-info"
-                             data-toggle="tooltip" data-placement="top" title="Generar ticket para llaves del vehículo">
-                                <i class="fas fa-ticket-alt"></i>
-                            </a>
                             <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-info text-info"
                              data-toggle="tooltip" data-placement="top" title="Editar registro">
                                 <i class="fas fa-pen"></i>

@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-info elevation-4">
     {{-- Brand --}}
-    <a href="{{ route('dashboard') }}"
+    <a href="{{ url('/') }}"
        class="brand-link d-flex justify-content-center align-items-center">
         @if (! empty($tenantLogo))
             <img
