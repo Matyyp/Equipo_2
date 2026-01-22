@@ -7,9 +7,14 @@
 <div class="container-fluid">
 
     <div class="card shadow-sm">
-        <div class="card-header bg-secondary text-white">
-            <i class="fas fa-list mr-2"></i> Seleccione registros de estacionamiento
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <i class="fas fa-list mr-2"></i> Seleccione los tickets a Imprimir
+             <a href="{{ route('estacionamiento.index') }}"
+               style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+                <i class="fas fa-arrow-left"></i> Volver al listado
+            </a>
         </div>
+       
 
         <div class="card-body">
 

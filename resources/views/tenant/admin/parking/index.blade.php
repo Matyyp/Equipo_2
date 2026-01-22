@@ -219,10 +219,10 @@
               class="btn btn-sm btn-outline-light" style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
               <i class="fas fa-plus me-1"></i> Ingresar vehículo
             </a>
-            <br>
+        
             <a href="{{ route('estacionamiento.ticket') }}"
               class="btn btn-sm btn-outline-light" style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
-              <i class="fas fa-plus me-1"></i> Imprimir Tickets
+              <i class="fas fa-print me-1"></i> Imprimir Tickets
             </a>
           @endif
         </div>
