@@ -17,6 +17,5 @@ class AdminUserCenterSeeder extends Seeder
             ]
         );
 
-        $user->assignRole('Admin');
     }
 }

@@ -219,6 +219,11 @@
               class="btn btn-sm btn-outline-light" style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
               <i class="fas fa-plus me-1"></i> Ingresar vehículo
             </a>
+        
+            <a href="{{ route('estacionamiento.ticket') }}"
+              class="btn btn-sm btn-outline-light" style="background-color: transparent; border: 1px solid currentColor; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px;" class="ml-auto">
+              <i class="fas fa-print me-1"></i> Imprimir Tickets
+            </a>
           @endif
         </div>
       </div>
@@ -605,10 +610,6 @@ $(function () {
                         <div >
                             <a href="${row.contract_url }" target="_blank" class="btn btn-sm btn-outline-info text-info" data-toggle="tooltip" data-placement="top" title="Generar contrato">
                                 <i class="fas fa-file-contract"></i>
-                            </a>
-                            <a href="/ticket/${row.id_parking_register}/print" class="btn btn-sm btn-outline-info text-info"
-                             data-toggle="tooltip" data-placement="top" title="Generar ticket para llaves del vehículo">
-                                <i class="fas fa-ticket-alt"></i>
                             </a>
                             <a href="/estacionamiento/${row.id_parking_register}/edit" class="btn btn-sm btn-outline-info text-info"
                              data-toggle="tooltip" data-placement="top" title="Editar registro">

@@ -40,7 +40,7 @@ use App\Http\Controllers\MapController;
 use App\Http\Controllers\ServiceLandingController;
 use App\Http\Controllers\ContainerImageLandingController;
 use App\Http\Controllers\AccidentController;
-
+use App\Http\Controllers\WhatsAppController;
 
 use App\Http\Controllers\UserRatingController;
 
@@ -164,10 +164,19 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
         ->name('estacionamiento.searchPhone');
         Route::get('estacionamiento/history', [ParkingController::class, 'history'])
         ->name('estacionamiento.history');
-        Route::get('/ticket/{parking}/print', [ParkingController::class, 'printTicket'])
-        ->name('ticket.print');
+        Route::post('estacionamiento/tickets/print', [ParkingController::class, 'printTicket'])
+        ->name('tickets.print');
         Route::get('parking/{parking}/send-whatsapp', [ParkingController::class, 'sendContractWhatsApp'])
         ->name('parking.send_whatsapp');
+        Route::get('estacionamiento/tickets', [ParkingController::class, 'infoTicket'])
+        ->name('estacionamiento.ticket');
+        Route::get('/probar-whatsapp', [WhatsappController::class, 'enviarMensajePrueba']);
+        // Vista principal
+        Route::get('/whatsapp/config', [WhatsappController::class, 'index'])->name('whatsapp.index');
+        
+        // Rutas API internas para el AJAX
+        Route::get('/whatsapp/status', [WhatsappController::class, 'checkStatus'])->name('whatsapp.status');
+        Route::get('/whatsapp/logout', [WhatsappController::class, 'disconnect'])->name('whatsapp.logout');
         
 
 
@@ -230,8 +239,10 @@ Route::middleware(['auth', 'permission:admin.panel.access'])->group(function () 
 
 
     //transbank
-    Route::post('/webpay/init/{car}', [TransbankController::class, 'init'])->name('webpay.init');
-    Route::get('/webpay/confirm', [TransbankController::class, 'confirm'])->name('webpay.confirm');
+    // Route::post('/webpay/init/{car}', [TransbankController::class, 'init'])->name('webpay.init');
+    // Route::get('/webpay/confirm', [TransbankController::class, 'confirm'])->name('webpay.confirm');
+    //Reemplazo de transbank
+    Route::post('/reserva/iniciando/{car}', [TransbankController::class, 'init'])->name('webpay.init');
     
     // Modulo de reservas
     Route::middleware(['auth', 'permission:reservas.access'])->group(function () {

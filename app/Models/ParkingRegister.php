@@ -21,7 +21,8 @@ class ParkingRegister extends Model
         'id_park',
         'status',
         'id_service',
-        'washed'
+        'washed',
+        'personal_extra'
     ];
 
     protected $primaryKey = 'id_parking_register';

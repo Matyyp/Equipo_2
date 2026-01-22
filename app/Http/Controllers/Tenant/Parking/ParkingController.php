@@ -26,7 +26,7 @@ use App\Models\Business;
 use App\Models\Addon;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
@@ -108,7 +108,7 @@ public function index(Request $request)
                 $washedDone = $reg->washed ?? false; 
 
                 return [
-                    'owner_name'    => $owner?->name ?? '-',
+                    'owner_name'    => $reg->personal_extra ? Str::after($reg->personal_extra, '-') : ($owner?->name ?? '-'),
                     'patent'        => $car?->patent ?? '-',
                     'brand_model'   => trim(($brand ?? '') . ' ' . ($model ?? '')),
                     'start_date'    => $reg->start_date ? \Carbon\Carbon::parse($reg->start_date)->format('d-m-Y') : '[NULO]',
@@ -156,55 +156,55 @@ public function index(Request $request)
     $empresaExiste = Business::exists();
     $sucursalExiste = BranchOffice::exists();
 
-    return view('tenant.admin.parking.index', compact('empresaExiste', 'sucursalExiste'));
-}
+        $user = auth()->user();
 
-public function generateContractWhatsappLink(ParkingRegister $parkingRegister)
-{
-    $park = Park::find($parkingRegister->id_park);
-    $car = $park?->park_car;
-    $owner = $car?->car_belongs->first()?->belongs_owner;
+    // Consulta base para servicios
+    $query = Service::with('service_branch_office.branch_office_contract')
+        ->whereIn('type_service', ['parking_daily', 'parking_annual'])
+        ->where('status', 'available');
 
-    $phone = $owner?->number_phone;
-    $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
-
-    if ($phoneDigitsOnly && !str_starts_with($phoneDigitsOnly, '56')) {
-        $phoneDigitsOnly = '56' . $phoneDigitsOnly;
+    // Si no es SuperAdmin, limitar por sucursal
+    if (!$user->hasRole('SuperAdmin')) {
+        $query->where('id_branch_office', $user->id_branch_office);
     }
 
-    if (!$phoneDigitsOnly || !$owner) {
-        return response()->json([
-            'success' => false,
-            'message' => 'No se pudo obtener el teléfono o propietario.',
-        ]);
+    $parkingServices = $query->get();
+
+    $hasContract = false;
+
+    foreach ($parkingServices as $svc) {
+        $contracts = $svc->service_branch_office->branch_office_contract ?? collect();
+
+        foreach ($contracts as $contract) {
+            $isValid = match ($svc->type_service) {
+                'parking_daily' => DailyContract::where('id_contract', $contract->id_contract)->exists(),
+                'parking_annual' => AnnualContract::where('id_contract', $contract->id_contract)->exists(),
+                default => false,
+            };
+
+            if ($isValid) {
+                $hasContract = true;
+                break 2; // Sale de ambos foreach
+            }
+        }
     }
 
-    // Genera el enlace firmado para el contrato con validez corta
-        $contractUrl = URL::temporarySignedRoute(
-            'contrato.print',
-            now()->addMinutes(3),
-            ['parking' => $parkingRegister->getKey()],
-            true // forzar incluir el host actual
-        );
+    $parks = Park::with('park_car')->get();
 
-    $message = "Hola {$owner->name}, gracias por estacionarte en nuestro Rent a car. Aquí está tu contrato:\n\n" .
-               "Contrato: " . $contractUrl .
-               "\n\nEl enlace expirará en 3 minutos.";
+    // Cargar todas las sucursales si es SuperAdmin
+    $branches = $user->hasRole('SuperAdmin')
+        ? BranchOffice::all()
+        : null;
 
-    $whatsappUrl = "https://wa.me/{$phoneDigitsOnly}?text=" . urlencode($message);
-
-    return response()->json([
-        'success' => true,
-        'url' => $whatsappUrl,
-    ]);
+    return view('tenant.admin.parking.index', compact('empresaExiste', 'sucursalExiste', 'parkingServices', 'parks', 'hasContract', 'branches'));
 }
-
 
 
 public function sendPaymentReminderWhatsApp(Request $request, $parkingId)
 {
     $reg = ParkingRegister::findOrFail($parkingId);
     $park = Park::find($reg->id_park);
+    
 
     $owner = $park?->park_car?->car_belongs->first()?->belongs_owner;
     if (!$owner) {
@@ -392,6 +392,7 @@ public function create()
             'model_name'   => 'required|string|max:100',
             'service_id'   => 'required|exists:services,id_service',
             'wash_type'    => 'nullable|exists:services,id_service',
+            'personal_extra'=> 'nullable|string|max:200',
         ]);
     
         $brandName = Str::title(trim($data['brand_name']));
@@ -457,6 +458,7 @@ public function create()
             'status'       => 'unpaid',
             'washed'       => '0',
             'id_service'   => $request->input('wash_type'),
+            'personal_extra'=> $data['personal_extra']
         ]);
     
         Register::create([
@@ -468,9 +470,12 @@ public function create()
             'id_contract'          => $id_contract,
             'id_parking_register'  => $parking->id_parking_register
         ]);
+
+        $this->generateContractWhatsappLink($parking->id_parking_register);
     
         return redirect()->route('estacionamiento.index')->with('success', 'Registro creado correctamente');
     }
+
 public function renew(Request $request, $id)
 {
     $request->validate([
@@ -695,6 +700,7 @@ public function update(Request $request, $id)
         'wash_type'        => 'nullable|exists:services,id_service',
         'wash_service'     => 'nullable|boolean',
         'branch_office_id' => 'nullable|exists:branch_offices,id_branch',
+        'personal_extra'   => 'nullable|string|max:200',
     ]);
 
     DB::transaction(function () use ($data, $id, $user, $request) {
@@ -780,6 +786,7 @@ public function update(Request $request, $id)
             'total_value' => $total,
             'id_service' => $washServiceId, // Aquí se guarda el servicio de lavado
             'status' => $parking->status,
+            'personal_extra'=> $data['personal_extra'],
             // washed se mantiene como estaba
         ]);
 
@@ -860,7 +867,7 @@ public function update(Request $request, $id)
 
         
 
-    public function print($parkingId)
+    public function print($parkingId,$returnBase64 = false)
     {
         $parking = ParkingRegister::with([
             'parking_register_register.register_parking.parking_service.service_branch_office.branch_office_business',
@@ -909,8 +916,6 @@ public function update(Request $request, $id)
             ];
         });
 
-
-    
         // Reglas del contrato
         $reglas = $parking->parking_register_generates
             ->flatMap(fn($gen) =>
@@ -936,11 +941,10 @@ public function update(Request $request, $id)
 
             ->toArray();
 
-    
         // PDF
         $pdfContent = PDF::loadView('pdf.ContractDaily', [
-            'nombre'                => $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible',
-            'telefono'              => $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible',
+            'nombre'                => Str::after($parking->personal_extra, '-') ?? $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible',
+            'telefono'              => Str::before($parking->personal_extra, '-') ?? $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible',
             'patente'               => $client->park_car->patent ?? 'No disponible',
             'marca'                 => $client->park_car->car_brand->name_brand ?? 'No disponible',
             'modelo'                => $client->park_car->car_model->name_model ?? 'No disponible',
@@ -965,54 +969,100 @@ public function update(Request $request, $id)
     
         $pdfBase64 = base64_encode($pdfContent);
     
+        if ($returnBase64) {
+            return $pdfBase64;
+        }
+
+        // Si es normal, devuelve la vista como siempre
         return view('pdf.print_contrato', compact('pdfBase64'));
     }
 
 
 
-    public function printTicket($parkingId)
+    public function printTicket(Request $request)
     {
-        $parking = ParkingRegister::with([
-            'parking_register_register.register_parking.parking_service.service_branch_office.branch_office_business',
-            'parking_register_generates.generates_contract_parking.contract_parking_contract.contract_presents.presents_contact_information',
-        ])->findOrFail($parkingId);
+        $ids = $request->input('registros', []);
 
-        $client = Park::where('id', $parking->id_park)
-            ->with([
-                'park_car.car_belongs.belongs_owner',
-                'park_car.car_model',
-                'park_car.car_brand'
-            ])
-            ->firstOrFail();
+        if (empty($ids)) {
+            return back()->with('error', 'Debe seleccionar al menos un registro.');
+        }
 
-        // Datos base
-        $nombre   = $client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible';
-        $telefono = $client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible';
-        $marca    = $client->park_car->car_brand->name_brand ?? 'No disponible';
-        $modelo   = $client->park_car->car_model->name_model ?? 'No disponible';
-        $patente  = $client->park_car->patent ?? 'No disponible';
+        $parkings = ParkingRegister::whereIn('id_parking_register', $ids)->get();
 
-        // Fechas formateadas
-        $inicio  = Carbon::parse($parking->start_date)->format('d-m-Y');
-        $termino = Carbon::parse($parking->end_date)->format('d-m-Y');
+        $tickets = [];
 
-        // Generar PDF tipo ticket horizontal
-        $pdfContent = PDF::loadView('pdf.TicketParking', [
-            'nombre'   => $nombre,
-            'telefono' => $telefono,
-            'marca'    => $marca,
-            'modelo'   => $modelo,
-            'patente'  => $patente,
-            'inicio'   => $inicio,
-            'termino'  => $termino,
-            'lavado'   => $parking->id_service
+        foreach ($parkings as $parking) {
+            $client = Park::where('id', $parking->id_park)
+                ->with([
+                    'park_car.car_belongs.belongs_owner',
+                    'park_car.car_model',
+                    'park_car.car_brand'
+                ])
+                ->first();
+
+            if (!$client) continue;
+
+            $extra = $parking->personal_extra;
+            $tieneGuion = !empty($extra) && str_contains($extra, '-');
+
+            $nombreFinal = $tieneGuion 
+                ? trim(Str::after($extra, '-')) 
+                : ($client->park_car->car_belongs->first()?->belongs_owner->name ?? 'No disponible');
+
+            $telefonoFinal = $tieneGuion 
+                ? trim(Str::before($extra, '-')) 
+                : ($client->park_car->car_belongs->first()?->belongs_owner->number_phone ?? 'No disponible');
+
+            $tickets[] = [
+                'nombre'   => $nombreFinal,
+                'telefono' => $telefonoFinal,
+                'marca'    => $client->park_car->car_brand->name_brand ?? 'No disponible',
+                'modelo'   => $client->park_car->car_model->name_model ?? 'No disponible',
+                'patente'  => $client->park_car->patent ?? 'No disponible',
+                'inicio'   => \Carbon\Carbon::parse($parking->start_date)->format('d-m-Y'),
+                'termino'  => \Carbon\Carbon::parse($parking->end_date)->format('d-m-Y'),
+                'lavado'   => $parking->id_service 
+            ];
+        }
+
+        $pdf = \PDF::loadView('pdf.TicketParking', compact('tickets'))
+                    ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('tickets.pdf');
+    }
+
+    public function infoTicket()
+    {
+        $registros = ParkingRegister::with([
+            'park.park_car.car_belongs.belongs_owner',
+            'park.park_car.car_brand',
+            'park.park_car.car_model'
         ])
-        ->setPaper([0, 0, 300, 125]) // ~10.5 cm ancho x ~4.4 cm alto
-        ->output();
+        ->whereHas('park', function ($q) {
+            $q->where('status', 'parked');
+        })
+        ->get()
+        ->map(function ($reg) {
 
-        $pdfBase64 = base64_encode($pdfContent);
+            $park  = $reg->park;
+            $car   = $park?->park_car;
+            $owner = $car?->car_belongs->first()?->belongs_owner;
+            
+            $extraName = null;
+            if (!empty($reg->personal_extra) && str_contains($reg->personal_extra, '-')) {
+                $extraName = Str::after($reg->personal_extra, '-');
+            }
 
-        return view('pdf.print_contrato', compact('pdfBase64'));
+            return [
+                'id'          => $reg->id_parking_register,
+                'owner_name'  => $extraName ?: ($owner?->name ?? 'Sin nombre'),
+                'patent'      => $car?->patent ?? 'N/A',
+                'start_date'  => $reg->start_date,
+                'end_date'    => $reg->end_date,
+            ];
+        });
+
+        return view('tenant.admin.parking.ticket', compact('registros'));
     }
 
     public function removeAddon($addonId)
@@ -1078,7 +1128,7 @@ public function update(Request $request, $id)
                 'payment'      => $paymentRecord->type_payment,
                 'amount'       => $paymentRecord->amount,
                 'id_register'  => $paymentRecord->id_parking_register,
-                'discount'     => 0, // Ajusta si hay lógica de descuento
+                'discount'     => 0,
                 'created_at'   => now(),
                 'updated_at'   => now(),
             ]);
@@ -1113,7 +1163,6 @@ public function getServicesByBranch(Request $request)
     $filteredServices = [];
 
     foreach ($services as $svc) {
-        // Elimina first() para recorrer TODOS los contratos
         foreach ($svc->service_branch_office->branch_office_contract as $contract) {
             $hasValidContract = false;
 
@@ -1127,9 +1176,9 @@ public function getServicesByBranch(Request $request)
                 $filteredServices[] = [
                     'id_service' => $svc->id_service,
                     'name' => $svc->name,
-                    'type_service' => $svc->type_service // Opcional: útil para lógica frontend
+                    'type_service' => $svc->type_service
                 ];
-                break; // Salir del loop de contratos si se encuentra uno válido
+                break; 
             }
         }
     }
@@ -1148,10 +1197,8 @@ public function getServicesByBranch(Request $request)
     public function getExtraServices(Request $request)
     {
         try {
-            // Determinar la sucursal según el rol
             $branchId = auth()->user()->id_branch_office;
             
-            // SuperAdmin puede especificar sucursal
             if (auth()->user()->hasRole('SuperAdmin') && $request->has('id_branch')) {
                 $branchId = $request->input('id_branch');
             }
@@ -1181,17 +1228,15 @@ public function getServicesByBranch(Request $request)
             $register = ParkingRegister::findOrFail($id);
             $extraServices = $request->input('extra_services', []);
             
-            // 1. Calcular nuevo total
             $newTotal = $register->total_value;
             $servicesToStore = [];
             
             foreach ($extraServices as $service) {
-                // Validación básica
+
                 if (!isset($service['id']) || !isset($service['price'])) {
                     continue;
                 }
                 
-                // Agregar a addons (si es necesario)
                 Addon::create([
                     'id_parking_register' => $id,
                     'id_service' => $service['id'],
@@ -1199,9 +1244,8 @@ public function getServicesByBranch(Request $request)
                     'updated_at' => now()
                 ]);
                 
-                // Preparar datos para guardar en el registro
                 $servicesToStore[] = [
-                    'id' => $service['id'],  // Nota: ahora es 'id' en lugar de 'id_service'
+                    'id' => $service['id'], 
                     'name' => $service['name'] ?? '',
                     'price' => $service['price']
                 ];
@@ -1209,7 +1253,6 @@ public function getServicesByBranch(Request $request)
                 $newTotal += $service['price'];
             }
             
-            // 2. Actualizar el registro
             $register->update([
                 'extra_services' => $servicesToStore,
                 'total_value' => $newTotal
@@ -1231,5 +1274,45 @@ public function getServicesByBranch(Request $request)
             ], 500);
         }
     }
+
+    public function generateContractWhatsappLink($parkingId)
+    {
+        try {
+            // 1. Necesitamos buscar el teléfono del dueño (Esto no lo devuelve 'print', así que lo buscamos rápido)
+            $parking = ParkingRegister::findOrFail($parkingId);
+            $park = Park::find($parking->id_park);
+            $owner = $park?->park_car?->car_belongs->first()?->belongs_owner;
+
+            $phone = $parking->personal_extra ? Str::before($parking->personal_extra, '-') : ($owner?->phone ?? '-');
+            $phoneDigitsOnly = $phone ? preg_replace('/\D+/', '', $phone) : null;
+
+            if ($phoneDigitsOnly && !str_starts_with($phoneDigitsOnly, '56')) {
+                $phoneDigitsOnly = '56' . $phoneDigitsOnly;
+            }
+
+            if (!$phoneDigitsOnly) {
+                return response()->json(['success' => false, 'message' => 'Cliente sin teléfono.']);
+            }
+
+            $pdfBase64 = $this->print($parkingId, true);
+
+            $response = Http::timeout(60)->post('http://localhost:3000/send-pdf-base64', [
+                'number'    => $phoneDigitsOnly,
+                'pdfBase64' => $pdfBase64,
+                'fileName'  => "Contrato_{$parkingId}.pdf",
+                'caption'   => "Hola {$owner->name}, aquí tienes tu contrato 📄"
+            ]);
+
+            if ($response->successful()) {
+                return response()->json(['success' => true, 'message' => 'Enviado correctamente']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Error Node: ' . $response->body()]);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
 }
 
