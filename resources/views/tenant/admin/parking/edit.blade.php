@@ -38,125 +38,133 @@
         @csrf
         @method('PUT')
 
-        <input type="hidden" id="original_phone" value="{{ $owner->number_phone }}">
-
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
             <label for="plate">Patente</label>
             <input type="text" id="plate" name="plate" class="form-control" value="{{ $car->patent }}" readonly>
           </div>
         </div>
-
         <div class="form-row">
           <div class="form-group col-12 col-md-6">
-            <label for="name">Nombre</label>
-            <input type="text" id="name" name="name" placeholder="Ej: Juan Perez" class="form-control" value="{{ $owner->name }}" required>
-          </div>
-          <div class="form-group col-12 col-md-6">
-            <label for="phone">Teléfono</label>
-            <input type="text" id="phone" name="phone" placeholder="Ej: 912345678"  class="form-control" value="{{ $owner->number_phone }}" maxlength="9" pattern="^[0-9]{9}$" required>
-            <div id="phone-error" class="text-danger mt-1"></div>
-          </div>
+                <div class="form-group">
+                    <label for="personal_extra">Persona que no es dueña del vehiculo, ingrese telefono y nombre (Opcional)</label>
+                    <input type="text" id="personal_extra" placeholder="Ej: 912345678-Pablo Perez" name="personal_extra"  value="{{ $parking->personal_extra }}" class="form-control">
+                </div>
+            </div>
         </div>
-
         <div class="form-row">
-          <div class="form-group col-12 col-md-6">
-            <label for="start_date">Fecha de Inicio</label>
-            <input type="date" id="start_date" name="start_date" class="form-control" value="{{ $parking->start_date }}" required>
-          </div>
-          <div class="form-group col-12 col-md-6">
-            <label for="end_date">Fecha de Término</label>
-            <input type="date" id="end_date" name="end_date" class="form-control" value="{{ $parking->end_date }}" required>
-          </div>
-        </div>
+          {{-- Columna 1: Nombre + Teléfono --}}
+          <div class="col-12 col-lg-4">
+              <div class="form-group">
+                  <label for="name">Nombre</label>
+                  <input type="text" id="name" placeholder="Ej: Juan Perez" value="{{ $owner->name }}" name="name" class="form-control" required>
+              </div>
 
-        <div class="form-row">
-          <div class="form-group col-12 col-md-6">
-            <label for="arrival_km">Km Entrada</label>
-            <input type="number" id="arrival_km" placeholder="Ej: 5000" name="arrival_km" class="form-control" value="{{ $parking->arrival_km }}" min="0">
+              <div class="form-group">
+                  <label for="phone">Teléfono</label>
+                  <input type="text" id="phone" name="phone" placeholder="Ej: 912345678" value="{{ $owner->number_phone }}" class="form-control" pattern="^[0-9]{9}$" maxlength="9" inputmode="numeric" required>
+              </div>
           </div>
-          <div class="form-group col-12 col-md-6">
-            <label for="km_exit">Km Salida</label>
-            <input type="number" id="km_exit" placeholder="Ej: 8000" name="km_exit" class="form-control" value="{{ $parking->km_exit }}" min="0">
-          </div>
-        </div>
-        
-        @role('SuperAdmin')
-        <div class="form-group">
-          <label for="branch_office_id">Sucursal</label>
-          <select id="branch_office_id" name="branch_office_id" placeholder="Seleccione una sucursal" class="selectpicker form-control" data-live-search="true">
-            <option value="">Seleccione una sucursal</option>
-            @foreach($branches as $branch)
-              <option value="{{ $branch->id_branch }}" {{ $branch->id_branch == $service->id_branch_office ? 'selected' : '' }}>
-                {{ $branch->name_branch_offices }}
-              </option>
-            @endforeach
-          </select>
-        </div>
-        @endrole
 
-        <div class="form-group" id="service-group">
-          <label for="service_id">Tipo de Estacionamiento</label>
+          {{-- Columna 2: Marca + Modelo --}}
+          <div class="col-12 col-lg-4">
+              <div class="form-group">
+                  <label for="brand_name">Marca</label>
+                  <input type="text" id="brand_name" placeholder="Ej: Toyota" name="brand_name" value="{{ $brands }}" 
+                        class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                  <label for="model_name">Modelo</label>
+                  <input type="text" id="model_name" placeholder="Ej: Yaris" name="model_name" value="{{ $models }}" 
+                        class="form-control" required>
+              </div>
+          </div>
+
+          {{-- Columna 3: Fecha inicio + Fecha término --}}
+          <div class="col-12 col-lg-4">
+              <div class="form-group">
+                  <label for="start_date">Fecha de Inicio</label>
+                  <input type="date" id="start_date" name="start_date" class="form-control"  value="{{ $parking->start_date }}" required>
+              </div>
+
+              <div class="form-group">
+                  <label for="end_date">Fecha de Término</label>
+                  <input type="date" id="end_date" name="end_date" class="form-control"  value="{{ $parking->end_date }}" required>
+              </div>
+          </div>
+
+      </div>
+
+
+      <div class="form-row">
+
+          {{-- COLUMNA 1: Sucursal (solo SuperAdmin) --}}
           @role('SuperAdmin')
-          <select id="service_id" name="service_id" class="selectpicker form-control" data-live-search="true" required>
-            <option value="">Seleccione un servicio</option>
-            @foreach($parkingServices as $svc)
-              <option
-                value="{{ $svc->id_service }}"
-                data-type-service="{{ $svc->type_service }}"
-                {{ (string) $svc->id_service === (string) ($service->id_service ?? '') ? 'selected' : '' }}>
-                {{ $svc->name }}
-              </option>
-            @endforeach
-          </select>
-          @else
-            <input type="text" class="form-control" value="{{ $service->name }}" readonly>
-            <input type="hidden" name="service_id" value="{{ $service->id_service }}">
+          <div class="form-group col-12 col-lg-4">
+              <label for="branch_office_id">Sucursal</label>
+              <select id="branch_office_id" name="branch_office_id"
+                      class="selectpicker form-control" data-live-search="true" required>
+                  <option >Seleccione una sucursal</option>
+                  @foreach($branches as $branch)
+                      <option value="{{ $branch->id_branch }}" {{ $branch->id_branch == $service->id_branch_office ? 'selected' : '' }}>{{ $branch->name_branch_offices }}</option>
+                  @endforeach
+              </select>
+          </div>
           @endrole
-        </div>
 
-        <div class="form-row">
-          <div class="form-group col-12 col-md-6">
-            <label for="brand_name">Marca</label>
-            <input type="text" id="brand_name" placeholder="Ej: Toyota" name="brand_name" class="form-control" value="{{ $brands }}" required>
+          {{-- COLUMNA 2: Tipo de Estacionamiento --}}
+          <div class="form-group col-12 col-lg-4">
+              <label for="service_id">Tipo de Estacionamiento</label>
+              <select id="service_id" name="service_id"
+                      class="selectpicker form-control" data-live-search="true" required>
+                  <option  >Seleccione el tipo de estacionamiento</option>
+                  @unless(auth()->user()->hasRole('SuperAdmin'))
+                      @foreach($parkingServices as $svc)
+                          <option value="{{ $svc->id_service }}">{{ $svc->name }}</option>
+                      @endforeach
+                  @endunless
+              </select>
           </div>
-          <div class="form-group col-12 col-md-6">
-            <label for="model_name">Modelo</label>
-            <input type="text" id="model_name" placeholder="Ej: Yaris" name="model_name" class="form-control" value="{{ $models }}" required>
-          </div>
-        </div>
 
-        {{-- Lavado --}}
-        <div class="form-check mb-3">
-          <input type="hidden" name="wash_service" value="0">
-          <input type="checkbox" id="wash_service" name="wash_service" class="form-check-input" value="1" {{ $lavadoAsignado ? 'checked' : '' }}>
-          <label for="wash_service" class="form-check-label">Incluye Servicio de Lavado</label>
-        </div>
+          {{-- COLUMNA 3: Lavado + tipo de lavado --}}
+          <div class="form-group col-12 col-lg-4">
+              <label class="d-block">Lavado</label>
 
-        <div id="wash-type-group" class="form-group" style="display: none;">
-          <label for="wash_type">Tipo de Lavado</label>
-          <select name="wash_type" id="wash_type" class="form-control">
-            <option value="">Seleccione un tipo de lavado</option>
-            @foreach($carWashServices as $lavado)
-              <option value="{{ $lavado->id_service }}" {{ $lavadoAsignado == $lavado->id_service ? 'selected' : '' }}>
-                {{ $lavado->name }}
-              </option>
-            @endforeach
-          </select>
-        </div>
+              <div class="form-check mb-2">
+                  <input type="checkbox" id="wash_service" name="wash_service" class="form-check-input" value="1" {{ $lavadoAsignado ? 'checked' : '' }}>
+                  <label for="wash_service" class="form-check-label">Incluye Servicio de Lavado</label>
+              </div>
 
-        <div class="form-group row justify-content-end">
-          <div class="col-auto">
-            <a href="{{ route('estacionamiento.index') }}" class="btn btn-secondary mr-1">
-                Cancelar
-            </a>
+             <div id="wash-type-group" style="display: none;">
+                <label for="wash_type">Tipo de Lavado</label>
+                <select name="wash_type" id="wash_type" class="form-control">
+                    <option value="">Seleccione un tipo de lavado</option> {{-- Opción por defecto fuera del loop --}}
+                    
+                    @foreach($carWashServices as $lavado)
+                        <option value="{{ $lavado->id_service }}" {{ $lavadoAsignado == $lavado->id_service ? 'selected' : '' }}>
+                            {{ $lavado->name }} {{-- Aquí debe ir el nombre del servicio --}}
+                        </option>
+                    @endforeach
+                </select>
+              </div>
+            </div>
+      </div>
+
+       
+
+          <div class="form-group row justify-content-end">
+            <div class="col-auto">
+              <a href="{{ route('estacionamiento.index') }}" class="btn btn-secondary mr-1">
+                  Cancelar
+              </a>
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-primary" id="submit-btn">
+                  Actualizar
+              </button>
+            </div>
           </div>
-          <div class="col-auto">
-            <button type="submit" class="btn btn-primary" id="submit-btn">
-                Actualizar
-            </button>
-          </div>
-        </div>
       </form>
     </div>
   </div>

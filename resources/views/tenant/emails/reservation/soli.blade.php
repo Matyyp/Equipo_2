@@ -1,8 +1,8 @@
 @component('mail::message')
-# ¡Tu reserva ha sido confirmada!
+# ¡Una persona acaba de hacer una solitud de reserva de arriendo!
 
-Gracias por confiar en nosotros. Aquí tienes un resumen de tu solicitud, pronto nos pondremos en contacto con usted para completar la solicitud:
-
+Ingresa a la plataforma para completar la solicitud y observar los datos de la persona, ademas de que te coloques en contacto:
+Informacion de la reserva:
 - **Auto:** 
   {{ optional($reservation->car->brand)->name_brand ?? 'Marca no disponible' }} 
   {{ optional($reservation->car->model)->name_model ?? 'Modelo no disponible' }}
@@ -10,7 +10,7 @@ Gracias por confiar en nosotros. Aquí tienes un resumen de tu solicitud, pronto
 - **Fecha de inicio:** {{ \Carbon\Carbon::parse($reservation->start_date)->format('d/m/Y') }}
 - **Fecha de término:** {{ \Carbon\Carbon::parse($reservation->end_date)->format('d/m/Y') }}
 
-¡Gracias por preferirnos!
+¡Gracias por leer la informacion!
 
 Saludos,<br>
 {{ $businessName }}

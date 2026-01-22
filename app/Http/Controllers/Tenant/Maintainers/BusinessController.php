@@ -34,7 +34,7 @@ class BusinessController extends Controller
     {
         $data = $request->validate([
             'name_business' => 'required|string|max:255',
-            'logo'          => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo'          => 'required|image|mimes:jpg,jpeg,png,webp|max:5000',
             'funds'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -83,7 +83,7 @@ class BusinessController extends Controller
     {
         $request->validate([
             'name_business' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5000',
             'funds' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3000',
         ], [
             'name_business.required' => 'El nombre de la empresa es obligatorio.',

@@ -122,10 +122,6 @@
               <label for="end_date">Fecha Término</label>
               <input type="date" id="end_date" class="form-control" value="{{ $reservation->end_date }}" readonly>
             </div>
-            <div class="form-group">
-              <label for="payment">Pago</label>
-              <input type="text" id="payment" class="form-control" value="Reserva cancelada por: ${{ number_format($reservation->reservationPayment->amount ?? 0, 0, ',', '.') }}" readonly>
-            </div>
           </div>
         </div>
 

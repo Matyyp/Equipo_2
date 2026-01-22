@@ -98,11 +98,15 @@ class ReservationController extends Controller
             'km_exit' => 'required|integer',
         ]);
 
-        $paymentAmount = $reservation->reservationPayment->amount ?? 0;
+        $paymentAmount = $reservation->car->price_per_day ?? 0;
+        $fechaInicio = Carbon::parse($reservation->start_date);
+        $fechaTermino = Carbon::parse($reservation->end_date);
+
+        $totalDias = $fechaInicio->diffInDays($fechaTermino)+1;
 
         $data['reservation_id'] = $reservation->id;
         $data['rental_car_id'] = $reservation->car_id;
-        $data['payment'] = $paymentAmount;
+        $data['payment'] = $paymentAmount*$totalDias;
         $data['start_date'] = $reservation->start_date;
         $data['end_date'] = $reservation->end_date;
 

@@ -3,7 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Rent a Car Coyhaique</title>
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "AutoRental",
+        "name": "Rent a Car Coyhaique - René Sandoval Pérez",
+        "image": "https://rentacarencoyhaique2.cl/img/logo.png",
+        "@id": "https://rentacarencoyhaique2.cl",
+        "url": "https://rentacarencoyhaique2.cl",
+        "priceRange": "$$",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Calle Mackena N°768",
+            "addressLocality": "Balmaceda",
+            "addressRegion": "Aysén",
+            "postalCode": "5950000",
+            "addressCountry": "CL"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -45.5752, 
+            "longitude": -72.0662
+        },
+        "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+            ],
+            "opens": "08:00",
+            "closes": "22:00"
+        },
+        "description": "Arriendo de vehículos y custodia privada en Coyhaique. Atendido por su dueño René Sandoval. Seguridad garantizada en Calle Mackena 768."
+        }
+        </script>
+    <title>Rent a car en Coyhaique</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
